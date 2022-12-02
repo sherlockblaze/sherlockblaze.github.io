@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/resources/img/header_img/DogFace.jpg">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          Python3 简单文件操作 - Sherlock Blaze
+        
+    </title>
+
+    <link rel="canonical" href="https://sherlockblaze.com/2017/06/17/python/file-operations/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url("https://source.unsplash.com/random/1280x720")
+    }
+    
+</style>
+
+<header class="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Python" title="Python">Python</a>
+                            
+                        </div>
+                        <h1>Python3 简单文件操作</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by Sherlock Blaze on
+                            2017-06-17
+                        </span>
+                    </div>
+                
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Sherlock Blaze</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/community/">Community</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <blockquote>
+<p>首先介绍一下什么叫做相对路径和绝对路径，我们程序狗家族想必都是懂这个的，但是难免会有童鞋忘记。所以码出来供大家快速回忆一下。</p>
+</blockquote>
+<p>相对路径</p>
+<blockquote>
+<p>相对路径是相对于文件当前的工作路径而言的</p>
+</blockquote>
+<p>绝对路径</p>
+<blockquote>
+<p>绝对路径是由文件名和它的完整路径以及驱动器字母组成的，如果是Windows系统，那么某一个文件的绝对路径可能是:<br>c:\pythonworkspace\firstpy.py<br>在Unix平台上，文件的绝对路径可能是: /home/sherlockblaze/Documents/pythonworkspace/firstpy.py</p>
+</blockquote>
+<h2 id="文件类型"><a href="#文件类型" class="headerlink" title="文件类型"></a>文件类型</h2><blockquote>
+<p>文件大概可以分为文本文件和二进制文件。在不同操作系统下，可以用文本编辑器编辑的文件，都称为文本文件，那么其他的文件就属于二进制文件。而二进制文件相比与文本文件的优势在于二进制文件的处理效率更高一些。</p>
+</blockquote>
+<h2 id="读取文件的开始"><a href="#读取文件的开始" class="headerlink" title="读取文件的开始"></a>读取文件的开始</h2><blockquote>
+<p>读取一个文件的思路永远都是相同的，第一步自然就是打开一个文件。在python中我们通过如下代码使用open函数来打开一个文件。</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">input = open(filepath,mode)</span><br></pre></td></tr></table></figure>
+<p>我们的mode主要由以下几种方式。</p>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>r</td>
+<td>读取模式</td>
+</tr>
+<tr>
+<td>w</td>
+<td>写入模式</td>
+</tr>
+<tr>
+<td>a</td>
+<td>追加模式</td>
+</tr>
+<tr>
+<td>rb</td>
+<td>读取二进制数据模式打开文件</td>
+</tr>
+<tr>
+<td>wb</td>
+<td>写入二进制数据模式打开文件</td>
+</tr>
+</tbody>
+</table>
+<p>同样我们有两种途径来打开文件。</p>
+<ul>
+<li>通过绝对路径</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">input = open(<span class="string">"/Users/sherlockblaze/Documents/pythonworkspace/Test.txt"</span>,<span class="string">"r"</span>)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>通过相对路径（需要注意的是，我们通过相对路径是可以打开当前工作目录下的文件的，也就是说如果我的.py文件存在 ／User/sherlock/Documents 下的话，我们通过相对路径打开的文件也同样存在当前路径下）</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">input = open(<span class="string">"Test.txt"</span>,<span class="string">"r"</span>)</span><br></pre></td></tr></table></figure>
+<p><strong>注意</strong></p>
+<blockquote>
+<p>在Windows下我们通过绝对路径来打开文件的时候，我们需要在绝对文件名前加上一个 r 前缀，来表示这个字符串是一个行字符串，这样可以让python解释器将文件中的反斜线理解成字面意义上的反斜线。例如：</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">input = open(<span class="string">r"d:\pythonworkspace\Test.txt"</span>,<span class="string">"r"</span>)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>如果我们不添加 r 作为前缀，则需要用转义字符把上面的语句修改成如下所示：</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">input = open(<span class="string">"d:\\pythonworkspace\\Test.txt"</span>,<span class="string">"r"</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="向文件中写入数据"><a href="#向文件中写入数据" class="headerlink" title="向文件中写入数据"></a>向文件中写入数据</h2><blockquote>
+<p>我们首先通过写入的方式打开文件，然后通过调用write方法，向文件中写入数据。</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    input = open(<span class="string">"Test.txt"</span>,<span class="string">"w"</span>)</span><br><span class="line">    input.write(<span class="string">"SherlockBlaze"</span>)</span><br><span class="line">    input.write(<span class="string">"\t is the most handsome guy!\n"</span>)</span><br><span class="line">    input.close()</span><br><span class="line"></span><br><span class="line">main()</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>通过这种方式，我们往当前目录下的 Test.txt 文件中写入了 SherlockBlaze is the most handsome guy! 这句话，并且需要注意的是，我们在写完文件后，调用close()方法关闭了文件流。</p>
+</blockquote>
+<p>常见小特性</p>
+<blockquote>
+<p>当使用w模式打开一个文件时，如果文件不存在，open函数就会创建一个新文件，如果该文件存在，那么这个文件里的内容会被心的内容覆盖。当我们用读／写模式打开文件的时候，文件内部会添加一个叫做文件指针的特殊标记，文件的读写操作都发生在指针当前位置上。</p>
+</blockquote>
+<p>判断文件是否存在</p>
+<blockquote>
+<p>为了避免误操作，我们可以通过os.path模块中的isFile函数来判断一个文件是否存在。即：</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os.path</span><br><span class="line"><span class="keyword">is</span> os.paht.isfile(<span class="string">"Test.txt"</span>):</span><br><span class="line">    print(<span class="string">"Test.txt exists"</span>)</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    print(<span class="string">"Test.txt doesn't exists"</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="简单小程序"><a href="#简单小程序" class="headerlink" title="简单小程序"></a>简单小程序</h2><ul>
+<li>输入文件路径，并且从中计算各个字母出现的次数</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    filename = input(<span class="string">"Enter a filename: "</span>).strip()</span><br><span class="line">    infile = open(filename,<span class="string">"r"</span>)</span><br><span class="line"></span><br><span class="line">    counts = <span class="number">26</span> * [<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> infile:</span><br><span class="line">        countLetters(line.lower(),counts)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(counts)):</span><br><span class="line">        <span class="keyword">if</span> counts[i] != <span class="number">0</span>:</span><br><span class="line">            print(chr(ord(<span class="string">'a'</span>) + i) + <span class="string">"appears "</span> + str(counts[i])</span><br><span class="line">            + (<span class="string">" time"</span> <span class="keyword">if</span> counts[i] == <span class="number">1</span> <span class="keyword">else</span> <span class="string">" times"</span>))</span><br><span class="line"></span><br><span class="line">    infile.close()</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">countLetters</span><span class="params">(line,counts)</span>:</span></span><br><span class="line">    <span class="keyword">for</span> ch <span class="keyword">in</span> line:</span><br><span class="line">        <span class="keyword">if</span> ch.isalpha():</span><br><span class="line">            counts[ord(ch) - ord(<span class="string">'a'</span>)] += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">main()</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>思路简单叙述：首先创建数组，每当读取到一个字符，对对应位置的数字进行加一，最后在进行遍历得到输出。</p>
+</blockquote>
+<ul>
+<li>下载网站源代码，然后写入目的文件中</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> urllib</span><br><span class="line"><span class="keyword">import</span> urllib.request</span><br><span class="line"><span class="keyword">import</span> os.path</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">download</span><span class="params">(url,num_retries = <span class="number">2</span>)</span>:</span></span><br><span class="line">    <span class="keyword">print</span> (<span class="string">'Downloading:'</span>,url)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        html = urllib.request.urlopen(url).read()</span><br><span class="line">    <span class="keyword">except</span> urllib.URLError <span class="keyword">as</span> e:</span><br><span class="line">        <span class="keyword">print</span> (<span class="string">'Download error:'</span>,e.reason)</span><br><span class="line">        html = <span class="keyword">None</span></span><br><span class="line">        <span class="keyword">if</span> num_retries &gt; <span class="number">0</span>:</span><br><span class="line">            <span class="keyword">if</span> hasattr(e,<span class="string">'code'</span>) <span class="keyword">and</span> <span class="number">500</span> &lt;= e.code &lt;<span class="number">600</span>:</span><br><span class="line">                <span class="keyword">return</span> download(url,num_retries<span class="number">-1</span>)</span><br><span class="line">    <span class="keyword">return</span> html</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    url = input(<span class="string">"Enter a url:\n"</span>).strip()</span><br><span class="line">    f2 = input(<span class="string">"Enter a target file:\n"</span>).strip()</span><br><span class="line">    <span class="keyword">if</span> os.path.isfile(f2):</span><br><span class="line">        print(f2 + <span class="string">" already exists"</span>)</span><br><span class="line">        sys.exit()</span><br><span class="line"></span><br><span class="line">    html = download(url)</span><br><span class="line">    target = open(f2,<span class="string">"w"</span>)</span><br><span class="line"></span><br><span class="line">    content = html.decode(encoding=<span class="string">"utf-8"</span>)</span><br><span class="line">    target.write(content)</span><br><span class="line">    target.close()</span><br><span class="line"></span><br><span class="line">main()</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>比如我输入网址 <code>http://www.game2.cn/</code>，在输入目的文件：game2.txt。即可进行下载并把对应html输入到当前工作目录的game2.txt文件中。</p>
+</blockquote>
+
+                
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2018/08/16/python/more-about-file-operations/" data-toggle="tooltip" data-placement="top" title="Python3 文件操作（一年后新版）">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                </ul>
+
+                <div class="comments" id="comments"></div>
+
+                <br>                      
+            </div>
+            
+            <!-- Table of Contents -->
+<aside id="sidebar">
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">Contents</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#文件类型"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">文件类型</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#读取文件的开始"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">读取文件的开始</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#向文件中写入数据"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">向文件中写入数据</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#简单小程序"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">简单小程序</span></a></li></ol>
+    
+    </div>
+</aside>
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Python" title="Python">Python</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://chaoscoffee.github.io/" target="_blank">ChaosCoffee&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<link rel="stylesheet" href="/css/valine.css">
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script type="text/javascript">
+    // Use import
+    // or Use require
+    var GUEST = ['nick','mail','link'];
+    var guest = "nick,mail,link";
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: true,
+        notify: false,
+        appId: 'zft6KmhKY69FtUwIJFY5XJo5-gzGzoHsz',
+        appKey: 'KhPyX7dVWp6nYvU3iK8OoOlS',
+        visitor: true,
+        placeholder: 'Let us talk more!!',
+        avatar: 'wavatar',
+        guest_info: guest,
+        pageSize: '10' || 10,
+        lang: 'en'
+    });
+</script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://github.com/sherlockblaze">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/jam-blaze-606ab3163">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/sherlockblaze_007">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Sherlock Blaze 2022 
+                    <br>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://sherlockblaze.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-133187385-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-133187385-1');
+</script>
+
+<!-- -->
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?4d1398d2e890275832d6fd932eb0e2e1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>

@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/resources/img/header_img/DogFace.jpg">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          Design Pattern in Go (Structural Pattern) - Sherlock Blaze
+        
+    </title>
+
+    <link rel="canonical" href="https://sherlockblaze.com/2019/12/06/golang/design-pattern-in-go-structural/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url("https://source.unsplash.com/random/1280x720")
+    }
+    
+</style>
+
+<header class="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Golang" title="Golang">Golang</a>
+                            
+                        </div>
+                        <h1>Design Pattern in Go (Structural Pattern)</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by Sherlock Blaze on
+                            2019-12-06
+                        </span>
+                    </div>
+                
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Sherlock Blaze</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/community/">Community</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2 id="Composite-design-pattern"><a href="#Composite-design-pattern" class="headerlink" title="Composite design pattern"></a>Composite design pattern</h2><p><strong>The Composite design pattern favors composition over inheritance.</strong> All in all, Go doesn’t have inheritance because it doesn’t need it!</p>
+<ul>
+<li><strong>composite_test.go</strong></li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> composition</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"testing"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestAthlete_Train</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    athlete := Athlete&#123;&#125;</span><br><span class="line">    athlete.Train()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestSwimmer_Swim</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    localSwim := Swim</span><br><span class="line">    swimmer := CompositeSwimmerA&#123;</span><br><span class="line">        MySwim: &amp;localSwim,</span><br><span class="line">    &#125;</span><br><span class="line">    swimmer.MyAthlete.Train()</span><br><span class="line">    (*swimmer.MySwim)()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestAnimal_Swim</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    fish := Shark&#123;</span><br><span class="line">        Swim: Swim,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    fish.Eat()</span><br><span class="line">    fish.Swim()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestSwimmer_Swim2</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    swimmer := CompositeSwimmerB&#123;</span><br><span class="line">        &amp;Athlete&#123;&#125;,</span><br><span class="line">        &amp;SwimmerImplementor&#123;&#125;,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    swimmer.Train()</span><br><span class="line">    swimmer.Swim()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestTree</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    root := Tree&#123;</span><br><span class="line">        LeafValue: <span class="number">0</span>,</span><br><span class="line">        Right: &amp;Tree&#123;</span><br><span class="line">            LeafValue: <span class="number">5</span>,</span><br><span class="line">            Right:     &amp;Tree&#123;<span class="number">6</span>, <span class="literal">nil</span>, <span class="literal">nil</span>&#125;,</span><br><span class="line">        &#125;,</span><br><span class="line">        Left: &amp;Tree&#123;<span class="number">4</span>, <span class="literal">nil</span>, <span class="literal">nil</span>&#125;,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println</span>(root.Right.Right.LeafValue)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestSon_GetParentField</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    son := Son&#123;&#125;</span><br><span class="line">    GetParentField(son.P)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>composite.go</strong></li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> composition</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Athlete <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(a *Athlete)</span> <span class="title">Train</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="built_in">println</span>(<span class="string">"Training"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Swim</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="built_in">println</span>(<span class="string">"Swimming!"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> CompositeSwimmerA <span class="keyword">struct</span> &#123;</span><br><span class="line">    MyAthlete Athlete</span><br><span class="line">    MySwim    *<span class="function"><span class="keyword">func</span><span class="params">()</span></span></span><br><span class="line"><span class="function">&#125;</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">type</span> <span class="title">Trainer</span> <span class="title">interface</span></span> &#123;</span><br><span class="line">    Train()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Swimmer <span class="keyword">interface</span> &#123;</span><br><span class="line">    Swim()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> SwimmerImplementor <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *SwimmerImplementor)</span> <span class="title">Swim</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="built_in">println</span>(<span class="string">"Swimming"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> CompositeSwimmerB <span class="keyword">struct</span> &#123;</span><br><span class="line">    Trainer</span><br><span class="line">    Swimmer</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Animal <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Animal)</span> <span class="title">Eat</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="built_in">println</span>(<span class="string">"Eating"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Shark <span class="keyword">struct</span> &#123;</span><br><span class="line">    Animal</span><br><span class="line">    Swim <span class="function"><span class="keyword">func</span><span class="params">()</span></span></span><br><span class="line"><span class="function">&#125;</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">type</span> <span class="title">Tree</span> <span class="title">struct</span></span> &#123;</span><br><span class="line">    LeafValue <span class="keyword">int</span></span><br><span class="line">    Right     *Tree</span><br><span class="line">    Left      *Tree</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Parent <span class="keyword">struct</span> &#123;</span><br><span class="line">    SomeField <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Son <span class="keyword">struct</span> &#123;</span><br><span class="line">    P Parent</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">GetParentField</span><span class="params">(p Parent)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> p.SomeField</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>At this point, you should be really comfortable using the Composite design pattern. It’s very idiomatic Go feature. The Composite design pattern makes our structures predictable but also allows us to create most of the design patterns.</p>
+<h2 id="Adapter-design-pattern"><a href="#Adapter-design-pattern" class="headerlink" title="Adapter design pattern"></a>Adapter design pattern</h2><p><strong>In Go, an adapter will allow us to use something that wasn’t built for a specific task at the beginning.</strong></p>
+<p>The Adapter pattern is very useful when, for example, an interface gets outdated and it’s not possible to replace it easily or fast. Instead, you create a new interface to deal with the current needs of your application, which, under the hood, uses implementations of the old interface.</p>
+<blockquote>
+<p>Just keep in mind that extensibility in code is only possible through the use of design patterns and interface-oriented programming.</p>
+</blockquote>
+<h3 id="Objectives"><a href="#Objectives" class="headerlink" title="Objectives"></a>Objectives</h3><p>The Adapter design pattern will help you fit the needs of two parts of the code that are incompatible at first.</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> structural</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> LegacyPrinter <span class="keyword">interface</span> &#123;</span><br><span class="line">    Print(s <span class="keyword">string</span>) <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> MyLegacyPrinter <span class="keyword">struct</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(l *MyLegacyPrinter)</span> <span class="title">Print</span><span class="params">(s <span class="keyword">string</span>)</span> <span class="params">(newMsg <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    newMsg = fmt.Sprintf(<span class="string">"Legacy Printer: %s\n"</span>, s)</span><br><span class="line">    <span class="built_in">println</span>(newMsg)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> NewPrinter <span class="keyword">interface</span> &#123;</span><br><span class="line">    PrintStored() <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> PrinterAdapter <span class="keyword">struct</span> &#123;</span><br><span class="line">    oldPrinter LegacyPrinter</span><br><span class="line">    Msg        <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p *PrinterAdapter)</span> <span class="title">PrintStored</span><span class="params">()</span> <span class="params">(newMsg <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> p.OldPrinter != <span class="literal">nil</span> &#123;</span><br><span class="line">        newMsg = fmt.Sprintf(<span class="string">"Adapter: %s"</span>, p.Msg)</span><br><span class="line">        newMsg = p.OldPrinter.Print(newMsg)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        newMsg = p.Msg</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Bridge-design-pattern"><a href="#Bridge-design-pattern" class="headerlink" title="Bridge design pattern"></a>Bridge design pattern</h2><p>The Bridge pattern is a design with a slightly cryptic definition from the original Gang of Four book. <strong>It decouples an abstraction from its implementation so that the two can vary independently.</strong> The cryptic explanation just means that you could even decouple the most basic form of functionality: <strong>decouple an object from what it does.</strong></p>
+<p>The Bridge pattern tries to decouple things as usual with design patterns. It decouples abstraction (an object) from its implementation (the thing that the object does). This way, we can change what an object does as much as we want. It also allows us to change the abstracted object while reusing the same implementation.</p>
+<p>The objective of the Bride pattern is to bring flexibility to a struct that change often. Knowing the inputs and outputs of a method, it allows us to change code without knowing too much about it and leaving the freedom for both sides to be modified more easily.</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> structural</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"errors"</span></span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"io"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> PrinterAPI <span class="keyword">interface</span> &#123;</span><br><span class="line">    PrintMessage(<span class="keyword">string</span>) error</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> PrinterAPI1 <span class="keyword">struct</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(d *PrinterAPI1)</span> <span class="title">PrintMessage</span><span class="params">(msg <span class="keyword">string</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    fmt.Printf(<span class="string">"%s\n"</span>, msg)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> PrinterAPI2 <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(d *PrinterAPI2)</span> <span class="title">PrintMessage</span><span class="params">(msg <span class="keyword">string</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> d.Writer == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> errors.New(<span class="string">"You need to pass an io.Writer to PrinterAPI2"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Printf(d.Writer, <span class="string">"%s"</span>, msg)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> PrinterAbstraction <span class="keyword">interface</span> &#123;</span><br><span class="line">    Print() error</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> NormalPrinter <span class="keyword">struct</span> &#123;</span><br><span class="line">    Msg     <span class="keyword">string</span></span><br><span class="line">    Printer PrinterAPI</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *NormalPrinter)</span> <span class="title">Print</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    c.Printer.PrintMessage(c.Msg)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> PacktPrinter <span class="keyword">struct</span> &#123;</span><br><span class="line">    Msg     <span class="keyword">string</span></span><br><span class="line">    Printer PrinterAPI</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *PacktPrinter)</span> <span class="title">Print</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    c.Printer.PrintMessage(fmt.Sprintf(<span class="string">"Message from Packt: %s"</span>, c.Msg))</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Proxy-Design-Pattern"><a href="#Proxy-Design-Pattern" class="headerlink" title="Proxy Design Pattern"></a>Proxy Design Pattern</h2><p>The Proxy Pattern usually wraps an object to hide some of its characteristic. These characteristics could be the fact that it is a remote object(remote proxy), a very heavy object such as a very big image or the dump of a terabyte database(virtual proxy), or a restricted access object(protection proxy).</p>
+<h3 id="Objectives-1"><a href="#Objectives-1" class="headerlink" title="Objectives"></a>Objectives</h3><p>The possibilities of the Proxy pattern are many, but in general, they all try to provide the same following functionalities:</p>
+<ul>
+<li>Hide an object behind the proxy so the features can be hidden, restricted, and so on</li>
+<li>Provide a new abstraction layer that is easy to work with, and can be changed easily</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> proxy</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> User <span class="keyword">struct</span> &#123;</span><br><span class="line">    ID <span class="keyword">int32</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> UserFinder <span class="keyword">interface</span> &#123;</span><br><span class="line">    FindUser(id <span class="keyword">string</span>) (User, error)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> UserList []User</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *UserList)</span> <span class="title">FindUser</span><span class="params">(id <span class="keyword">int32</span>)</span> <span class="params">(User, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="built_in">len</span>(*t); i++ &#123;</span><br><span class="line">        <span class="keyword">if</span> (*t)[i].ID) == id &#123;</span><br><span class="line">            <span class="keyword">return</span> (*t)[i], <span class="literal">nil</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> User&#123;&#125;, fmt.Errorf(<span class="string">"User %s could not be found\n"</span>, id)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *UserList)</span> <span class="title">addUser</span><span class="params">(newUser User)</span></span> &#123;</span><br><span class="line">    *t = <span class="built_in">append</span>(*t, newUser)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> UserListProxy <span class="keyword">struct</span> &#123;</span><br><span class="line">    MockedDatabase      *UserList</span><br><span class="line">    StackCache          UserList</span><br><span class="line">    StatckSize          <span class="keyword">int</span></span><br><span class="line">    LastSearchUsedCache <span class="keyword">bool</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(u *UserListProxy)</span> <span class="title">addUserToStack</span><span class="params">(user User)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(u.StackCache) &gt;= u.StatckSize &#123;</span><br><span class="line">        u.StackCache = <span class="built_in">append</span>(u.StackCache[<span class="number">1</span>:], user)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        u.StackCache.addUser(user)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(u *UserListProxy)</span> <span class="title">FindUser</span><span class="params">(id <span class="keyword">int32</span>)</span> <span class="params">(User, error)</span></span> &#123;</span><br><span class="line">    user, err := u.StackCache.FindUser(id)</span><br><span class="line">    <span class="keyword">if</span> err == <span class="literal">nil</span> &#123;</span><br><span class="line">        fmt.Println(<span class="string">"Returning user from cache"</span>)</span><br><span class="line">        u.LastSearchUsedCache = <span class="literal">true</span></span><br><span class="line">        <span class="keyword">return</span> user, <span class="literal">nil</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    user, err = u.MockedDatabase.FindUser(id)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> User&#123;&#125;, err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    u.addUserToStack(user)</span><br><span class="line"></span><br><span class="line">    fmt.Println(<span class="string">"Returning user from database"</span>)</span><br><span class="line">    u.LastSearchUsedCache = <span class="literal">false</span></span><br><span class="line">    <span class="keyword">return</span> user, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Decorator-Design-Pattern"><a href="#Decorator-Design-Pattern" class="headerlink" title="Decorator Design Pattern"></a>Decorator Design Pattern</h2><p><strong>The Decorator design pattern allows you to decorate an already existing type with more functional features without actually touching it.</strong> It uses an approach similar to <strong><em>matryoshka dolls</em></strong>, where you have a small doll that you can put inside a doll of the same shape but bigger, and so on and so forth.</p>
+<p>The Decorator type implements the same interface of the type it decorates, and stores an instance of that type in its members.</p>
+<p>This way, you can stack as many decorators (dolls) as you want by simply storing the old decorator in a field of the new one.</p>
+<h3 id="Objectives-2"><a href="#Objectives-2" class="headerlink" title="Objectives"></a>Objectives</h3><p>When you think about extending legacy code without the risk of breaking something, you should think of the Decorator pattern first.</p>
+<p>So, precisely when are we going to use the Decorator pattern?</p>
+<ul>
+<li>When you need to add functionality to some code that you don’t have access to, or you don’t want to modify to avoid a negative effect on the code, and follow the open/colse principle (like legacy code)</li>
+<li><p>When you want the functionality of an object to be created or altered dynamically, and the number of features is unknown and could grow fast</p>
+</li>
+<li><p><strong>pizza_decorator.go</strong></p>
+</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> decorator</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"errors"</span></span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> IngredientAdder <span class="keyword">interface</span> &#123;</span><br><span class="line">    AddIngredient() (<span class="keyword">string</span>, error)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> PizzaDecorator <span class="keyword">struct</span> &#123;</span><br><span class="line">    Ingredient IngredientAdder</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p *PizzaDecorator)</span> <span class="title">AddIngredient</span><span class="params">()</span> <span class="params">(<span class="keyword">string</span>, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">"Pizza with the following ingredients:"</span>, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Meat <span class="keyword">struct</span> &#123;</span><br><span class="line">    Ingredient IngredientAdder</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Meat)</span> <span class="title">AddIngredient</span><span class="params">()</span> <span class="params">(<span class="keyword">string</span>, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> m.Ingredient == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">""</span>, errors.New(<span class="string">"An IngredientAdder is needed on the Ingredient field of the Meat"</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    s, err := m.Ingredient.AddIngredient()</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">""</span>, err</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> fmt.Sprintf(<span class="string">"%s %s,"</span>, s, <span class="string">"meat"</span>), <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Onion <span class="keyword">struct</span> &#123;</span><br><span class="line">    Ingredient IngredientAdder</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(o *Onion)</span> <span class="title">AddIngredient</span><span class="params">()</span> <span class="params">(<span class="keyword">string</span>, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> o.Ingredient == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">""</span>, errors.New(<span class="string">"An ingredientAdder is needed on the Ingredient field of the Onion"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    s, err := o.Ingredient.AddIngredient()</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">""</span>, err</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> fmt.Sprintf(<span class="string">"%s %s,"</span>, s, <span class="string">"onion"</span>), <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>server_decorator.go</strong></li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"io"</span></span><br><span class="line">    <span class="string">"log"</span></span><br><span class="line">    <span class="string">"net/http"</span></span><br><span class="line">    <span class="string">"os"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> MyServer <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *MyServer)</span> <span class="title">ServeHTTP</span><span class="params">(w http.ResponseWriter, r *http.request)</span></span> &#123;</span><br><span class="line">    fmt.Fprintln(w, <span class="string">"Hello Decorator!"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> LoggerMiddleware <span class="keyword">struct</span> &#123;</span><br><span class="line">    Handler   http.Handler</span><br><span class="line">    LogWriter io.Writer</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(l *LoggerMiddleware)</span> <span class="title">ServeHTTP</span><span class="params">(w http.ResponseWriter, r *http.request)</span></span> &#123;</span><br><span class="line">    fmt.Fprintf(l.LogWriter, <span class="string">"Request URI: %s\n"</span>, r.RequestURI)</span><br><span class="line">    fmt.Fprintf(l.LogWriter, <span class="string">"Host: %s\n"</span>, r.Host)</span><br><span class="line">    fmt.Fprintf(l.LogWirter, <span class="string">"Content Length: %d\n"</span>, r.ContentLength)</span><br><span class="line">    fmt.Fprintf(l.LogWriter, <span class="string">"Method: %s\n"</span>, r.Method)</span><br><span class="line">    fmt.Fprintf(l.LogWriter, <span class="string">"--------------------\n"</span>)</span><br><span class="line">    l.Handler.ServeHttp(w, r)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> SimpleAuthMiddleware <span class="keyword">struct</span> &#123;</span><br><span class="line">    Handler  http.Handler</span><br><span class="line">    User     <span class="keyword">string</span></span><br><span class="line">    Password <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *SimpleAuthMiddleware)</span> <span class="title">ServeHTTP</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">    user, pass, ok := r.BasicAuth()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ok &#123;</span><br><span class="line">        <span class="keyword">if</span> user == s.User &amp;&amp; pass == s.Password &#123;</span><br><span class="line">            s.Handler.ServeHTTP(w, r)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            fmt.Fprintf(w, <span class="string">"User or Password incorrect\n"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        fmt.Fprintln(w, <span class="string">"Error trying to retrieve data from Basic auth"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">"Enter the type number of server you want to launch from the"</span> + <span class="string">" following:"</span>)</span><br><span class="line">    fmt.Println(<span class="string">"1.- Plain server"</span>)</span><br><span class="line">    fmt.Println(<span class="string">"2.- Server with logging"</span>)</span><br><span class="line">    fmt.Println(<span class="string">"3.- Server with logging and authentication"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> selection <span class="keyword">int</span></span><br><span class="line">    fmt.Fscanf(os.Stdin, <span class="string">"%d"</span>, &amp;selection)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> mySuperServer http.Handler</span><br><span class="line"></span><br><span class="line">    <span class="keyword">switch</span> selection &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">        mySuperServer = <span class="built_in">new</span>(MyServer)</span><br><span class="line">    <span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">        mySuperServer = &amp;LoggerMiddleware&#123;</span><br><span class="line">            Handler:   <span class="built_in">new</span>(MyServer),</span><br><span class="line">            LogWriter: os.Stdout,</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">3</span>:</span><br><span class="line">        <span class="keyword">var</span> user, password <span class="keyword">string</span></span><br><span class="line">        fmt.Println(<span class="string">"Enter user and password separated by a space"</span>)</span><br><span class="line">        fmt.Fscanf(os.Stdin, <span class="string">"%s %s"</span>, &amp;user, &amp;password)</span><br><span class="line"></span><br><span class="line">        mySuperServer = &amp;LoggerMiddleware&#123;</span><br><span class="line">            Handler: &amp;SimpleAuthMiddleware&#123;</span><br><span class="line">                Handler:  <span class="built_in">new</span>(MyServer),</span><br><span class="line">                User:     user,</span><br><span class="line">                Password: password,</span><br><span class="line">            &#125;,</span><br><span class="line">            LogWriter: os.Stdout,</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        mySuperServer = <span class="built_in">new</span>(MyServer)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    http.Handle(<span class="string">"/"</span>, mySuperServer)</span><br><span class="line"></span><br><span class="line">    log.Fatal(http.ListenAndServe(:<span class="number">8080</span>, <span class="literal">nil</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>In the Decorator pattern, we decorate a type dynamically. This means that the decoration may or may not be there, or it may be composed of one or many types. If you remember, the Proxy pattern wraps a type in a similar fashion, but it does so at compile time and it’s more like a way to access some type.</p>
+<p>At the same time, a decorator might implement the entire interface that the type it decorates also implements or not. So you can have an interface with 10 methods and a decorator that just implements one of them and it will still be valid. This is a very powerful feature but also very prone to undesired behaviors at runtime if you forget to implement any interface method.</p>
+<p>In this aspect, you may think that the Proxy pattern is less flexible, and it is. But the Decorator pattern is weaker, as you could have errors at runtime, which you can avoid at compile time by using the Proxy pattern. <strong>Just keep in mind that the Decorator is commonly used when you want to add functionality to an object at runtime, like in our web server.</strong> It’s a compromise between what you need and what you want to sacrifice to achieve it.</p>
+<h2 id="Facade-Design-Pattern"><a href="#Facade-Design-Pattern" class="headerlink" title="Facade Design Pattern"></a>Facade Design Pattern</h2><p><strong>Proxy pattern was a way to wrap an type to hide some of its features of complexity from the user.</strong></p>
+<p><strong>Imagine that we group many proxies in a single point such as a file or a library.</strong> This could be Facade patter.</p>
+<p>A facade, in architectural terms, is the front wall that hides the rooms and corridors of a building. It protects its inhabitants from code and rain, and provides them privacy. It orders and divides the dwellings.</p>
+<p>The Facade design pattern shields the code from unwanted access, orders some calls, and hides the complexity scope from the user.</p>
+<h3 id="Objectives-3"><a href="#Objectives-3" class="headerlink" title="Objectives"></a>Objectives</h3><p>You use Facade when you want to hide the complexity of some tasks, especially when most of them share utilities(such as authentication in an API). A library is a form of facade, where someone has to provide some methods for a developer to do certain things in a friendly way. This way, if a developer needs to use your library, he doesn’t need to know all the inner tasks to retrieve the result he/she wants.</p>
+<ul>
+<li>When you want to decrease the complexity of some parts of our code. You hide that complexity behind the facade by providing a more easy-to-use method.</li>
+<li>When you want to group actions that are cross-related in a single place.</li>
+<li>When you want to build a library so that others can use your products without worrying about how it all works.</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> openWeatherMap</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"encoding/json"</span></span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"io"</span></span><br><span class="line">    <span class="string">"io/ioutil"</span></span><br><span class="line">    <span class="string">"net/http"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> CurrentWeatherDataRetriever <span class="keyword">interface</span> &#123;</span><br><span class="line">    GetByGeoCoordinates(lat, lon <span class="keyword">float32</span>) (*Weather, error)</span><br><span class="line">    GetByCityAndCountryCode(city, countryCode <span class="keyword">string</span>) (*Weather, error)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> CurrentWeatherData <span class="keyword">struct</span> &#123;</span><br><span class="line">    APIkey <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Weather <span class="keyword">struct</span> &#123;</span><br><span class="line">    Coord <span class="keyword">struct</span> &#123;</span><br><span class="line">        Lon <span class="keyword">float32</span> <span class="string">`json:"lon"`</span></span><br><span class="line">        Lat <span class="keyword">float32</span> <span class="string">`json:"lat"`</span></span><br><span class="line">    &#125; <span class="string">`json:"coord"`</span></span><br><span class="line">    Weather []<span class="keyword">struct</span> &#123;</span><br><span class="line">        Id          <span class="keyword">int</span>    <span class="string">`json:"id"`</span></span><br><span class="line">        Main        <span class="keyword">string</span> <span class="string">`json:"main"`</span></span><br><span class="line">        Description <span class="keyword">string</span> <span class="string">`json:"description"`</span></span><br><span class="line">        Icon        <span class="keyword">string</span> <span class="string">`json:"icon"`</span></span><br><span class="line">    &#125; <span class="string">`json:"weather"`</span></span><br><span class="line">    Base <span class="keyword">string</span> <span class="string">`json:"base"`</span></span><br><span class="line">    Main <span class="keyword">struct</span> &#123;</span><br><span class="line">        Temp     <span class="keyword">float32</span> <span class="string">`json:"temp"`</span></span><br><span class="line">        Pressure <span class="keyword">float32</span> <span class="string">`json:"pressure"`</span></span><br><span class="line">        Humidity <span class="keyword">float32</span> <span class="string">`json:"humidity"`</span></span><br><span class="line">        TempMin  <span class="keyword">float32</span> <span class="string">`json:"temp_min"`</span></span><br><span class="line">        TempMax  <span class="keyword">float32</span> <span class="string">`json:"temp_max"`</span></span><br><span class="line">    &#125; <span class="string">`json:"main"`</span></span><br><span class="line">    Wind <span class="keyword">struct</span> &#123;</span><br><span class="line">        Speed <span class="keyword">float32</span> <span class="string">`json:"speed"`</span></span><br><span class="line">        Deg   <span class="keyword">float32</span> <span class="string">`json:"deg"`</span></span><br><span class="line">    &#125; <span class="string">`json:"wind"`</span></span><br><span class="line">    Clouds <span class="keyword">struct</span> &#123;</span><br><span class="line">        All <span class="keyword">int</span> <span class="string">`json:"all"`</span></span><br><span class="line">    &#125; <span class="string">`json:"clouds"`</span></span><br><span class="line">    Rain <span class="keyword">struct</span> &#123;</span><br><span class="line">        ThreeHours <span class="keyword">float32</span> <span class="string">`json:"3h"`</span></span><br><span class="line">    &#125; <span class="string">`json:"rain"`</span></span><br><span class="line">    Dt  <span class="keyword">uint32</span> <span class="string">`json:"dt"`</span></span><br><span class="line">    Sys <span class="keyword">struct</span> &#123;</span><br><span class="line">        Type    <span class="keyword">int</span>     <span class="string">`json:"type"`</span></span><br><span class="line">        ID      <span class="keyword">int</span>     <span class="string">`json:"id"`</span></span><br><span class="line">        Message <span class="keyword">float32</span> <span class="string">`json:"message"`</span></span><br><span class="line">        Country <span class="keyword">string</span>  <span class="string">`json:"country"`</span></span><br><span class="line">        Sunrise <span class="keyword">int</span>     <span class="string">`json:"sunrise"`</span></span><br><span class="line">        Sunset  <span class="keyword">int</span>     <span class="string">`json:"sunset"`</span></span><br><span class="line">    &#125; <span class="string">`json:"sys"`</span></span><br><span class="line">    ID   <span class="keyword">int</span>    <span class="string">`json:"id"`</span></span><br><span class="line">    Name <span class="keyword">string</span> <span class="string">`json:"name"`</span></span><br><span class="line">    Cod  <span class="keyword">int</span>    <span class="string">`json:"cod"`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">    commonRequestPrefix = <span class="string">"http://api.openweathermap.org/data/2.5/"</span></span><br><span class="line">    weatherByCityName = commonRequestPrefix + <span class="string">"weather?q=%s,%s&amp;APPID=%s"</span></span><br><span class="line">    weatherByGeographicalCoordinates = commonRequestPrefix + <span class="string">"weather?lat=%f&amp;lon=%f&amp;APPID=%s"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *CurrentWeatherData)</span> <span class="title">GetByGeoCoordinates</span><span class="params">(lat, lon <span class="keyword">float32</span>)</span> <span class="params">(weather *Weather, err error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> c.doRequest(fmt.Sprintf(weatherByGeographicalCoordinates, lat, lon, c.APIkey))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *CurrentWeatherData)</span> <span class="title">GetByCityAndCountryCode</span><span class="params">(city, countryCode <span class="keyword">string</span>)</span> <span class="params">(weather *Weather, err error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> c.doRequest(fmt.Sprintf(weatherByCityName, city, countryCode, c.APIkey))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *CurrentWeatherData)</span> <span class="title">responseParser</span><span class="params">(body io.Reader)</span> <span class="params">(*Weather, error)</span></span> &#123;</span><br><span class="line">    w := <span class="built_in">new</span>(Weather)</span><br><span class="line">    err := json.NewDecoder(body).Decode(w)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> w, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(o *CurrentWeatherData)</span> <span class="title">doRequest</span><span class="params">(uri <span class="keyword">string</span>)</span> <span class="params">(weather *Weather, err error)</span></span> &#123;</span><br><span class="line">    client := &amp;http.Client&#123;&#125;</span><br><span class="line">    req, err := http.NewRequest(<span class="string">"GET"</span>, uri, <span class="literal">nil</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    req.Header.Set(<span class="string">"Content-Type"</span>, <span class="string">"application/json"</span>)</span><br><span class="line"></span><br><span class="line">    resp, err := client.Do(req)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> resp.StatusCode != <span class="number">200</span> &#123;</span><br><span class="line">        byt, errMsg := ioutil.ReadAll(resp.Body)</span><br><span class="line">        <span class="keyword">defer</span> resp.Body.Close()</span><br><span class="line">        <span class="keyword">if</span> errMsg == <span class="literal">nil</span> &#123;</span><br><span class="line">            errMsg = fmt.Errorf(<span class="string">"%s"</span>, <span class="keyword">string</span>(byt))</span><br><span class="line">        &#125;</span><br><span class="line">        err = fmt.Errorf(<span class="string">"Status code was %d, aborting. Error message was:\n%s\n"</span>, resp.StatusCode, errMsg)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    weather, err = o.responseParser(resp.Body)</span><br><span class="line">    resp.Body.Close()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Flyweight-Design-Pattern"><a href="#Flyweight-Design-Pattern" class="headerlink" title="Flyweight Design Pattern"></a>Flyweight Design Pattern</h2><p>Flyweight design pattern is very commonly used in computer graphics and the video game industry, but not so much in enterprise applications.</p>
+<p><strong>Flyweight is a pattern which allows sharing the state of a heavy object between many instance of some type.</strong></p>
+<p>Imagine that you have to create and store too many objects of some heavy type that are fundamentally equal. You’ll run out of memory pretty quickly.</p>
+<p>This problem can be easily solved with the Flyweight pattern, <strong>with additional help of the Factory pattern.</strong></p>
+<h3 id="Objectives-4"><a href="#Objectives-4" class="headerlink" title="Objectives"></a>Objectives</h3><p>Thanks to the Flyweight pattern, we can share all possible states of objects in a single common object, and thus minimize object creation by using pointers to already created objects.</p>
+<blockquote>
+<p>To give an example, we are going to simulate something that you find on betting webpages. Imagine the final match of the European championship, which is viewed by millions of people across the continent.<br>Now imagine that we own a betting webpage, where we provide historical information about every team in Europe. This is plenty of information, which is usually stored in some distributed database, and each team has, literally, megabytes of information about their players, matches, championships, and so on.<br>If a million users access information about a team and a new instance of the information is created for each user querying for historical data, we will run out of memory in the blink of an eye. With the Proxy solution, we could make a cache of the <strong><em>n</em></strong> most recent searches to speed up queries, but if we return a clone for every team, we will still get short on memory(but faster thanks to our cache).<br>Instead, we will store each team’s information just once, and we will deliver references to them to the users. So, if we face a million users trying to access information about a match, we will actually just have two teams in memory with a million pointers to the same memory direction.</p>
+</blockquote>
+<ul>
+<li><strong>flyweight.go</strong></li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> flyweight</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"time"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">    TEAM_A = <span class="literal">iota</span></span><br><span class="line">    TEAM_B</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Player <span class="keyword">struct</span> &#123;</span><br><span class="line">    Name         <span class="keyword">string</span></span><br><span class="line">    Surname      <span class="keyword">string</span></span><br><span class="line">    PreviousTeam <span class="keyword">uint64</span></span><br><span class="line">    Photo        []<span class="keyword">byte</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> HistoricalData <span class="keyword">struct</span> &#123;</span><br><span class="line">    Year          <span class="keyword">uint8</span></span><br><span class="line">    LeagueResults []Match</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Team <span class="keyword">struct</span> &#123;</span><br><span class="line">    ID             <span class="keyword">uint64</span></span><br><span class="line">    Name           <span class="keyword">string</span></span><br><span class="line">    Shield         []<span class="keyword">byte</span></span><br><span class="line">    Players        []Player</span><br><span class="line">    HistoricalData []HistoricalData</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Match <span class="keyword">struct</span> &#123;</span><br><span class="line">    Date          time.Time</span><br><span class="line">    VisitorID     <span class="keyword">uint64</span></span><br><span class="line">    LocalID       <span class="keyword">uint64</span></span><br><span class="line">    LocalScore    <span class="keyword">byte</span></span><br><span class="line">    VisitorScore  <span class="keyword">byte</span></span><br><span class="line">    LocalShoots   <span class="keyword">uint16</span></span><br><span class="line">    VisitorShoots <span class="keyword">uint16</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">getTeamFactory</span><span class="params">(team <span class="keyword">int</span>)</span> <span class="title">Team</span></span> &#123;</span><br><span class="line">    <span class="keyword">switch</span> team &#123;</span><br><span class="line">    <span class="keyword">case</span> TEAM_B:</span><br><span class="line">        <span class="keyword">return</span> TEAM&#123;</span><br><span class="line">            ID:   <span class="number">2</span>,</span><br><span class="line">            Name: <span class="string">"TEAM_B"</span>,</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">return</span> Team&#123;</span><br><span class="line">            ID:   <span class="number">1</span>,</span><br><span class="line">            Name: <span class="string">"TEAM_A"</span>,</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewTeamFactory</span><span class="params">()</span> <span class="title">teamFlyweightFactory</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> teamFlyweightFactory&#123;</span><br><span class="line">        createdTeams: <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">int</span>]*Team, <span class="number">0</span>),</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> teamFlyweightFactory <span class="keyword">struct</span> &#123;</span><br><span class="line">    createdTeams <span class="keyword">map</span>[<span class="keyword">int</span>]*Team</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *teamFlyweightFactory)</span> <span class="title">GetTeam</span><span class="params">(teamName <span class="keyword">int</span>)</span> *<span class="title">Team</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> t.createdTeams[teamName] != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> t.createdTeams[teamName]</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    team := getTeamFactory(teamName)</span><br><span class="line">    t.createdTeams[teamName] = &amp;team</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> t.createdTeams[teamName]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *teamFlyweightFactory)</span> <span class="title">GetNumberOfObjects</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">len</span>(t.createdTeams)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>flyweight_test.go</strong></li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> flyweight</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"testing"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestTeamFlyweightFactory_GetTeam</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    factory := NewTeamFactory()</span><br><span class="line"></span><br><span class="line">    teamA1 := factory.GetTeam(TEAM_A)</span><br><span class="line">    <span class="keyword">if</span> teamA1 == <span class="literal">nil</span> &#123;</span><br><span class="line">        t.Error(<span class="string">"The pointer to the TEAM_A was nil"</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    teamA2 := factory.GetTeam(TEAM_A)</span><br><span class="line">    <span class="keyword">if</span> teamA2 == <span class="literal">nil</span> &#123;</span><br><span class="line">        t.Error(<span class="string">"The pointer to the TEAM_A was nil"</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> teamA1 != teamA2 &#123;</span><br><span class="line">        t.Error(<span class="string">"TEAM_A objects weren't the same"</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> factory.GetNumberOfObjects() != <span class="number">1</span> &#123;</span><br><span class="line">        t.Errorf(<span class="string">"The number of objects created was not 1: %d\n"</span>, factory.GetNumberOfObjects())</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Test_HighVolume</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    factory := NewTeamFactory()</span><br><span class="line"></span><br><span class="line">    teams := <span class="built_in">make</span>([]*Team, <span class="number">500000</span>*<span class="number">2</span>)</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">500000</span>; i++ &#123;</span><br><span class="line">        teams[i] = factory.GetTeam(TEAM_A)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">500000</span>; i &lt; <span class="number">2</span>*<span class="number">500000</span>; i++ &#123;</span><br><span class="line">        teams[i] = factory.GetTeam(TEAM_B)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> factory.GetNumberOfObjects() != <span class="number">2</span> &#123;</span><br><span class="line">        t.Errorf(<span class="string">"The number of objects created was not 2: %d\n"</span>, factory.GetNumberOfObjects())</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">3</span>; i++ &#123;</span><br><span class="line">        fmt.Printf(<span class="string">"Pointer %d points to %p and is located in %p\n"</span>, i, teams[i], &amp;teams[i])</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="What’s-the-difference-between-Singleton-and-Flyweight"><a href="#What’s-the-difference-between-Singleton-and-Flyweight" class="headerlink" title="What’s the difference between Singleton and Flyweight?"></a>What’s the difference between Singleton and Flyweight?</h3><p>With the Singleton pattern, we ensure that the same type is created only once. Also, the Singleton pattern is a Creational pattern. With Flyweight, which is a Structural pattern, <strong>we aren’t worried about how the objects are created, but about how to structure a type to contain heavy information in a light way.</strong></p>
+
+                
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2019/12/13/golang/golang-gc/" data-toggle="tooltip" data-placement="top" title="Golang GC">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/12/06/golang/design-pattern-in-go-behavioral/" data-toggle="tooltip" data-placement="top" title="Design Pattern in Go (Behavioral Pattern)">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <div class="comments" id="comments"></div>
+
+                <br>                      
+            </div>
+            
+            <!-- Table of Contents -->
+<aside id="sidebar">
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">Contents</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Composite-design-pattern"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">Composite design pattern</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Adapter-design-pattern"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">Adapter design pattern</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Objectives"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">Objectives</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Bridge-design-pattern"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">Bridge design pattern</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Proxy-Design-Pattern"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">Proxy Design Pattern</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Objectives-1"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">Objectives</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Decorator-Design-Pattern"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">Decorator Design Pattern</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Objectives-2"><span class="toc-nav-number">5.1.</span> <span class="toc-nav-text">Objectives</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Facade-Design-Pattern"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">Facade Design Pattern</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Objectives-3"><span class="toc-nav-number">6.1.</span> <span class="toc-nav-text">Objectives</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Flyweight-Design-Pattern"><span class="toc-nav-number">7.</span> <span class="toc-nav-text">Flyweight Design Pattern</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Objectives-4"><span class="toc-nav-number">7.1.</span> <span class="toc-nav-text">Objectives</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#What’s-the-difference-between-Singleton-and-Flyweight"><span class="toc-nav-number">7.2.</span> <span class="toc-nav-text">What’s the difference between Singleton and Flyweight?</span></a></li></ol></li></ol>
+    
+    </div>
+</aside>
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Golang" title="Golang">Golang</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://chaoscoffee.github.io/" target="_blank">ChaosCoffee&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<link rel="stylesheet" href="/css/valine.css">
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script type="text/javascript">
+    // Use import
+    // or Use require
+    var GUEST = ['nick','mail','link'];
+    var guest = "nick,mail,link";
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: true,
+        notify: false,
+        appId: 'zft6KmhKY69FtUwIJFY5XJo5-gzGzoHsz',
+        appKey: 'KhPyX7dVWp6nYvU3iK8OoOlS',
+        visitor: true,
+        placeholder: 'Let us talk more!!',
+        avatar: 'wavatar',
+        guest_info: guest,
+        pageSize: '10' || 10,
+        lang: 'en'
+    });
+</script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://github.com/sherlockblaze">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/jam-blaze-606ab3163">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/sherlockblaze_007">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Sherlock Blaze 2022 
+                    <br>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://sherlockblaze.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-133187385-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-133187385-1');
+</script>
+
+<!-- -->
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?4d1398d2e890275832d6fd932eb0e2e1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>

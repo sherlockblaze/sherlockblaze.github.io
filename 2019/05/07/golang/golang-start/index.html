@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/resources/img/header_img/DogFace.jpg">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          Golang 初探 - Sherlock Blaze
+        
+    </title>
+
+    <link rel="canonical" href="https://sherlockblaze.com/2019/05/07/golang/golang-start/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url("https://source.unsplash.com/random/1280x720")
+    }
+    
+</style>
+
+<header class="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Golang" title="Golang">Golang</a>
+                            
+                        </div>
+                        <h1>Golang 初探</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by Sherlock Blaze on
+                            2019-05-07
+                        </span>
+                    </div>
+                
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Sherlock Blaze</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/community/">Community</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <blockquote>
+<p>本学习笔记总结自： <a href="https://www.amazon.com/Go-Action-William-Kennedy/dp/1617291781/ref=sr_1_1?keywords=go+in+action&amp;qid=1557230058&amp;s=gateway&amp;sr=8-1" target="_blank" rel="noopener">《Go in Action》</a></p>
+</blockquote>
+<h2 id="优势"><a href="#优势" class="headerlink" title="优势"></a>优势</h2><ol>
+<li>Golang 是一种让代码分享更加容易的编程语言</li>
+<li>提供了更高效的代码复用手段</li>
+<li>高效利用服务器上的所有核心</li>
+<li>编译速度很快，即使是大型项目</li>
+<li>开发速度快</li>
+<li>现代化的内存管理机制</li>
+</ol>
+<h2 id="类型系统"><a href="#类型系统" class="headerlink" title="类型系统"></a>类型系统</h2><ol>
+<li>类型简单。类型之间更多使用了组合的方式，而非继承</li>
+<li>利用接口对一组行为建模。利用了鸭子类型，即一个东西看起来是只鸭子，那它就是只鸭子</li>
+</ol>
+<h2 id="Hello-World"><a href="#Hello-World" class="headerlink" title="Hello World"></a>Hello World</h2><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span> <span class="comment">// 引入外部包</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span> <span class="params">()</span></span> &#123; <span class="comment">// 主方法，程序的入口</span></span><br><span class="line">    fmt.Println(<span class="string">"Hello World!"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="More-than-Hello-World"><a href="#More-than-Hello-World" class="headerlink" title="More than Hello-World"></a>More than Hello-World</h2><h3 id="功能描述"><a href="#功能描述" class="headerlink" title="功能描述"></a>功能描述</h3><p>从不同的数据源拉取数据，将数据内容与一组搜索项做对比，然后将匹配的内容显示在终端窗口。这个程序会读取文本文件，进行网络调用，解码 XML 和 JSON 成为结构化类型数据，并且利用 Go 语言的并发机制保证这些操作的速度。</p>
+<h3 id="架构图"><a href="#架构图" class="headerlink" title="架构图"></a>架构图</h3><p><img src="https://sherlockblaze.com/resources/img/code/golang/architecture-first-go.png" alt=""></p>
+<h3 id="简单解说"><a href="#简单解说" class="headerlink" title="简单解说"></a>简单解说</h3><p>我们知道，任何程序主要做的无非三件事，输入，处理，输出。</p>
+<ul>
+<li>输入: 那一组等待搜索的数据源，我们需要有一个方法去获取</li>
+<li>处理: 也就是我们执行搜索的部分，我们通过启动几个 goroutine(协程)，执行既定好的代码去完成</li>
+<li>输出: 主要也就是显示结果那一部分</li>
+</ul>
+<h3 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">code</span></span><br><span class="line"><span class="string">│</span>   <span class="string">main</span> <span class="meta">---</span> <span class="string">主程序</span></span><br><span class="line"><span class="string">│</span></span><br><span class="line"><span class="string">└───data</span></span><br><span class="line"><span class="string">│</span>   <span class="string">│</span>   <span class="string">data.json</span> <span class="meta">---</span> <span class="string">数据源</span></span><br><span class="line"><span class="string">│</span>   </span><br><span class="line"><span class="string">└───search</span></span><br><span class="line"><span class="string">│</span>   <span class="string">│</span>   <span class="string">default.go</span> <span class="meta">---</span> <span class="string">搜索数据用的默认匹配器</span></span><br><span class="line"><span class="string">│</span>   <span class="string">│</span>   <span class="string">feed.go</span>    <span class="meta">---</span> <span class="string">用于读取</span> <span class="string">json</span> <span class="string">数据文件</span></span><br><span class="line"><span class="string">│</span>   <span class="string">|   match.go   --- 用于支持不同匹配器的接口</span></span><br><span class="line"><span class="string">│   |   search.go  --- 执行搜索的主控制逻辑</span></span><br><span class="line"><span class="string">│    </span></span><br><span class="line"><span class="string">└───matchers</span></span><br><span class="line"><span class="string">    │   rss.go     --- 搜索 rss 源的匹配器</span></span><br></pre></td></tr></table></figure>
+<h3 id="代码实现及分析"><a href="#代码实现及分析" class="headerlink" title="代码实现及分析"></a>代码实现及分析</h3><p>按照输入、输出、处理的顺序来遍历一遍代码。</p>
+<h4 id="输入"><a href="#输入" class="headerlink" title="输入"></a>输入</h4><p>已知 <code>feed.go</code> 用于读取 json 的数据文件，所以我们从 <code>feed.go</code> 的代码开始编写。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> search</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"encoding/json"</span></span><br><span class="line">    <span class="string">"os"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> dataFile = <span class="string">"data/data.json"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义结构体</span></span><br><span class="line"><span class="keyword">type</span> Feed <span class="keyword">struct</span> &#123;</span><br><span class="line">    Name <span class="keyword">string</span> <span class="string">`json:"site"`</span> <span class="comment">// 结构体中的名称为: Name，对应 json 中的标签为 site</span></span><br><span class="line">    URI  <span class="keyword">string</span> <span class="string">`json:"line"`</span></span><br><span class="line">    Type <span class="keyword">string</span> <span class="string">`json:"type"`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">RetrieveFeeds</span><span class="params">()</span> <span class="params">([]*Feed, error)</span></span> &#123;</span><br><span class="line">    <span class="comment">// 打开文件</span></span><br><span class="line">    file, err := os.Open(dataFile)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// defer 关键字标注的语句会在方法结束时调用</span></span><br><span class="line">    <span class="keyword">defer</span> file.Close()</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// Feed 指针切片  </span></span><br><span class="line">    <span class="keyword">var</span> feeds []*Feed</span><br><span class="line">    <span class="comment">// 利用 json 库，解析 json 中的内容，并且放到 feeds 中</span></span><br><span class="line">    err = json.NewDecoder(file).Decode(&amp;feeds)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> feeds, err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="输出"><a href="#输出" class="headerlink" title="输出"></a>输出</h4><p>我们来看看 <code>match.go</code> 文件中做了什么</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> search</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"log"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 结构体 Result</span></span><br><span class="line"><span class="keyword">type</span> Result <span class="keyword">struct</span> &#123;</span><br><span class="line">    Filed   <span class="keyword">string</span></span><br><span class="line">    Content <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个 Matcher 接口</span></span><br><span class="line"><span class="keyword">type</span> Matcher <span class="keyword">interface</span> &#123;</span><br><span class="line">    Search(feed *Feed, searchTerm <span class="keyword">string</span>) ([]*Result, error)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Match 方法</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Match</span><span class="params">(matcher Matcher, feed *Feed, searchTerm <span class="keyword">string</span>, results <span class="keyword">chan</span>&lt;- *Result)</span></span> &#123;</span><br><span class="line">    <span class="comment">// 调用</span></span><br><span class="line">    searchResults, err := matcher.Search(feed, searchTerm)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Println(err)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> _, result := <span class="keyword">range</span> searchResults &#123;</span><br><span class="line">        results &lt;- result</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Display</span><span class="params">(results <span class="keyword">chan</span> *Result)</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> result := <span class="keyword">range</span> results &#123;</span><br><span class="line">        log.Printf(<span class="string">"%s:\n%s\n\n"</span>, result.Field, result.Content)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="处理"><a href="#处理" class="headerlink" title="处理"></a>处理</h4><p>获取到我们输入数据后，我们就要开始处理他们了。</p>
+<p>首先我们在 <code>default.go</code> 文件里声明一个默认解析器，当然，do nothing</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> search</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> defaultMatcher <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> matcher defaultMatcher</span><br><span class="line">    <span class="comment">// 注册 default matcher</span></span><br><span class="line">    Register(<span class="string">"default"</span>, matcher)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 实现 Search 接口，Golang 实现接口的方式很简单高效，直接针对某个类型，实现对应的方法即可</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m defaultMatcher)</span> <span class="title">Search</span><span class="params">(feed *Feed, searchTerm <span class="keyword">string</span>)</span> <span class="params">([]*Result, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span>, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来我们来看 <code>search.go</code> 文件</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> search</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"log"</span></span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 声明一个 map，由 matcher 名称(键) + 实际的 Mathcer(值) 组成</span></span><br><span class="line"><span class="keyword">var</span> matchers = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]Matcher)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Run</span><span class="params">(searchTerm <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    <span class="comment">// 调用 RetrieveFeeds 方法来获取 data.json 里的内容</span></span><br><span class="line">    feeds, err := RetrieveFeeds()</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Fatal(err)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建通道</span></span><br><span class="line">    results := <span class="built_in">make</span>(<span class="keyword">chan</span> *Result)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> waitGroup sync.WaitGroup</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 声明 waitGroup 并添加 feeds 长度</span></span><br><span class="line">    waitGroup.Add(<span class="built_in">len</span>(feeds))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> _, feed := <span class="keyword">range</span> feeds &#123;</span><br><span class="line">        <span class="comment">// 获取 matcher</span></span><br><span class="line">        matcher, exists := matchers[feed.Type]</span><br><span class="line">        <span class="keyword">if</span> !exists &#123;</span><br><span class="line">            matcher = matchers[<span class="string">"default"</span>]</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 执行协程，开启 matcher 之旅</span></span><br><span class="line">        <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(matcher Matcher, feed *Feed)</span></span> &#123;</span><br><span class="line">            Match(matcher, feed, searchTerm, results)</span><br><span class="line">            waitGroup.Done()</span><br><span class="line">        &#125;(matcher, feed) <span class="comment">// 括号里的内容是传入的参数</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 跟踪结果的 goroutine</span></span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        waitGroup.Wait()</span><br><span class="line">        <span class="built_in">close</span>(results)</span><br><span class="line">    &#125;()</span><br><span class="line"></span><br><span class="line">    Display(results)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 注册 matcher</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Register</span><span class="params">(feedType <span class="keyword">string</span>, matcher Mathcer)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> _, exists := matchers[feedType]; exists &#123;</span><br><span class="line">        log.Fatalln(feedType, <span class="string">"Matcher already Registered"</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    log.Println(<span class="string">"Register"</span>, feedType, <span class="string">"matcher"</span>)</span><br><span class="line">    matchers[feedType] = matcher</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>重头戏来了，之前的工作主要就是通过找到 matcher，调用 matcher 中的方法来执行数据的处理</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> matchers</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"encoding/xml"</span></span><br><span class="line">    <span class="string">"errors"</span></span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"log"</span></span><br><span class="line">    <span class="string">"net/http"</span></span><br><span class="line">    <span class="string">"regexp"</span></span><br><span class="line"></span><br><span class="line">    <span class="string">"search"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 声明一些结构体去匹配 xml 中的内容，你可以仅使用一个 type</span></span><br><span class="line"><span class="keyword">type</span> (</span><br><span class="line">    item <span class="keyword">struct</span> &#123;</span><br><span class="line">        XMLName     xml.Name <span class="string">`xml:"item"`</span></span><br><span class="line">        PubDate     <span class="keyword">string</span>   <span class="string">`xml:"pubDate"`</span></span><br><span class="line">        Title       <span class="keyword">string</span>   <span class="string">`xml:"title"`</span></span><br><span class="line">        Description <span class="keyword">string</span>   <span class="string">`xml:"description"`</span></span><br><span class="line">        Link        <span class="keyword">string</span>   <span class="string">`xml:"link"`</span></span><br><span class="line">        GUID        <span class="keyword">string</span>   <span class="string">`xml:"guid"`</span></span><br><span class="line">        GeoRssPoint <span class="keyword">string</span>   <span class="string">`xml:"georss:point"`</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    image <span class="keyword">struct</span> &#123;</span><br><span class="line">        XMLNAME xml.Name <span class="string">`xml:"image"`</span></span><br><span class="line">        URL     <span class="keyword">string</span>   <span class="string">`xml:"url"`</span></span><br><span class="line">        Title   <span class="keyword">string</span>   <span class="string">`xml:"title"`</span></span><br><span class="line">        Link    <span class="keyword">string</span>   <span class="string">`xml:"link"`</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    channel <span class="keyword">struct</span> &#123;</span><br><span class="line">        XMLNAME        xml.Name <span class="string">`xml:"channel"`</span></span><br><span class="line">        Title          <span class="keyword">string</span>   <span class="string">`xml:"title"`</span></span><br><span class="line">        Description    <span class="keyword">string</span>   <span class="string">`xml:"description"`</span></span><br><span class="line">        Link           <span class="keyword">string</span>   <span class="string">`xml:"link"`</span></span><br><span class="line">        PubDate        <span class="keyword">string</span>   <span class="string">`xml:"pubDate"`</span></span><br><span class="line">        LastBuildDate  <span class="keyword">string</span>   <span class="string">`xml:"lastBuildDate"`</span></span><br><span class="line">        TTL            <span class="keyword">string</span>   <span class="string">`xml:"ttl"`</span></span><br><span class="line">        Language       <span class="keyword">string</span>   <span class="string">`xml:"language"`</span></span><br><span class="line">        ManagingEditor <span class="keyword">string</span>   <span class="string">`xml:"managingEditor"`</span></span><br><span class="line">        WebMaster      <span class="keyword">string</span>   <span class="string">`xml:"webMaster"`</span></span><br><span class="line">        Image          image    <span class="string">`xml:"image"`</span></span><br><span class="line">        Item           []item   <span class="string">`xml:"item"`</span></span><br><span class="line">    &#125;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> rssMatcher <span class="keyword">struct</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 初始化，注册 Matcher</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> matcher rssMatcher</span><br><span class="line">    search.Register(<span class="string">"rss"</span>, matcher)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 为 rssMatcher 实现 Search 方法</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m rssMatcher)</span> <span class="title">Search</span><span class="params">(feed *search.Feed, searchTerm <span class="keyword">string</span>)</span> <span class="params">([]*search.Result, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> results []*result.Result</span><br><span class="line">    log.Printf(<span class="string">"Search Feed Type[%s] Site[%s] For URI[%s]\n"</span>, feed.Type, feed.Name, feed.URI)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取 document</span></span><br><span class="line">    document, err := m.retrieve(feed)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 进行匹配</span></span><br><span class="line">    <span class="keyword">for</span> _, channelItem := <span class="keyword">range</span> document.Channel.Item &#123;</span><br><span class="line">        matched, err := regexp.MatchString(searchTerm, channelItem.Title)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> matched &#123;</span><br><span class="line">            results = <span class="built_in">append</span>(results, &amp;search.Result &#123;</span><br><span class="line">                Field: <span class="string">"Title"</span>,</span><br><span class="line">                Content: channelItem.Title,</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">        <span class="keyword">return</span> results, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取 feed 流</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m rssMatcher)</span> <span class="title">retrieve</span><span class="params">(feed *search.Feed)</span> <span class="params">(*rssDocument, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> feed.URI == <span class="string">""</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, errors.New(<span class="string">"No rss feed url provided"</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取相应，并解码</span></span><br><span class="line">    resp, err := http.Get(feed.URI)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">defer</span> resp.Body.Close()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> resp.StatusCode != <span class="number">200</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, fmt.Errorf(<span class="string">"HTTP Response Error %d\n"</span>, resp.StatusCode)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> document rssDocument</span><br><span class="line">    err = xml.NewDecoder(resp.Body).Decode(&amp;document)</span><br><span class="line">    <span class="keyword">return</span> &amp;document, err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="主程序"><a href="#主程序" class="headerlink" title="主程序"></a>主程序</h4><p>接下来我们需要一个主程序来作为整个程序的入口。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"log"</span></span><br><span class="line">    <span class="string">"os"</span></span><br><span class="line"></span><br><span class="line">    _ <span class="string">"matchers"</span></span><br><span class="line">    <span class="string">"search"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">    log.SetOutput(os.Stdout)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    search.Run(<span class="string">"president"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>你可以在<a href="https://sherlockblaze.com/resources/file/code/golang/data.json">这里</a>下载 <code>data.json</code>。</p>
+
+                
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2019/05/08/golang/golang-grammar/" data-toggle="tooltip" data-placement="top" title="Golang 基本语法">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/05/05/data-structure/trees/trees/" data-toggle="tooltip" data-placement="top" title="Trees">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <div class="comments" id="comments"></div>
+
+                <br>                      
+            </div>
+            
+            <!-- Table of Contents -->
+<aside id="sidebar">
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">Contents</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#优势"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">优势</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#类型系统"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">类型系统</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Hello-World"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">Hello World</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#More-than-Hello-World"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">More than Hello-World</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#功能描述"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">功能描述</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#架构图"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text">架构图</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#简单解说"><span class="toc-nav-number">4.3.</span> <span class="toc-nav-text">简单解说</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#项目结构"><span class="toc-nav-number">4.4.</span> <span class="toc-nav-text">项目结构</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#代码实现及分析"><span class="toc-nav-number">4.5.</span> <span class="toc-nav-text">代码实现及分析</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#输入"><span class="toc-nav-number">4.5.1.</span> <span class="toc-nav-text">输入</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#输出"><span class="toc-nav-number">4.5.2.</span> <span class="toc-nav-text">输出</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#处理"><span class="toc-nav-number">4.5.3.</span> <span class="toc-nav-text">处理</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#主程序"><span class="toc-nav-number">4.5.4.</span> <span class="toc-nav-text">主程序</span></a></li></ol></li></ol></li></ol>
+    
+    </div>
+</aside>
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Golang" title="Golang">Golang</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://chaoscoffee.github.io/" target="_blank">ChaosCoffee&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<link rel="stylesheet" href="/css/valine.css">
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script type="text/javascript">
+    // Use import
+    // or Use require
+    var GUEST = ['nick','mail','link'];
+    var guest = "nick,mail,link";
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: true,
+        notify: false,
+        appId: 'zft6KmhKY69FtUwIJFY5XJo5-gzGzoHsz',
+        appKey: 'KhPyX7dVWp6nYvU3iK8OoOlS',
+        visitor: true,
+        placeholder: 'Let us talk more!!',
+        avatar: 'wavatar',
+        guest_info: guest,
+        pageSize: '10' || 10,
+        lang: 'en'
+    });
+</script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://github.com/sherlockblaze">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/jam-blaze-606ab3163">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/sherlockblaze_007">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Sherlock Blaze 2022 
+                    <br>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://sherlockblaze.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-133187385-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-133187385-1');
+</script>
+
+<!-- -->
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?4d1398d2e890275832d6fd932eb0e2e1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>

@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/resources/img/header_img/DogFace.jpg">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          How Linux Works(Chapter Two)--Directory Hierarchy Essentials - Sherlock Blaze
+        
+    </title>
+
+    <link rel="canonical" href="https://sherlockblaze.com/2019/03/04/linux/how-linux-works/directory-hierarchy/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url("https://source.unsplash.com/random/1280x720")
+    }
+    
+</style>
+
+<header class="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Linux" title="Linux">Linux</a>
+                            
+                        </div>
+                        <h1>How Linux Works(Chapter Two)--Directory Hierarchy Essentials</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by Sherlock Blaze on
+                            2019-03-04
+                        </span>
+                    </div>
+                
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Sherlock Blaze</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/community/">Community</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <blockquote>
+<p>All the summaries are from the book named <strong><a href="https://www.amazon.com/How-Linux-Works-2nd-Superuser/dp/1593275676/ref=sr_1_1?keywords=how+linux+works&amp;qid=1551169061&amp;s=gateway&amp;sr=8-1" target="_blank" rel="noopener">How Linux Works</a></strong>.</p>
+</blockquote>
+<p>Let’s check the directory hierarchy of linux first.</p>
+<p><img src="https://sherlockblaze.com/resources/img/profession/linux/how-linux-works/linux-directory-hierarchy.png" alt="Linux directory hierarchy"></p>
+<p>This picture offers a simplified overview of the hierarchy, showing some of the directories under <code>/</code>, <code>/usr</code>, and <code>/var</code>. Notice that the directory structure under <code>/usr</code> contains some of the same directory names as <code>/</code>.</p>
+<p>Here are the most important subdirectories in <code>root</code>:</p>
+<ul>
+<li><code>/bin</code> Contains ready-to-run programs(also known as an executables), including most of the basic Unix commnads such as <code>ls</code> and <code>cp</code>. Most of the programs in <code>/bin</code> are in binary format, having been created been by a C compiler, but some are shell scripts in modern systems.</li>
+<li><code>/dev</code> Contains device files.</li>
+<li><code>/etc</code> This core system configuration directory contains the user password, boot, device, networking, and other setup files. Many items in <code>/etc</code> are specific to the machine’s hardware. For example, the <code>/etc/X11</code> directory contains graphics card and window system configurations.</li>
+<li><code>/home</code> Holds personal directories for regular users. Most Unix installations conform to this standard.</li>
+<li><code>/lib</code> An abbreviation for library, this directory holds library files containing code that executables can use. There are <strong><em>two</em></strong> types of libraries: <strong>static</strong> and <strong>shared</strong>. <strong>The <code>/lib</code> directory should contain only shared libraries</strong>, but other lib directories, such as <code>/usr/lib</code>, contain both varieties as well as other auxiliary files.</li>
+<li><code>/proc</code> Provides system statistics through a browsable directory-and-file interface. Much of the <code>/proc</code> subdirectory structure on Linux is unique, but many other Unix variants have similar features. The <code>/proc</code> directory contains information about currently running processes as well as some kernel parameters.</li>
+<li><code>/sys</code> This directory is similar to <code>/proc</code> in that it provides a device and system interface.</li>
+<li><code>/sbin</code> The place for system executables. Programs in <code>/sbin</code> directories relate to system management, so regular users usually do not have <code>/sbin</code> components in their command paths. Many of the utilities found here will not work if you’re not running them as root.</li>
+<li><code>/tmp</code> A storage area for smaller, temporary files that you don’t care much about. Any user may read to and write from <code>/tmp</code>, but the user may not have permission to access another user’s files there. Many programs use this directory as a workspace. If something is extremely important, don’t put it in <code>/tmp</code> because most distributions clear <code>/tmp</code> when then machine boots and some even remove its old files periodically. Also don’t  let <code>/tmp</code> fill up with garbage because its space is usually shared with something critical.</li>
+<li><code>/usr</code> Although pronounced “user”, this subdirectory has no user files. Instead, it contains a large directory hierarchy, including the bulk of the Linux system. Many of the directory names in <code>/usr</code> are the same as those in the root directory(like <code>/usr/bin</code> and <code>/usr/lib</code>), and they hold the same type of files.</li>
+<li><code>/var</code> The variable subdirectory, where programs record runtime information. System logging, user tracking, caches, and other files that system programs create and manage are here.</li>
+</ul>
+<h2 id="Other-Root-Subdirectories"><a href="#Other-Root-Subdirectories" class="headerlink" title="Other Root Subdirectories"></a>Other Root Subdirectories</h2><p>There are a few other interesting subdirectories in the root directory:</p>
+<ul>
+<li><code>/boot</code> Contains kernel boot loader files. These files pertain only to the very first stage of Linux startup procedure;</li>
+<li><code>/media</code> A base attachment point for removable media such as flash drives that is found in many distributions.</li>
+<li><code>/opt</code> This may contain additional third-party software. Many systems don’t use <code>/opt</code></li>
+</ul>
+<h2 id="The-usr-Directory"><a href="#The-usr-Directory" class="headerlink" title="The /usr Directory"></a>The <code>/usr</code> Directory</h2><p>The <code>/usr</code> directory may look relatively clean at first glance, but a quick look at <code>/usr/bin</code> and <code>/usr/lib</code> reveals that there’s a lot here; <code>/usr</code> is where most of the user-space programs and data reside. In addition to <code>/usr/bin</code>, <code>/usr/sbin</code>, and <code>/usr/lib</code>, <code>/usr</code> contains the following:</p>
+<ul>
+<li><code>/include</code> Holds header files used by C compiler.</li>
+<li><code>/info</code> Contains GNU info manuals.</li>
+<li><code>/local</code> Is where administrators can install their own software. Its structure should look like that of <code>/</code> and <code>/usr</code>.</li>
+<li><code>/man</code> Contains manual pages.</li>
+<li><code>/share</code> Contains files that should work on other kinds of Unix machines with no loss of functionality. In the past, networks of machines would share this directory, but a true <code>/share</code> directory is becoming rare because there are no space issues on modern disk. Maintaining a <code>/share</code> directory is often just a pain. In any case, <code>/man</code> , <code>/info</code>, and some other subdirectories are often found here.</li>
+</ul>
+<h2 id="Kernel-Location"><a href="#Kernel-Location" class="headerlink" title="Kernel Location"></a>Kernel Location</h2><p>On Linux system, the kernel is normally in <code>/vmlinuz</code> or <code>/boot/vmlinuz</code>. A boot loader loads this file into memory and sets it in motion when the system boots.</p>
+<p>Once the boot loader runs and sets the kernel in motion, the main kernel file is no longer used by the running system. However, you’ll find many modules that the kernel can load and unload on demand during the course of normal system operation. Called loadable kernel modules, they are located under <code>/lib/modules</code>.</p>
+<h2 id="Recommended-Reading"><a href="#Recommended-Reading" class="headerlink" title="Recommended Reading"></a>Recommended Reading</h2><p><a href="http://www.pathname.com/fhs/" target="_blank" rel="noopener">Filesystem Hierarchy Standard</a></p>
+
+                
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2019/03/11/linux/how-linux-works/devices/" data-toggle="tooltip" data-placement="top" title="How Linux Works(Chapter Three)--Devices">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/03/02/linux/how-linux-works/basic-commands-part-two/" data-toggle="tooltip" data-placement="top" title="How Linux Works(Chapter Two)--Basic Commands(Part Two)">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <div class="comments" id="comments"></div>
+
+                <br>                      
+            </div>
+            
+            <!-- Table of Contents -->
+<aside id="sidebar">
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">Contents</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Other-Root-Subdirectories"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">Other Root Subdirectories</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#The-usr-Directory"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">The /usr Directory</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Kernel-Location"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">Kernel Location</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Recommended-Reading"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">Recommended Reading</span></a></li></ol>
+    
+    </div>
+</aside>
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Linux" title="Linux">Linux</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://chaoscoffee.github.io/" target="_blank">ChaosCoffee&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<link rel="stylesheet" href="/css/valine.css">
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script type="text/javascript">
+    // Use import
+    // or Use require
+    var GUEST = ['nick','mail','link'];
+    var guest = "nick,mail,link";
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: true,
+        notify: false,
+        appId: 'zft6KmhKY69FtUwIJFY5XJo5-gzGzoHsz',
+        appKey: 'KhPyX7dVWp6nYvU3iK8OoOlS',
+        visitor: true,
+        placeholder: 'Let us talk more!!',
+        avatar: 'wavatar',
+        guest_info: guest,
+        pageSize: '10' || 10,
+        lang: 'en'
+    });
+</script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://github.com/sherlockblaze">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/jam-blaze-606ab3163">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/sherlockblaze_007">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Sherlock Blaze 2022 
+                    <br>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://sherlockblaze.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-133187385-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-133187385-1');
+</script>
+
+<!-- -->
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?4d1398d2e890275832d6fd932eb0e2e1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>

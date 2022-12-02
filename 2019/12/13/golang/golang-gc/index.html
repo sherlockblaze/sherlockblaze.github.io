@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/resources/img/header_img/DogFace.jpg">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          Golang GC - Sherlock Blaze
+        
+    </title>
+
+    <link rel="canonical" href="https://sherlockblaze.com/2019/12/13/golang/golang-gc/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url("https://source.unsplash.com/random/1280x720")
+    }
+    
+</style>
+
+<header class="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Golang" title="Golang">Golang</a>
+                            
+                        </div>
+                        <h1>Golang GC</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by Sherlock Blaze on
+                            2019-12-13
+                        </span>
+                    </div>
+                
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Sherlock Blaze</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/community/">Community</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2 id="Basic"><a href="#Basic" class="headerlink" title="Basic"></a>Basic</h2><p><strong>Garbage Collection is the process of freeing memory space that is not being used.</strong></p>
+<blockquote>
+<p>The garbage collector sees which objects are out of scope and can no longer be referenced, and it frees the memory space they consume.</p>
+</blockquote>
+<p><strong>This process happens in a concurrent manner while a Go program is running.</strong></p>
+<p>The documentation of the Go garbage collector implementation states the following:</p>
+<ul>
+<li><strong>The GC runs concurrently with mutator threads, is type accurate(aka precise), allows multiple GC threads to run in parallel.</strong></li>
+<li><strong>It is a concurrent mark and sweep that uses a write barrier.</strong></li>
+<li><strong>It is non-generational and non-compacting.</strong></li>
+<li><strong>Allocation is done using size segregated per P allocation areas to minimize fragmentation while eliminating locks in the common case.</strong></li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"runtime"</span></span><br><span class="line">    <span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">printStats</span><span class="params">(mem runtime.MemStats)</span></span> &#123;</span><br><span class="line">    runtime.ReadMemStats(&amp;mem)</span><br><span class="line">    fmt.Println(<span class="string">"mem.Alloc:"</span>, mem.Alloc)</span><br><span class="line">    fmt.Println(<span class="string">"mem.TotalAlloc:"</span>, mem.TotalAlloc)</span><br><span class="line">    fmt.Println(<span class="string">"mem.HeapAlloc:"</span>, mem.HeapAlloc)</span><br><span class="line">    fmt.Println(<span class="string">"mem.NumGC:"</span>, mem.NumGC)</span><br><span class="line">    fmt.Println(<span class="string">"-------"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> mem runtime.MemStats</span><br><span class="line">    printStats(mem)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">        s := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">50000000</span>)</span><br><span class="line">        <span class="keyword">if</span> s == <span class="literal">nil</span> &#123;</span><br><span class="line">            fmt.Println(<span class="string">"Operation failed!"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    printStats(mem)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">        s := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">100000000</span>)</span><br><span class="line">        <span class="keyword">if</span> s == <span class="literal">nil</span> &#123;</span><br><span class="line">            fmt.Println(<span class="string">"Operation failed!"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        time.Sleep(<span class="number">5</span> * time.Second)</span><br><span class="line">    &#125;</span><br><span class="line">    printStats(mem)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>There is a trick that allows you to get even more detailed output about the way the Go garbage collector operates, which is illustrated by the next command:</p>
+</blockquote>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ GODEBUG=gctrace=1 go run main.go</span><br></pre></td></tr></table></figure>
+<h2 id="The-Tricolor-Algorithms"><a href="#The-Tricolor-Algorithms" class="headerlink" title="The Tricolor Algorithms"></a>The Tricolor Algorithms</h2><p>The operation of the Go garbage collector is based on the <strong>tricolor algorithm.</strong></p>
+<blockquote>
+<p>The tricolor algorithms is not unique to Go, and it can be used in other programming languages as well.</p>
+</blockquote>
+<p>The official name for the algorithms used in Go is the <strong>tricolor mark-and-sweep algorithm</strong>.</p>
+<p>It can work concurrently with the program and uses a <strong>write barrier</strong>.</p>
+<blockquote>
+<p>This means that when a Go program runs, the Go scheduler is responsible for the scheduling of the application and the garbage collector as if the Go scheduler had to deal with a regular application with multiple <strong>goroutines!</strong></p>
+</blockquote>
+<p>The Primary principle behind the tricolor mark-and-sweep algorithm is that <strong>it divides the objects of the heap into three different sets according to their color, which is assigned by algorithm.</strong></p>
+<ul>
+<li>The objects of <strong>black set</strong> are guaranteed to have no pointers to any object of the white set.</li>
+<li>An object in the <strong>white set</strong> can have a pointer to an object of the black, because this has no effect on the operation of the garbage collector</li>
+<li>The objects of the <strong>grey set</strong> might have pointers to some objects of the white set.</li>
+</ul>
+<p><strong>The objects of the white set are candidates for garbage collection.</strong></p>
+<ul>
+<li><strong>No object can go directly from the black set to the white set</strong>, which allows the algorithm to operate and be able to clear the objects in the white set.</li>
+<li><strong>No object of the black set can directly point to an object of the white set.</strong></li>
+</ul>
+<p>Let’s go:</p>
+<ol>
+<li>When the garbage collection begins, <strong>all objects are white</strong> and the <strong>garbage collector visitor all of the root objects and colors them grey.</strong> The roots are the objects that can be directly accessed by the application, <strong>which includes global variables and other things on the stack.</strong></li>
+<li>After this, the garbage collector <strong>picks a grey object</strong>, makes it black, and starts searching to determine if that object has pointers to other objects of the white set.</li>
+<li>When a grey object is being scanned for pointers to other objects, it is colored black. <strong>If that scan discovers that this particular object has one or more pointers to a white object</strong>, it puts that white object in the grey set.</li>
+</ol>
+<p>This process keeps going for as long as objects exist in the grey set. <strong>After that, the objects in the white set are unreachable and their memory space can be reused.</strong></p>
+<p>Therefore, at this point, the elements of the white set are said to be garbage collected.</p>
+<blockquote>
+<p>If an object of the grey set becomes unreachable at some point in a garbage collection cycle, it will not be collected in that garbage collection cycle but rather in the next one!</p>
+</blockquote>
+<p>During this process, the running application is called the <strong>mutator</strong>.</p>
+<p>The mutator runs a small function named <strong>write barrier</strong> that is executed each time a pointer in the heap is modified.</p>
+<p><strong>If the pointer of an object in the heap is modified, which means that this object is now reachable, the write barrier colors it grey and puts it in the grey set.</strong></p>
+<blockquote>
+<p>The mutator is responsible for the invariant that no element of the black set has a pointer to an element of the white set. This is accomplished with the help of the write barrier function. Failing to accomplish this invariant will ruin the garbage collection process, and it will most likely crash your program in an ugly and undesired way.</p>
+</blockquote>
+<p><img src="https://sherlockblaze.com/resources/img/golang/gc-cycle-mastering-go.png" alt="gc-cycle-mastering-go"></p>
+<p>The Go garbage collection can also be applied to variables such as <strong>channel</strong>. When the garbage collector finds out that a channel is unreachable and that the channel variable can no longer be accessed, it will free its resources even if the channel has not closed.</p>
+<blockquote>
+<p>Go allows you to initiate a garbage collection manually by putting a <code>runtime.GC()</code> statement in your Go code.<br>Keep in mind that <code>runtime.GC()</code> will block the caller, and it might block the entire program, especially if you are running a very busy Go program with many objects. This happens mainly because you cannot perform garbage collections while everything else is rapidly changing, as this will not give the garbage collector the opportunity to identify clearly the members of the white, black, and grey sets!<br>This garbage collection status is also called the <strong>garbage collection safe-point.</strong></p>
+</blockquote>
+<h2 id="More"><a href="#More" class="headerlink" title="More"></a>More</h2><p>The main concern of the Go garbage collector is <strong>low latency</strong>, which basically means short pauses in its operation in order to have real-time operation.</p>
+<p>What a program does all the time is to create new objects and manipulate existing objects with pointers. This process can end up creating objects that cannot be accessed any longer because no pointers exist that point to these objects.</p>
+<p><strong>Such objects are now garbage waiting for the garbage collector to clean them up and free their memory space.</strong></p>
+<p>The way that the <strong>mark-and-sweep algorithm</strong> works is pretty simple:</p>
+<ul>
+<li>The algorithm stops the program execution(<strong>stop-the-world garbage collector</strong>) in order to visit all of the accessible objects of the heap of a program and marks them.</li>
+<li>It sweeps the inaccessible objects. During the mark phase of the algorithm, each object is marked as white, grey or black.</li>
+<li>The children of a grey object are colored grey, whereas the original grey object is now colored black.</li>
+</ul>
+<p>The sweep phase begins when there are no more grey objects to examine. This technique works because <strong>there are no pointers from the black set to the white set, which is a fundamental invariant of the algorithm.</strong></p>
+<p>Go tries to lower that particular latency by running the garbage collector as a concurrent process and using the tricolor algorithm.</p>
+<p>Other processes can move pointers or create new objects while the garbage collector runs concurrently. As a result, <strong>the principal point that allows the tricolor algorithm to run concurrently is to be able to maintain the fundamental invariant of the mark-and-sweep algorithm-no object of the black set can point to an object of the white set.</strong></p>
+<p><strong>But new objects must go to grey set,</strong> because this way the fundamental invariant of the mark-and-sweep algorithm cannot be altered.</p>
+<p>Additionally, when a pointer of the program is moved, color the object to which the pointer points as grey. Last, each time a pointer is moved, some Go code gets automatically executed, which is the <strong>write barrier</strong> that does some recoloring.</p>
+<p><strong>The latency introduced by the execution of the write barrier code is the price we have to pay for being able to run the garbage collector concurrently.</strong></p>
+<p><a href="https://sherlockblaze.com/resources/file/golang/on-the-fly-gc.pdf">On-the-fly Garbage Collection: An Exercise in Cooperation</a></p>
+
+                
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2019/12/19/golang/golang-concurrent-intro/" data-toggle="tooltip" data-placement="top" title="Golang Concurrent">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/12/06/golang/design-pattern-in-go-structural/" data-toggle="tooltip" data-placement="top" title="Design Pattern in Go (Structural Pattern)">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <div class="comments" id="comments"></div>
+
+                <br>                      
+            </div>
+            
+            <!-- Table of Contents -->
+<aside id="sidebar">
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">Contents</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Basic"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">Basic</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#The-Tricolor-Algorithms"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">The Tricolor Algorithms</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#More"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">More</span></a></li></ol>
+    
+    </div>
+</aside>
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Golang" title="Golang">Golang</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://chaoscoffee.github.io/" target="_blank">ChaosCoffee&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<link rel="stylesheet" href="/css/valine.css">
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script type="text/javascript">
+    // Use import
+    // or Use require
+    var GUEST = ['nick','mail','link'];
+    var guest = "nick,mail,link";
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: true,
+        notify: false,
+        appId: 'zft6KmhKY69FtUwIJFY5XJo5-gzGzoHsz',
+        appKey: 'KhPyX7dVWp6nYvU3iK8OoOlS',
+        visitor: true,
+        placeholder: 'Let us talk more!!',
+        avatar: 'wavatar',
+        guest_info: guest,
+        pageSize: '10' || 10,
+        lang: 'en'
+    });
+</script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://github.com/sherlockblaze">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/jam-blaze-606ab3163">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/sherlockblaze_007">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Sherlock Blaze 2022 
+                    <br>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://sherlockblaze.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-133187385-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-133187385-1');
+</script>
+
+<!-- -->
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?4d1398d2e890275832d6fd932eb0e2e1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>

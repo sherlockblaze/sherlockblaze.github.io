@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/resources/img/header_img/DogFace.jpg">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          How Linux Works(Chapter Three)--Devices - Sherlock Blaze
+        
+    </title>
+
+    <link rel="canonical" href="https://sherlockblaze.com/2019/03/11/linux/how-linux-works/devices/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url("https://source.unsplash.com/random/1280x720")
+    }
+    
+</style>
+
+<header class="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Linux" title="Linux">Linux</a>
+                            
+                        </div>
+                        <h1>How Linux Works(Chapter Three)--Devices</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by Sherlock Blaze on
+                            2019-03-11
+                        </span>
+                    </div>
+                
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Sherlock Blaze</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/community/">Community</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <blockquote>
+<p>All the summaries are from the book named <strong><a href="https://www.amazon.com/How-Linux-Works-2nd-Superuser/dp/1593275676/ref=sr_1_1?keywords=how+linux+works&amp;qid=1551169061&amp;s=gateway&amp;sr=8-1" target="_blank" rel="noopener">How Linux Works</a></strong>.</p>
+</blockquote>
+<p>Throughout the history of Linux, there have been many changes to how the kernel presents  devices to the user. We’ll begin by looking at the traditional system of device files to see how the kernel provides device configuration information through <code>sysfs</code>.</p>
+<p><strong>Goal:</strong> </p>
+<ol>
+<li>Be able to extract information about the devices on a system in order to understand a few rudimentary operations.</li>
+<li>Understand how the kernel interacts with user space when presented with new devices. The <code>udev</code> system enables user-space programs to automatically configure and use new devices.</li>
+</ol>
+<h2 id="Device-Files"><a href="#Device-Files" class="headerlink" title="Device Files"></a>Device Files</h2><p><strong>It’s easy to manipulate most devices on a Unix system because the kernel presents many of the device I/O interfaces to user processes as files.</strong></p>
+<p>These device files are sometimes called <strong><em>device nodes.</em></strong></p>
+<p>There’s a limit to what you can do with a file interface, so not all devices or device capabilities are accessible with standard file I/O.</p>
+<p>Using command <code>ls -l</code> and get result like this:</p>
+<p><img src="https://sherlockblaze.com/resources/img/profession/linux/how-linux-works/ls-l-command.png" alt="ls -l"></p>
+<p>Note the first character of each line(the first character of the file’s mode), if this character is <code>b</code>, <code>c</code>, <code>p</code> or <code>s</code>, the file is a device. These letters stand for <code>block</code>, <code>pipe</code>, and <code>socket</code>, respectively.</p>
+<h3 id="Block-device"><a href="#Block-device" class="headerlink" title="Block device"></a>Block device</h3><ul>
+<li>Program access data from a <strong><em>block device</em></strong> in fixed chunks, The <code>sda</code> in the preceding example is a <strong><em>disk device</em></strong>, a type of block device. Disk can be easily split up into blocks of data. Because a block device’s total size is fixed and easy to index, processes have random access to any block in the device with the help of the kernel.</li>
+</ul>
+<h3 id="Character-device"><a href="#Character-device" class="headerlink" title="Character device"></a>Character device</h3><ul>
+<li>Character devices work with data streams. You can only read characters from or write characters to character devices, as previously demonstrated with <code>/dev/null</code>. Character devices don’t have a size; <strong>when you read from or write to one, the kernel usually performs a read or write operation on the device.</strong> Printers directly attached to your computer are represented by character devices. <strong>It’s important to note that during character device interaction, the kernel cannot back up and reexamine the data stream after it has passed data to a device or process.</strong></li>
+</ul>
+<h3 id="Pipe-device"><a href="#Pipe-device" class="headerlink" title="Pipe device"></a>Pipe device</h3><ul>
+<li>Named pipes are like character devices, with another process at the other end of the I/O stream instead of a kernel driver.</li>
+</ul>
+<h3 id="Socket-device"><a href="#Socket-device" class="headerlink" title="Socket device"></a>Socket device</h3><ul>
+<li><strong>Sockets</strong> are special-purpose interfaces that are <strong>frequently used for interprocess communication.</strong> They’re often found outside of the <code>/dev</code> directory. Socket files represent Unix domain sockets.</li>
+</ul>
+<blockquote>
+<p>Note all devices have device files because the block and character device I/O interfaces are not appropriate in all cases. For example, network interfaces don’t have device files. It is theoretically possible to interact with a network interface using a single character device, but because it would be exceptionally difficult, the kernel uses other I/O interfaces.</p>
+</blockquote>
+<h2 id="The-sysfs-Device-Path"><a href="#The-sysfs-Device-Path" class="headerlink" title="The sysfs Device Path"></a>The <code>sysfs</code> Device Path</h2><p>The traditional Unix <code>/dev</code> directory is a convenient way for user processes to reference and interface with devices supported by the kernel, but it’s also a very simplistic scheme. The name of device in <code>/dev</code> tells you a little about device, but not a lot. <strong>Another problem is that the kernel assigns devices in the order in which they are found, so a device may have a different name between reboots.</strong></p>
+<p>To provide a uniform view for attached devices based on their actual hardware attributes, the Linux kernel offers the <code>sysfs</code> interface through a system of files and directories. The base path for devices is <code>/sys/devices</code>.</p>
+<p>For example, the SATA hard disk at <code>/dev/sda</code> might have the following path in <code>sysfs</code>:</p>
+<p><img src="https://sherlockblaze.com/resources/img/profession/linux/how-linux-works/device-in-sysfs.png" alt=""></p>
+<p>The <code>/dev</code> file is there so that user processes can use the device, whereas the <code>/sys/devices</code> path is used to view information and manage the device.</p>
+<p>There are a few shortcuts in the <code>/sys</code> directory. For example, <code>/sys/block</code> should contain all of the block devices available on a system. However, those are just symbolic links; run <code>ls -l /sys/block</code> to reveal the true sysfs paths.</p>
+<p>It can be difficult to find the sysfs location of a device in <code>/dev</code>. Use the <code>udevadm</code> command to show the path and other attributes:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ udevadm info --query=all --name=/dev/sda</span><br></pre></td></tr></table></figure>
+<h2 id="dd-and-Devices"><a href="#dd-and-Devices" class="headerlink" title="dd and Devices"></a>dd and Devices</h2><p>The program <code>dd</code> is extremely useful when working with block and character devices.</p>
+<p><strong>This program’s sole function is to read from an input file or stream and write to an output file or stream, possibly doing some encoding conversion on the way.</strong></p>
+<p><code>dd</code> copies data in blocks of a <strong>fixed</strong> size. Here’s how to use <code>dd</code> with a character device and some common options:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ dd <span class="keyword">if</span>=/dev/zero of=new_file bs=1024 count=1</span><br></pre></td></tr></table></figure>
+<p>As you can see, the <code>dd</code> option format differs from the option formants of most other Unix commands; it’s based on an old IBM Job Control Language(JCL) style. Rather than use the dash(-) character to signal an option, you name an option and set its value to something with the equals(=) sign. The preceding example copies a single 1024-byte block from <code>/dev/zero</code> to <strong><em>new_file</em></strong>.</p>
+<p><strong>There are the important <code>dd</code> options:</strong></p>
+<ul>
+<li><strong>if=file</strong> The input file. The default is the standard input.</li>
+<li><strong>of=file</strong> The output file. The default is the standard output.</li>
+<li><strong>bs=size</strong> The block size. <code>dd</code> reads and writes this many bytes of data at a time. To abbreviate large chunks of data, you can use <code>b</code> and <code>k</code> to signify 512 and 1024 bytes, respectively. Therefore, the example above could read <code>bs=1k</code> instead of <code>bs=1024</code>.</li>
+<li><strong>ibs=size, obs=size</strong> The input and output block sizes. If you can use the same block size for both input and output, use the <code>bs</code> option; if not, use <code>ibs</code> and <code>obs</code> for input and output, respectively.</li>
+<li><strong>count=num</strong> The total number of blocks to copy. When working with a huge file – or with a device that supplies an endless stream of data, such as <code>/dev/zero</code> – you want <code>dd</code> to stop at a fixed point or you could waste a lot of disk space, CPU time or both. Use <code>count</code> with the <code>skip</code> parameter to copy a small piece from a large file or device.</li>
+<li><strong>skip=num</strong> Skip past the first num blocks in the input file or stream and do not copy them to the output.</li>
+</ul>
+<p><strong>WARNING</strong></p>
+<blockquote>
+<p>dd is very powerful, so make sure you know what you’re doing when you run it. It’s very easy to corrupt files and data on devices by making a careless mistake. It often helps to write the output to a new file if you’re not sure what it will do.</p>
+</blockquote>
+<h2 id="Device-Name-Summary"><a href="#Device-Name-Summary" class="headerlink" title="Device Name Summary"></a>Device Name Summary</h2><p>It can sometimes be difficult to find the name of a device. Here are a few ways to find out what it is in this book:</p>
+<ul>
+<li>Query udevd using <code>udevadm</code></li>
+<li>Look for the device in the <code>/sys</code> directory</li>
+<li>Guess the name from the output of the <code>dmesg</code> command(which prints the last few kernel messages) or the kernel system log file. This output might contain a description of the devices on your system.</li>
+<li>For a disk device that is already visible to the system, you can check the output of <code>mount</code> command.</li>
+<li>Run <code>cat /proc/devices</code> to see the block and character devices for which your system currently has drivers. It’s the most useful way i think. Each line consists of a number and name. The number is the major number of the device as described in <a href="#Device-Files">Device Files</a>. If you can guess the device from the name, look in <code>/dev</code> for the character or block devices with the corresponding major number, and you’ve found the device files.</li>
+</ul>
+<blockquote>
+<p>Among these methods, only the first is reliable, but it does require udev. If you get into a situation where udev is not available, try the other methods but keep in mind that the kernel might not have a device file for your hardware.</p>
+</blockquote>
+<p>The following sections list the most common Linux devices and their naming conventions.</p>
+<h3 id="Hard-Disks-dev-sd"><a href="#Hard-Disks-dev-sd" class="headerlink" title="Hard Disks: /dev/sd*"></a>Hard Disks: <code>/dev/sd*</code></h3><p>Most hard disks attached to current Linux systems correspond in device names with an <strong><em>sd</em></strong> prefix, such as <code>/dev/sda</code>, <code>/dev/sdb</code>, and so on. </p>
+<p>These devices represent entire disks; the kernel makes separate device files, such as <code>/dev/sda1</code> and <code>/dev/sdb2</code> for the partitions on a disk.</p>
+<p>The naming convention requires a little explanation. The <strong>sd</strong> portion of the name stands for SCSI disk. <strong>Small Computer System Interface(SCSI)</strong> was originally developed as a hardware and protocol standard for communication between devices such as disks and other peripherals.</p>
+<p>Although traditional SCSI hardware isn’t used in most modern machines, <strong>the SCSI protocol is everywhere due to its adaptability.</strong> The story on SATA disks is a little more complicated, but the Linux kernel still uses SCSI commands at a certain point when talking to them.</p>
+<p>To list the SCSI devices on your system, use a utility that walks the device paths provided by sysfs. One of the most succinct is <code>lsscsi</code>, maybe you should install it on your machine first. For example, my system is Ubuntu 18.04, I installed by using command <code>sudo apt install lsscsi</code>. Here is what you can expect when you run it:</p>
+<p><img src="https://sherlockblaze.com/resources/img/profession/linux/how-linux-works/output-of-lsscsi.png" alt=""></p>
+<p>The first column identifies the address of the device on the system, the second describes what kind of device it is, and the last indicates where to find the device file. Everything else is vendor information.</p>
+<p><strong>Linux assigns devices to device files in the order in which its drivers encounter devices.</strong></p>
+<p><strong>Notice:</strong></p>
+<blockquote>
+<p>Unfortunately, this device assignment scheme has traditionally caused problems when reconfiguring hardware. Say, for example, that you have a system with three disks: <code>/dev/sda</code>, <code>/dev/sdb</code>, and <code>/dev/sdc</code>. If <code>/dev/sdb</code> explodes and you mush remove the disk so that the machine can work again, the former <code>/dev/sdc</code> moves to <code>/dev/sdb</code>, and there is no longer a <code>/dev/sdc</code>. If you were referring to the device names directly in the <code>fstab</code> file, you’d have to make some changes to that file in order to get things back to normal. To solve this problem, <strong>most modern Linux systems use the Universally Unique Identifier(UUID)</strong> fro persistent disk device access.</p>
+</blockquote>
+<h3 id="CD-and-DVD-Drives-dev-sr"><a href="#CD-and-DVD-Drives-dev-sr" class="headerlink" title="CD and DVD Drives: /dev/sr*"></a>CD and DVD Drives: <code>/dev/sr*</code></h3><p>Linux recognizes most optical storage drives as the SCSI devices <code>/dev/sr0</code>, <code>/dev/sr1</code>, and so on. However, if the drive uses an older interface, it might show up as a PATH device , as discussed below. The <code>/dev/sr*</code> devices are read only, and they are used only for reading from discs. For the write and rewrite capabilities of optical devices, you’ll use the “generic” SCSI devices such as <code>/dev/sg0</code>.</p>
+
+                
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2019/03/12/linux/how-linux-works/how-the-linux-kernel-boots/" data-toggle="tooltip" data-placement="top" title="How Linux Works(Chapter Five)--How the Linux Kernel Boots">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/03/04/linux/how-linux-works/directory-hierarchy/" data-toggle="tooltip" data-placement="top" title="How Linux Works(Chapter Two)--Directory Hierarchy Essentials">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <div class="comments" id="comments"></div>
+
+                <br>                      
+            </div>
+            
+            <!-- Table of Contents -->
+<aside id="sidebar">
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">Contents</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Device-Files"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">Device Files</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Block-device"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">Block device</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Character-device"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">Character device</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Pipe-device"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">Pipe device</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Socket-device"><span class="toc-nav-number">1.4.</span> <span class="toc-nav-text">Socket device</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#The-sysfs-Device-Path"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">The sysfs Device Path</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#dd-and-Devices"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">dd and Devices</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Device-Name-Summary"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">Device Name Summary</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Hard-Disks-dev-sd"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">Hard Disks: /dev/sd*</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#CD-and-DVD-Drives-dev-sr"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text">CD and DVD Drives: /dev/sr*</span></a></li></ol></li></ol>
+    
+    </div>
+</aside>
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Linux" title="Linux">Linux</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://chaoscoffee.github.io/" target="_blank">ChaosCoffee&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<link rel="stylesheet" href="/css/valine.css">
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script type="text/javascript">
+    // Use import
+    // or Use require
+    var GUEST = ['nick','mail','link'];
+    var guest = "nick,mail,link";
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: true,
+        notify: false,
+        appId: 'zft6KmhKY69FtUwIJFY5XJo5-gzGzoHsz',
+        appKey: 'KhPyX7dVWp6nYvU3iK8OoOlS',
+        visitor: true,
+        placeholder: 'Let us talk more!!',
+        avatar: 'wavatar',
+        guest_info: guest,
+        pageSize: '10' || 10,
+        lang: 'en'
+    });
+</script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://github.com/sherlockblaze">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/jam-blaze-606ab3163">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/sherlockblaze_007">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Sherlock Blaze 2022 
+                    <br>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://sherlockblaze.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-133187385-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-133187385-1');
+</script>
+
+<!-- -->
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?4d1398d2e890275832d6fd932eb0e2e1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>

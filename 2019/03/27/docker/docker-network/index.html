@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/resources/img/header_img/DogFace.jpg">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          Docker 网络 - Sherlock Blaze
+        
+    </title>
+
+    <link rel="canonical" href="https://sherlockblaze.com/2019/03/27/docker/docker-network/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url("https://source.unsplash.com/random/1280x720")
+    }
+    
+</style>
+
+<header class="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Docker" title="Docker">Docker</a>
+                            
+                        </div>
+                        <h1>Docker 网络</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by Sherlock Blaze on
+                            2019-03-27
+                        </span>
+                    </div>
+                
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Sherlock Blaze</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/community/">Community</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <blockquote>
+<p>本文为学习笔记，内容来自于 <a href="https://item.jd.com/12200103.html" target="_blank" rel="noopener">《每天五分钟玩转 Docker 容器技术》</a></p>
+</blockquote>
+<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><ol>
+<li>Docker 提供的几种原生网络</li>
+<li>创建自定义网络</li>
+<li>容器之间如何通信</li>
+<li>容器与外界如何交互</li>
+</ol>
+<h2 id="原生网络"><a href="#原生网络" class="headerlink" title="原生网络"></a>原生网络</h2><blockquote>
+<p>Docker 在安装时会自动在 host 上创建三个网络，使用命令 <code>docker network ls</code> 查看。得到如下输出：</p>
+</blockquote>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">NETWORK ID          NAME                DRIVER              SCOPE</span><br><span class="line"></span><br><span class="line">c760fab58f72       <span class="built_in"> bridge </span>            <span class="built_in"> bridge </span>             local</span><br><span class="line">d42648b05ee4        host                host                local</span><br><span class="line">fcc455e2c312        none                <span class="literal">null</span>                local</span><br></pre></td></tr></table></figure>
+<p>由上述内容可知，docker 提供了三个原生网络，分别是： <code>bridge</code>、<code>host</code>、<code>none</code></p>
+<h3 id="none-网络"><a href="#none-网络" class="headerlink" title="none 网络"></a>none 网络</h3><p>顾名思义，none 网络就是什么都没有的网络，启动容器时，如果使用 <code>--network=none</code> 来指定使用 <code>none</code> 网络，那么该容器的网络环境便是封闭的，而封闭，意味着隔离。挂在这个网络下的除了 <code>lo</code>，没有其他任何网卡。</p>
+<p>一般来说，对于一些安全性要求较高，并且不需要联网的应用可以使用 <code>none</code> 网络。</p>
+<p><strong>注</strong>： <code>lo</code> 及 <code>localhost</code> 缩写。</p>
+<h3 id="host-网络"><a href="#host-网络" class="headerlink" title="host 网络"></a>host 网络</h3><p>通过 <code>--network=host</code> 指定容器使用 <code>host</code> 网络。<strong>连接到 host 网络的容器共享 Docker host(即安装 Docker 应用的主机) 的网络栈。</strong></p>
+<p>在宿主机上执行命令 <code>ip l</code> 得到如下输出：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN mode<span class="built_in"> DEFAULT group default </span>qlen 1000</span><br><span class="line">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</span><br><span class="line">2: enp2s0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc fq_codel state UP mode<span class="built_in"> DEFAULT group default </span>qlen 1000</span><br><span class="line">    link/ether 98:ee:cb:6e:55:b3 brd ff:ff:ff:ff:ff:ff</span><br><span class="line">4: docker0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP mode<span class="built_in"> DEFAULT group default </span></span><br><span class="line">    link/ether 02:42:d2:c5:c5:23 brd ff:ff:ff:ff:ff:ff</span><br><span class="line">5: vpn0: &lt;POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP&gt; mtu 1418 qdisc fq_codel state UP mode<span class="built_in"> DEFAULT group default </span>qlen 500</span><br><span class="line">    link/none </span><br><span class="line">30: veth8bd9ae5@if29: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue master docker0 state UP mode<span class="built_in"> DEFAULT group default </span></span><br><span class="line">    link/ether 4e:6c:2c:2d:68:4f brd ff:ff:ff:ff:ff:ff link-netnsid 0</span><br></pre></td></tr></table></figure>
+<p>执行以下命令运行 <code>busybox</code> 容器：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker run -it --network=host busybox</span><br></pre></td></tr></table></figure>
+<p>进入容器后执行命令 <code>ip l</code> 得到如下输出：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">/ # <span class="built_in">ip</span> l</span><br><span class="line"><span class="number">1</span>: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu <span class="number">65536</span> qdisc noqueue qlen <span class="number">1000</span></span><br><span class="line">    link/loopback <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> <span class="keyword">brd </span><span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span></span><br><span class="line"><span class="number">2</span>: enp2s0: &lt;<span class="keyword">BROADCAST,MULTICAST,UP,LOWER_UP&gt; </span>mtu <span class="number">1500</span> qdisc fq_codel qlen <span class="number">1000</span></span><br><span class="line">    link/ether <span class="number">98</span>:ee:cb:<span class="number">6</span>e:<span class="number">55</span>:<span class="keyword">b3 </span><span class="keyword">brd </span>ff:ff:ff:ff:ff:ff</span><br><span class="line"><span class="number">4</span>: docker0: &lt;<span class="keyword">BROADCAST,MULTICAST,UP,LOWER_UP&gt; </span>mtu <span class="number">1500</span> qdisc noqueue </span><br><span class="line">    link/ether <span class="number">02</span>:<span class="number">42</span>:<span class="built_in">d2</span>:<span class="built_in">c5</span>:<span class="built_in">c5</span>:<span class="number">23</span> <span class="keyword">brd </span>ff:ff:ff:ff:ff:ff</span><br><span class="line"><span class="number">5</span>: vpn0: &lt;POINTOPOINT,<span class="keyword">MULTICAST,NOARP,UP,LOWER_UP&gt; </span>mtu <span class="number">1418</span> qdisc fq_codel qlen <span class="number">500</span></span><br><span class="line">    link/[<span class="number">65534</span>] </span><br><span class="line"><span class="number">30</span>: veth8bd9ae5<span class="comment">@if29: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1500 qdisc noqueue master docker0 </span></span><br><span class="line">    link/ether <span class="number">4</span>e:<span class="number">6</span>c:<span class="number">2</span>c:<span class="number">2</span>d:<span class="number">68</span>:<span class="number">4</span>f <span class="keyword">brd </span>ff:ff:ff:ff:ff:ff</span><br></pre></td></tr></table></figure>
+<p>通过两者输出的内容我们可以确定指定使用 <code>host</code> 网路的容器确实使用了和宿主机相同的网络栈。</p>
+<p>使用 <code>host</code> 机网络有如下几个点需要清楚：</p>
+<ol>
+<li>使用该网络最大的优点就是性能，如果容器对网络传输效率有比较高的要求，可以选择使用 host 网络</li>
+<li>但如果使用该网络模式，那么必然会损失一些灵活性，比如端口冲突问题，在宿主机上使用过的端口，就无法再在容器中使用了</li>
+</ol>
+<h3 id="bridge-网络"><a href="#bridge-网络" class="headerlink" title="bridge 网络"></a>bridge 网络</h3><p>Docker 安装时会默认创建一个名称为 docker0 的 Linux bridge。如果不指定 <code>--network</code> 参数，创建的容器默认都会挂到 docker0 上。</p>
+<p>使用命令 <code>brctl show</code> 查看宿主机上 bridge 网络的情况，得到如下输出：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bridge name<span class="built_in"> bridge </span>id       STP enabled interfaces</span><br><span class="line">docker0     8000.0242d2c5c523   <span class="literal">no</span></span><br></pre></td></tr></table></figure>
+<p>可以观察到，目前 docker0 上没有挂载任何网络设备。我们执行如下命令运行 busybox:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker run -it busybox</span><br></pre></td></tr></table></figure>
+<p>继续输入命令 <code>brctl show</code> 查看 bridge 网络情况：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bridge name<span class="built_in"> bridge </span>id       STP enabled interfaces</span><br><span class="line">docker0     8000.0242d2c5c523   <span class="literal">no</span>      veth4317eb1</span><br></pre></td></tr></table></figure>
+<p>我们惊喜的发现 interfaces 下显示了一个网卡地址，这个地址就是容器的虚拟网卡，名为 <code>veth4317eb1</code>。</p>
+<p>在运行的 busybox 容器中执行命令 <code>ip a</code> 得到如下输出：</p>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>: lo: &lt;LOOPBACK,<span class="meta">UP</span>,LOWER_UP&gt; mtu <span class="number">65536</span> qdisc noqueue qlen <span class="number">1000</span></span><br><span class="line">    link/loopback <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> brd <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span></span><br><span class="line">    inet <span class="number">127.0</span><span class="meta">.0</span><span class="meta">.1</span>/<span class="number">8</span> scope host lo</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line"><span class="number">31</span>: eth0@if32: &lt;BROADCAST,MULTICAST,<span class="meta">UP</span>,LOWER_UP,M-<span class="meta">DOWN</span>&gt; mtu <span class="number">1500</span> qdisc noqueue </span><br><span class="line">    link/ether <span class="number">02</span>:<span class="number">42</span>:ac:<span class="number">11</span>:<span class="number">00</span>:<span class="number">02</span> brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet <span class="number">172.17</span><span class="meta">.0</span><span class="meta">.2</span>/<span class="number">16</span> brd <span class="number">172.17</span><span class="meta">.255</span><span class="meta">.255</span> scope <span class="meta">global</span> eth0</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br></pre></td></tr></table></figure>
+<p>我们会发现，除了原本有的　<code>lo</code> 网卡，还多出了一个名为 <code>eth0@if32</code> 的网卡。</p>
+<p>在这段内容里面，关于 <code>eth0@if32</code> 和 <code>veth4317eb1</code> 的关系，实际上，是一对 <code>veth pair</code>。</p>
+<p><strong><code>veth pair</code> 是一种成对出现的特殊网络设备，想象成一对由一根虚拟网线连接起来的网卡，网卡的一头是 <code>eth0@if32</code>，它身处容器之中，而另一头 <code>veth4317eb1</code> 则挂在网桥 docker0 上。</strong></p>
+<p>执行命令 <code>docker network inspect bridge</code> 查看到如下内容：</p>
+<p><img src="https://sherlockblaze.com/resources/img/profession/docker/docker-network-inspect-bridge.png" alt=""></p>
+<p>我们注意到在 <code>Config</code> 配置项下，有两个配置项，分别是 <code>subnet</code> 和 <code>Gateway</code>，看到网关的值为 <code>172.17.0.1</code>，而这个网关，就是我们的 <code>docker0</code>。</p>
+<p>此时容器的网络拓扑结构如下图所示：</p>
+<p><img src="https://sherlockblaze.com/resources/img/profession/docker/docker-bridge-config.png" alt=""></p>
+<h2 id="user-defined-网络"><a href="#user-defined-网络" class="headerlink" title="user-defined 网络"></a>user-defined 网络</h2><p>docker 这么灵活好用的玩意，当然不止可以使用原生网络，用户可以自己根据业务需要创建网络。称为 <code>user-defined</code> 网络。</p>
+<p>我们可以使用以下命令创建网络：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker network create --driver bridge my_net</span><br></pre></td></tr></table></figure>
+<p>使用上述命令我们创建一个名称为 my_net 的 bridge 网络。分别执行命令 <code>brctl show</code> 和 <code>docker network inspect my_net</code> 可以得到以下输出结果。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ brctl show</span><br><span class="line"></span><br><span class="line">bridge name bridge id       STP enabled interfaces</span><br><span class="line">br-57b3ea2cc45d     8000.02423e9e1e01   no      </span><br><span class="line">docker0     8000.0242d2c5c523   no      veth4317eb1</span><br></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker network inspect my_net</span><br></pre></td></tr></table></figure>
+<p><img src="https://sherlockblaze.com/resources/img/profession/docker/docker-network-inspect-my_net.png" alt=""></p>
+<p>上图中，<code>172.21.0.0/16</code> 是 Docker 自动分配的 IP 网段。当然，我们也可以自己指定网段。只需要在创建网段时指定 <code>--subnet</code> 和 <code>--gateway</code> 参数即可。</p>
+<p>执行命令 <code>docker network create --driver bridge --subnet 172.22.16.0/24 --gateway 172.22.16.1 my_net2</code></p>
+<p><img src="https://sherlockblaze.com/resources/img/profession/docker/docker-network-inspect-my_net2.png" alt=""></p>
+<p>接下来我们做实验，首先使用命令 </p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --network=my_net2 --ip 172.22.16.9 busybox</span><br><span class="line">docker run -it --network=my_net2 --ip 172.22.16.8 busybox</span><br><span class="line">docker run -it --network=my_net busybox</span><br></pre></td></tr></table></figure>
+<p>到这里我们需要知道如下几个事情： </p>
+<ol>
+<li>在前两条命令中我们指定了 <code>ip</code>，想要这样做我们需要在创建网络的时候指定 <code>subnet</code> 配置项</li>
+<li>执行上述命令行后，我们创建出三个容器，且这个状态下的网络拓扑结构如下图所示：</li>
+</ol>
+<p><img src="https://sherlockblaze.com/resources/img/profession/docker/docker-bridge-graph-new.png" alt=""></p>
+<p>接下来我们讨论容器的通信问题。</p>
+<h2 id="容器间通信"><a href="#容器间通信" class="headerlink" title="容器间通信"></a>容器间通信</h2><p><strong>容器之间可以通过 IP、Docker DNS Server 和 joined 容器三种方式通信。</strong></p>
+<h3 id="IP-通信"><a href="#IP-通信" class="headerlink" title="IP 通信"></a>IP 通信</h3><p>根据上段内容，我们得到了三个容器。ip地址分别是： <code>172.22.16.8</code> 、 <code>172.22.16.9</code> 以及 <code>172.21.0.2</code>。</p>
+<p>其中，前两个属于同一个网段，后一个单独一个网段。</p>
+<p>理论上，身处同一个网段中是可以互通的，我们在 IP 为 <code>172.22.16.8</code> 的容器中去 <code>ping</code> IP 为 <code>172.22.16.9</code> 的容器。得到的结果如下图所示：</p>
+<p><img src="https://sherlockblaze.com/resources/img/profession/docker/ping-172-22-16-9.png" alt=""></p>
+<p>以上结果验证了我们的说法，同一网段中的容器的确和 ping 通。</p>
+<p>接下来我们在 IP 为 <code>172.22.16.8</code> 的容器中去 <code>ping</code> IP 为 <code>172.21.0.2</code> 的容器：</p>
+<p><img src="https://sherlockblaze.com/resources/img/profession/docker/ping-172-21-0-2.png" alt=""></p>
+<blockquote>
+<p>不同的网络如果加上路由应该是可以通信的。</p>
+</blockquote>
+<p>在 Docker 宿主机上执行命令 <code>ip r</code>，我们可以得到如下结果：</p>
+<p><img src="https://sherlockblaze.com/resources/img/profession/docker/host-ip-r-router.png" alt=""></p>
+<p>图中我们可以观察到两个网络的路由器， <code>172.22.16.0</code> 以及 <code>172.21.0.0</code>。</p>
+<p>继续执行命令 <code>sysctl net.ipv4.ip_forward</code>，得到如图输出：</p>
+<p><img src="https://sherlockblaze.com/resources/img/profession/docker/check_ipv4_forward.png" alt=""></p>
+<p>由此我们可以确认 ip forwarding 已启用。</p>
+<p>到了这里我们需要查看一下问题所在，因为目前知道通过 IP 进行通信的条件是基本满足的： 1. 两个网络的路由器已经配置完毕 2. ip forwarding 已经启用。</p>
+<p>那么是什么原因导致挂载在两个不同网桥的 busybox 无法互相访问呢？</p>
+<p>执行命令 <code>sudo iptables-save</code> 得到以下结果，然后我们来一探究竟：</p>
+<p><img src="https://sherlockblaze.com/resources/img/profession/docker/ip-table-docker-network.png" alt=""></p>
+<p>在图片的下方我们可以看到如下两行内容：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-A DOCKER-ISOLATION-STAGE<span class="number">-2</span> -o br<span class="number">-2</span>d8877e1871b -j DROP</span><br><span class="line">-A DOCKER-ISOLATION-STAGE<span class="number">-2</span> -o br<span class="number">-57</span>b3ea2cc45d -j DROP</span><br></pre></td></tr></table></figure>
+<p>原来，iptables 把从 <code>br-2d8877e1871b</code> 和 <code>br-57b3ea2cc45d</code> 两个网桥出来的流量都给 DROP 掉了。同时，从命令规则上来看，<code>DOCKER-ISOLATION</code> 的名称，可知 docker 在设计上就是要隔离不同的 network。</p>
+<p>那么在 Docker 中我们如何将两个网络连接起来呢？答案很简单，就是向其中一个 busybox 添加一个网卡，让它和挂载在被添加的网卡上的网络联通。</p>
+<p>执行命令 <code>docker network connect my_net2 8b4a</code> 即可完成。</p>
+<p>接下来我们在 ip 为 <code>172.21.0.2</code> 的 busybox 容器中执行命令 <code>ifconfig</code>，得到如下输出：</p>
+<p><img src="https://sherlockblaze.com/resources/img/profession/docker/ifconfig-after-connect-network.png" alt=""></p>
+<p>我们可以清楚的观察到多了一个 ip 为 <code>172.22.16.2</code> 的网卡 <code>eth1</code>。此时，网络拓扑图如下所示：</p>
+<p><img src="https://sherlockblaze.com/resources/img/profession/docker/docker-bridge-graph-after-connect.png" alt=""></p>
+<p>致此，我们就可以用新 IP 让三个 busybox 实现互通了。</p>
+
+                
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2019/04/12/architecture/baetyl/" data-toggle="tooltip" data-placement="top" title="BAETYL">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/03/12/linux/how-linux-works/how-the-linux-kernel-boots/" data-toggle="tooltip" data-placement="top" title="How Linux Works(Chapter Five)--How the Linux Kernel Boots">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <div class="comments" id="comments"></div>
+
+                <br>                      
+            </div>
+            
+            <!-- Table of Contents -->
+<aside id="sidebar">
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">Contents</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#目标"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">目标</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#原生网络"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">原生网络</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#none-网络"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">none 网络</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#host-网络"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text">host 网络</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#bridge-网络"><span class="toc-nav-number">2.3.</span> <span class="toc-nav-text">bridge 网络</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#user-defined-网络"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">user-defined 网络</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#容器间通信"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">容器间通信</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#IP-通信"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">IP 通信</span></a></li></ol></li></ol>
+    
+    </div>
+</aside>
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Docker" title="Docker">Docker</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://chaoscoffee.github.io/" target="_blank">ChaosCoffee&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<link rel="stylesheet" href="/css/valine.css">
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script type="text/javascript">
+    // Use import
+    // or Use require
+    var GUEST = ['nick','mail','link'];
+    var guest = "nick,mail,link";
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: true,
+        notify: false,
+        appId: 'zft6KmhKY69FtUwIJFY5XJo5-gzGzoHsz',
+        appKey: 'KhPyX7dVWp6nYvU3iK8OoOlS',
+        visitor: true,
+        placeholder: 'Let us talk more!!',
+        avatar: 'wavatar',
+        guest_info: guest,
+        pageSize: '10' || 10,
+        lang: 'en'
+    });
+</script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://github.com/sherlockblaze">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/jam-blaze-606ab3163">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/sherlockblaze_007">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Sherlock Blaze 2022 
+                    <br>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://sherlockblaze.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-133187385-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-133187385-1');
+</script>
+
+<!-- -->
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?4d1398d2e890275832d6fd932eb0e2e1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>

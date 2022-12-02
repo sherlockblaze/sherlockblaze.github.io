@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type="text/xsl" href="sitemap.xsl"?>
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+    <url>
+        <loc>https://sherlockblaze.com</loc>
+        <changefreq>daily</changefreq>
+        <priority>1</priority>
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2018/08/16/python/advanced-features/</loc>
+        <lastmod>2022-12-02T21:42:10.419Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2018/08/16/python/basic-grammar/</loc>
+        <lastmod>2022-12-02T21:42:10.419Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2018/08/16/python/basic-multithread/</loc>
+        <lastmod>2022-12-02T21:42:10.419Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2017/06/17/python/file-operations/</loc>
+        <lastmod>2022-12-02T21:42:10.419Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2018/08/16/python/functional-programming/</loc>
+        <lastmod>2022-12-02T21:42:10.419Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2018/08/16/python/more-about-file-operations/</loc>
+        <lastmod>2022-12-02T21:42:10.419Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2018/08/16/python/more-about-multithread/</loc>
+        <lastmod>2022-12-02T21:42:10.419Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2022/06/26/think/about-learning/</loc>
+        <lastmod>2022-12-02T21:42:10.419Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2022/06/25/think/about-work/</loc>
+        <lastmod>2022-12-02T21:42:10.419Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2018/08/16/python/object-oriented/</loc>
+        <lastmod>2022-12-02T21:42:10.419Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/03/02/linux/how-linux-works/basic-commands-part-two/</loc>
+        <lastmod>2022-12-02T21:42:10.419Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/02/28/linux/how-linux-works/basic-commands-part-one/</loc>
+        <lastmod>2022-12-02T21:42:10.419Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/03/04/linux/how-linux-works/directory-hierarchy/</loc>
+        <lastmod>2022-12-02T21:42:10.419Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/03/12/linux/how-linux-works/how-the-linux-kernel-boots/</loc>
+        <lastmod>2022-12-02T21:42:10.419Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2020/04/19/linux/linux-in/shell-in-linux/</loc>
+        <lastmod>2022-12-02T21:42:10.419Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/03/11/linux/how-linux-works/devices/</loc>
+        <lastmod>2022-12-02T21:42:10.419Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/02/26/linux/how-linux-works/the-big-picture-of-linux/</loc>
+        <lastmod>2022-12-02T21:42:10.419Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2020/02/14/books/%E5%A7%94%E5%B1%88%E6%88%90%E5%B0%B1%E4%BC%9F%E5%A4%A7-%E5%95%86%E7%95%8C%E7%B2%BE%E8%8B%B1%E7%BB%99%E5%B9%B4%E8%BD%BB%E4%BA%BA%E7%9A%8412%E4%B8%AA%E5%BF%A0%E5%91%8A/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2020/04/26/c++/system-programming-p1/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/12/03/docker/docker-introduction/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/12/06/golang/design-pattern-in-go-behavioral/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/12/04/golang/golang-goroutines/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/04/12/architecture/baetyl/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/03/27/docker/docker-network/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/12/06/golang/design-pattern-in-go-creational/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/12/19/golang/golang-concurrent-intro/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/12/13/golang/golang-gc/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/05/08/golang/golang-grammar/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/05/07/golang/golang-start/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/12/06/golang/design-pattern-in-go-structural/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/05/14/golang/golang-concurrent-start/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/01/24/algorithms/classic/insertion-sort/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/01/24/algorithms/combat/add-two-numbers/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/01/24/algorithms/combat/reverse-print-list/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/01/24/algorithms/combat/replace-all-spaces/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/01/24/algorithms/combat/search-in-two-dimensional-array/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/01/24/algorithms/combat/two-sum/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/01/24/algorithms/rules/growth-of-function/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/01/24/algorithms/rules/loop-invariants/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/01/21/data-structure/lists/arraylist/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/01/21/data-structure/lists/doubly-linkedList/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/01/21/data-structure/lists/linkedlist/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/01/21/data-structure/lists/queue/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/05/05/data-structure/trees/avl-tree/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/01/21/data-structure/lists/stack/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/05/05/data-structure/trees/binary-search-tree/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/05/05/data-structure/trees/red-black-trees/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/05/05/data-structure/trees/binary-trees/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://sherlockblaze.com/2019/05/05/data-structure/trees/trees/</loc>
+        <lastmod>2022-12-02T21:42:10.415Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+</urlset>
+<!-- XML Sitemap generated by Hexo SEO Friendly Sitemap Generator -->

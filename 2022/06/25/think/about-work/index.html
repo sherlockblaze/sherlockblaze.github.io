@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/resources/img/header_img/DogFace.jpg">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          关于工作 - Sherlock Blaze
+        
+    </title>
+
+    <link rel="canonical" href="https://sherlockblaze.com/2022/06/25/think/about-work/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url("https://source.unsplash.com/random/1280x720")
+    }
+    
+</style>
+
+<header class="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Daily Rethink" title="Daily Rethink">Daily Rethink</a>
+                            
+                        </div>
+                        <h1>关于工作</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by Sherlock Blaze on
+                            2022-06-25
+                        </span>
+                    </div>
+                
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Sherlock Blaze</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/community/">Community</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="关于工作"><a href="#关于工作" class="headerlink" title="关于工作"></a>关于工作</h1><h2 id="工作的分类"><a href="#工作的分类" class="headerlink" title="工作的分类"></a>工作的分类</h2><p>在我的理解里，日常工作主要分成三个类别：</p>
+<p>其一，是可以通过细致分析解决的工作，这个类别的工作对个人专业能力和过往经验的要求较高；其二，除了细节上的把控，还需要具备更全局的视角、时机上的把控以及开创精神，此类工作对个人的综合素养要求更高；还剩下一类，这类工作大多是不值得消耗精力去做的，要么是当前的情况下不适合去做，没法落地，要么是根本没有做的价值。</p>
+<p>这三个类别的工作大抵上遵循正态分布：第一类工作占比最多，大概 50% - 70%；第二类工作大概占比 10% - 20%，第三类占比 20% - 30%。也就是说，十个工作里面，可能有 5 到 7 个工作是可以通过细致分析解决的，只要你足够耐心、踏实；再有 1 到 2 个工作，可能需要你更加有创造力，更加大胆、敢于挑战；剩下 2 到 3 个工作则暂时不要去做。</p>
+<p>到了这里，我会去思考为什么要给工作做这样的分类？一方面，是为了更好地管理我们的时间和精力，另一方面，更是为了指导我们的行为，帮助我们管理职业生涯不同阶段的目标。</p>
+<p><img src="https://sherlockblaze.com/resources/img/dailyrethink/about-work/classify.jpg" alt="Classify"></p>
+<h2 id="第一阶段"><a href="#第一阶段" class="headerlink" title="第一阶段"></a>第一阶段</h2><p>在职业生涯的第一阶段，我理解重点是锻炼自己落地的能力。要学会分辨哪些工作可以做，而哪些暂时不适合去做。这个阶段的个人往往富有想法，有非常非常多的 idea 想去尝试。但想要保证这个阶段的工作质量，踏实地让所分配到的工作落地是非常重要的。</p>
+<p>举例来说，你负责一款产品的推广 —— 这是一家创业公司的新产品 —— 主要向在校大学生提供服务，最好的情况是能跟学校建立合作，这样可以保证不断有学生进入新的生命周期。这时候你有两个选择：一是自下而上，从学生开始突破，积累一定的学生用户以后，再和校方建立联系；二是自上而下，从学校开始突破，直接和校方联系，投入资源进行谈判，成功建立合作以后，再向下推展工作。</p>
+<p>第二种方法简单粗暴，如果成功有可能短时间内获得大量的目标用户，然后升职加薪走向人生巅峰。但是，我们要注意的是，这一家初创企业的新产品。这款产品在其生命周期的初期，这个阶段的产品更需要不断提升其品质，做好口碑和种子用户的 BD 工作，争取获得自增长能力。另外，拿着新产品去和校方谈合作，这对一家初创企业来说所需的资源一定是不低的。因此，相对来说，第一种方案可能更加可行一些，并且有方法可以更加具体地向下执行。哪种方案更加经济、可行并能获得具备长期价值的结果，需要根据实际的情况来进行判断。</p>
+<p>所以，我理解，在职业生涯的第一阶段，主要目标应该是尽可能多地将事情做成，去不断地探索落地。当你把一个目标拆分成几个具体的工作时，应该能非常敏锐地判断出哪些工作是当下应该去做的，而哪些不是。</p>
+<p>随着两到三年或者三到五年的努力和沉淀，我们已经具备了分辨重点工作的能力，这时候我们的全部精力都是放在前两个类别的工作上。但有趣的事情发生了，相对于第一类工作，我们都能感觉到第二类的工作带给人的满足感更强、更加有趣，回报也更丰盛。可是，第一类的那 5 - 7 个工作就会占用日常精力的 70% - 80%，你几乎没有足够精力去挑战那 1 - 2 个有趣的工作，何况它们所需的精力甚至远远超过那 5 - 7 个工作。</p>
+<p><img src="https://sherlockblaze.com/resources/img/dailyrethink/about-work/detail.jpg" alt="detail"></p>
+<h2 id="第二阶段"><a href="#第二阶段" class="headerlink" title="第二阶段"></a>第二阶段</h2><p>为了让我们更加有能力去挑战第二类工作，我认为职业生涯第二阶段的主要目标，应该是努力提高我们在第一类工作上的掌控力。因为这样才能帮助我们节省更多的精力去面对更大的挑战。</p>
+<p>我们在之前的分类中也提到，第一类工作往往通过细致的分析、对细节的把控就可以很好地完成。因此，想要提高对这类工作的掌控力，我们需要足够细节。但怎样才能说是足够细节呢？</p>
+<p>假设这样一个情境：有一家平台企业，向客户提供所需的咨询服务。你是这家公司的客服人员，日常工作就是接听电话，将潜在的客户向后转化。但非常可惜的是，有一些客户对平台有天然的抵触心理，在你刚开口介绍完我们是一家平台 —— “您好，我们是 XX 服务平台，请问有什么问题可以帮您” 时 —— 客户就果断挂掉了电话。</p>
+<p>类似的情况在客户有能力直接获取处于供应链上游的服务时更为常见。这个时候，你要怎样做到：1. 客户清楚平台的存在；2. 客户愿意进一步沟通。但当缺乏细节层面的掌控力时，你只能选择碰运气，等一个愿意听你把话讲下去的友好客户。但这必然会消耗你越来越多的精力，因为你需要不断地跟客户介绍平台的作用，而非去了解客户实际的需求。真正的工作目标 —— 向后转化 —— 会消耗更多才有可能完成，这导致你完全没有机会去挑战第二类工作，比如：优化客户的整条转化路径。</p>
+<p>实际上，你可以利用客户的从众心理。比如，你可以在接听时加上一小段话介绍这家公司的业务情况：“您好，我们是 XX 服务平台。我们有 XXX 个服务供应商，已经有 XXX 位客户选择了从我们平台获取服务，其中，有 XX% 的客户给出了满分好评”。</p>
+<p>这个方法在奥巴马竞选拉票时也使用过，“Jason，你知道吗？已经有 XXXXX 位 Jason（同名） 已经投票选择奥巴马作为下一届总统了”。最后的结果我们可以在历史课堂上学习到，奥巴马利用这种方式来让自己的竞选更具掌控性。</p>
+<p>通过细节上的把控，你能在第一类工作中获得更多的掌控力，可以明确某个行为可能引发什么样的反应。当不再需要去赌运气的时候，就会减少很多意外情况，会有越来越多的精力被节省出来。这时，我们也会更有机会去挑战那高难度的第二类工作。甚至未来某一天，可以把全部的精力放在处理这种类别的工作上，即升职了。</p>
+<p>按照我现阶段的理解，我正处于第二阶段的沉淀中。希望未来的 3 - 5 年里，我可以在第一类工作上具备更强的掌控力，以此来帮助我做好进入职业生涯第三阶段的准备。</p>
+<h2 id="第三阶段"><a href="#第三阶段" class="headerlink" title="第三阶段"></a>第三阶段</h2><p>这里也简单提一下我对第三阶段的理解：这一阶段既要能自上而下从宏观角度规划我们的工作，也要能自下而上从微观角度设计我们的执行路径。</p>
+<p>共勉。</p>
+<p><img src="https://sherlockblaze.com/resources/img/dailyrethink/about-work/future.jpg" alt="future"></p>
+
+                
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2022/06/26/think/about-learning/" data-toggle="tooltip" data-placement="top" title="关于学习">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2020/04/26/c++/system-programming-p1/" data-toggle="tooltip" data-placement="top" title="Getting Started with System Programming">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <div class="comments" id="comments"></div>
+
+                <br>                      
+            </div>
+            
+            <!-- Table of Contents -->
+<aside id="sidebar">
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">Contents</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#关于工作"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">关于工作</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#工作的分类"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">工作的分类</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#第一阶段"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">第一阶段</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#第二阶段"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">第二阶段</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#第三阶段"><span class="toc-nav-number">1.4.</span> <span class="toc-nav-text">第三阶段</span></a></li></ol></li></ol>
+    
+    </div>
+</aside>
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Daily Rethink" title="Daily Rethink">Daily Rethink</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://chaoscoffee.github.io/" target="_blank">ChaosCoffee&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<link rel="stylesheet" href="/css/valine.css">
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script type="text/javascript">
+    // Use import
+    // or Use require
+    var GUEST = ['nick','mail','link'];
+    var guest = "nick,mail,link";
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: true,
+        notify: false,
+        appId: 'zft6KmhKY69FtUwIJFY5XJo5-gzGzoHsz',
+        appKey: 'KhPyX7dVWp6nYvU3iK8OoOlS',
+        visitor: true,
+        placeholder: 'Let us talk more!!',
+        avatar: 'wavatar',
+        guest_info: guest,
+        pageSize: '10' || 10,
+        lang: 'en'
+    });
+</script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://github.com/sherlockblaze">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/jam-blaze-606ab3163">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/sherlockblaze_007">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Sherlock Blaze 2022 
+                    <br>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://sherlockblaze.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-133187385-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-133187385-1');
+</script>
+
+<!-- -->
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?4d1398d2e890275832d6fd932eb0e2e1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>

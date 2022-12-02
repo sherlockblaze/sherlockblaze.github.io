@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/resources/img/header_img/DogFace.jpg">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          How Linux Works(Chapter One)--The Big Picture of Linux - Sherlock Blaze
+        
+    </title>
+
+    <link rel="canonical" href="https://sherlockblaze.com/2019/02/26/linux/how-linux-works/the-big-picture-of-linux/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url("https://source.unsplash.com/random/1280x720")
+    }
+    
+</style>
+
+<header class="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Linux" title="Linux">Linux</a>
+                            
+                        </div>
+                        <h1>How Linux Works(Chapter One)--The Big Picture of Linux</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by Sherlock Blaze on
+                            2019-02-26
+                        </span>
+                    </div>
+                
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Sherlock Blaze</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/community/">Community</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <blockquote>
+<p>All the summaries are from the book named <strong><a href="https://www.amazon.com/How-Linux-Works-2nd-Superuser/dp/1593275676/ref=sr_1_1?keywords=how+linux+works&amp;qid=1551169061&amp;s=gateway&amp;sr=8-1" target="_blank" rel="noopener">How Linux Works</a></strong>.</p>
+</blockquote>
+<h2 id="About-Understanding-Something"><a href="#About-Understanding-Something" class="headerlink" title="About Understanding Something"></a>About Understanding Something</h2><p>The most effective way to understand how an operating system works is through <strong><em>abstraction</em></strong> —- a fancy way of saying that you can ignore most of the details. For example, when you ride in a car , you normally don’t need to think about details such as the mounting bolts that hold the motor inside the car or the people who build and maintain the road upon which the car drives. If you’re a passenger in a car, all you really need to know is what the car does and a few basics about how to use it.</p>
+<p><strong>But</strong> if you’re driving a car, you need to know more. You need to learn how to operate the controls and what to do when something goes wrong.</p>
+<p>For example, let’s say that the car ride is rough. Now <strong>you can break up the abstraction of “a car that rolls on a road” into tree parts: a car, a road, and the way that you’re driving</strong>. This helps isolate the problem: If the road is bumpy, you don’t blame the car or the way that you’re driving it. Instead, you may want to find out why the road has deteriorated or, if the road is new, why the construction workers did a lousy job.</p>
+<p>Software developers use abstraction as a tool when building an operating system and its applications. There are many terms for an abstracted subdivision in computer software, including subsystem, module, and package—but we’ll use the term component in this chapter because it’s simple. When building a software component, developers typically don’t think much about the internal structure of other components, but they do care about what other components they can use and how to use them.</p>
+<h2 id="Levels-and-Layers-of-Abstraction-in-a-Linux-System"><a href="#Levels-and-Layers-of-Abstraction-in-a-Linux-System" class="headerlink" title="Levels and Layers of Abstraction in a Linux System"></a>Levels and Layers of Abstraction in a Linux System</h2><p>A Linux system has three main levels. The following pictures shows these levels and some of the components inside each level. The <strong><em>hardware</em></strong> is at the base. Hardware includes the memory as well as one or more CPUs to perform computation and to read from and write to memory. Devices such as disks and network interfaces are also part of the hardware.</p>
+<p>The next level up is the kernel, which is the core of the operation system. <strong>The kernel is software residing in memory that tells the CPU what to do.</strong> The kernel manages the hardware and <strong>acts primarily as an interface</strong> between the hardware and any running program.</p>
+<p><strong><em>Processes</em></strong> – the running programs that the kernel manages —- collectively make up the system’s upper level, called <strong><em>user space</em></strong>. (A more specific term for process is <strong><em>user process</em></strong>, regardless of whether of a user directly interacts with the process. For example, all web servers run as user processes.)</p>
+<p><img src="https://sherlockblaze.com/resources/img/profession/linux/how-linux-works/general-linux-system-organization.png" alt="General Linux System Organization"></p>
+<p>The critical difference between the ways that the kernel and user processes run: The kernel runs in <strong><em>kernel mode</em></strong>, and the user processes run in <strong><em>user mode</em></strong>. Code running in kernel mode has unrestricted access to the processor and main memory. <strong>The area that only the kernel can access is called <strong><em>kernel space</em></strong>.</strong></p>
+<blockquote>
+<p>This is a powerful but dangerous privilege that allows a kernel process to easily crash the entire system.</p>
+</blockquote>
+<p><strong>User mode</strong>, in comparison, restricts access to a subset of memory and safe CPU operations. <strong><em>User space</em></strong> refers to the parts of main memory that the user processes can access. If a process makes a mistake and crashes, the consequences are limited and can be cleaned up by the kernel. This means that if your web browser crashes, it probably won’t take down the scientific computation that you’ve been running in the background for days.</p>
+<h2 id="Hardware-Understanding-Main-Memory"><a href="#Hardware-Understanding-Main-Memory" class="headerlink" title="Hardware: Understanding Main Memory"></a>Hardware: Understanding Main Memory</h2><p>Of all of the hardware on a computer system, <strong><em>main memory</em></strong> is perhaps the most important. In its most raw form, main memory is just a big storage area for a bunch of 0s and 1s. Each 0 or 1 is called a <strong><em>bit</em></strong>. This is where the running kernel and processes reside —- they’re just big collections of bits. All input and output from peripheral devices flows through main memory, also as a bunch of bits. A CPU is just an operator on memory; it reads its instructions and data fromn the memory and writes data back out to the memory.</p>
+<p>You’ll often hear the term <strong><em>state</em></strong> in reference to memory, processes, the kernel, and other parts of a computer system. A state is a particular arrangement of bits. For example, if you have four bits in your memory, 0110, 0001, and 1011 represent three different states.</p>
+<p><strong>Note</strong>: Because it’s common to refer to the state in abstract terms rather than to the actual bits, the term image refers to a particular physical arrangement of bits.</p>
+<h2 id="The-Kernel"><a href="#The-Kernel" class="headerlink" title="The Kernel"></a>The Kernel</h2><p>Nearly everything that the kernel does revolves around main memory. One of the kernel’s tasks is to <strong>split memory into many subdivisions, and it must maintain certain state information about those subdivisions at all times.</strong> <strong><em>Each process gets its own share of memory, and the kernel must ensure that each process keeps to it share.</em></strong></p>
+<p>The kernel is in charge of managing tasks in <strong>four</strong> general system areas:</p>
+<ul>
+<li><strong>Processes</strong>. The kernel is responsible for determining which processes are allowed to use the CPU.</li>
+<li><strong>Memory</strong>. The kernel needs to keep track of all memory – what is currently allocated to a particular process, what might be shared between processes, and what is free.</li>
+<li><strong>Device Drivers</strong>. The kernel acts as an interface between hardware and processes. It’s usually the kernel’s job to operate the hardware.</li>
+<li><strong>System calls and support</strong>. Processes normally use system calls to communicate with the kernel.</li>
+</ul>
+<h3 id="Process-Management"><a href="#Process-Management" class="headerlink" title="Process Management"></a>Process Management</h3><p><strong><em>Process Management</em></strong> describes the starting, pausing, resuming, and terminating of processes.</p>
+<p>On any modern operating system, many processes run “simultaneously”. For example, you might have a web browser and a spreadsheet open on a desktop computer at the same time. However, things are not as the appear: The processes behind these applications typically do not run at <strong><em>exactly</em></strong> the same time.</p>
+<p><strong>Context Switch</strong>: Consider a system with a one-core CPU, many processes may be able to use the CPU, but only one process may actually use the CPU at any given time. In practice, each process uses the CPU for a small fraction of a second, then pauses; the another process uses the CPU for another small fraction of a second; then another process takes a turn, and so on. The act of one process giving up control of the CPU to another process is called a <strong><em>context switch</em></strong>.</p>
+<p><strong>Time Slice</strong>: Each piece of time—called a <strong><em>time slice</em></strong> — gives a process enough time for significant computation (and indeed, a process often finishes its current task during a single slice). However, because the slices are so small, humans can’t perceive them, and the system appears to be running multiple processes at the same time (a capability known as multitasking).</p>
+<p><strong>How a context switch works??</strong></p>
+<blockquote>
+<p>The kernel is responsible for context switching. And here’s what happens:</p>
+</blockquote>
+<ol>
+<li>The CPU interrupts the current process based on an internal timer, switches into kernel mode, and hands control back to the kernel.</li>
+<li>The kernel records the current state of the CPU and memory, which will be essential to resuming the process that was just interrupted.</li>
+<li>The kernel performs any tasks that might have come up during the preceding time slice.(such as collecting data from input and output, or I/O, operations)</li>
+<li>The kernel is now ready to let another process run. The kernel analyzes the list of processes that are ready to run and choose one.</li>
+<li>The kernel prepares the memory for this new process, and then prepares the CPU.</li>
+<li>The kernel tells the CPU how long the time slice for the new process will last.</li>
+<li>The kernel switches the CPU into user mode and hands control of the CPU to the process.</li>
+</ol>
+<p><strong>The context switch answers the important question of when the kernel runs. The answer is that it runs between process time slices during a context switch.</strong></p>
+<p><strong>Attention:</strong></p>
+<p>In the case of a multi-CPU system, things become slightly more complicated because the kernel doesn’t need to relinquish control of its current CPU in order to allow a process to run on a different CPU. However, to maximize the usage of all available CPUs, the kernel typically does so anyway(and may use certain tricks to grab a little more CPU time for itself).</p>
+<h3 id="Memory-Management"><a href="#Memory-Management" class="headerlink" title="Memory Management"></a>Memory Management</h3><p>Because the kernel must manage memory during a context switch, it has a complex job of memory management. The kernel’s job is complicated because the following conditions must hold:</p>
+<ul>
+<li>The kernel must have its own private area in memory that user processes can’t access.</li>
+<li>Each user process needs its own section of memory</li>
+<li>One user process may not access the private memory of another process.</li>
+<li>User processes can share memory.</li>
+<li>Some memory in user processes can be read-only.</li>
+<li>The system can use more memory than is physically present by using disk space as auxiliary.</li>
+</ul>
+<p>It’s difficult, but fortunately for the kernel, there is help. Modern CPUs include a <strong><em>memory management unit(MMU)</em></strong> that enables a memory access scheme called <strong><em>virtual memory</em></strong>. When using virtual memory, <strong>a process does not directly access the memory by its physical location in the hardware.</strong> Instead, the kernel sets up each process to act as if it had an entire machine to itself.<br>When the process accesses some of its memory, the MMU intercepts the access and uses a memory address map to translate the memory location from the process into an actual physical memory location on the machine.<br><strong>The kernel must still initialize and continuously maintain and alter this memory address map. For example, during a context switch, the kernel has to change the map from the outgoing process to the incoming process.</strong></p>
+<p><strong>Note</strong>: The implementation of a memory address map is called a page table.</p>
+<h3 id="Device-Drivers-and-Management"><a href="#Device-Drivers-and-Management" class="headerlink" title="Device Drivers and Management"></a>Device Drivers and Management</h3><p>The kernel’s role with devices is pretty simple. A device is typically accessible only in kernel mode because improper access could crash the machine. Another problem is that different devices rarely have the same programming interface, even if the devices do the same thing, such as two different network cards. Therefore, device drivers have traditionally been part of the kernel, and they strive to present a uniform interface to user processes in order to simplify the software developer’s job.</p>
+<h3 id="System-calls-and-Support"><a href="#System-calls-and-Support" class="headerlink" title="System calls and Support"></a>System calls and Support</h3><p>There are several other kinds of kernel features available to user processes. For example, <strong><em>system calls(or syscalls)</em></strong> perform specific tasks that a user process alone cannot do well or at all. For example, the acts of opening, reading, and writing files all involve system calls.</p>
+<p>Two system calls, <code>fork()</code> and <code>exec()</code>, are important to understanding how processes start up:</p>
+<ul>
+<li><strong>fork()</strong> When a process calls <code>fork()</code>, the kernel creates a nearly identical copy of the process.</li>
+<li><strong>exec()</strong> When a process calls <code>exec(program)</code>, the kernel starts program, replacing the current process.</li>
+</ul>
+<p><strong>Other than init, all user processes on a Linux system start as a result of <code>fork()</code></strong>, and most of the time, you also run <code>exec()</code> to start a new program instead of running a copy of an existing process. A very simple example is any program that you run at the command line, such as the <code>ls</code> command to show the contents of a directory. When you enter <code>ls</code> into a terminal window, the shell that’s running inside the terminal window calls <code>fork()</code> to create a copy of the shell, and then the new copy of the shell calls <code>exec(ls)</code> to run <code>ls</code>. The process shows as follow:</p>
+<p><img src="https://sherlockblaze.com/resources/img/profession/linux/how-linux-works/starting-a-new-process.png" alt="start a new process"></p>
+<p>The kernel also supports user processes with features other than traditional system calls, the most common of which are <strong><em>pseudodevices</em></strong>. Pseudo-devices look like devices to user processes, but they’re implemented purely in software. As such, they don’t technically need to be in the kernel, but they are usually there for practical reasons. For example, the kernel random number generator device(<code>/dev/random</code>) would be difficult to implement securely with a user process.</p>
+<p>Technically, a user process that accesses a pseudodevice still has to use a system call to open the device, so processes can’t entirely avoid system calls.</p>
+<h2 id="User-Space"><a href="#User-Space" class="headerlink" title="User Space"></a>User Space</h2><p>The main memory that the kernel allocates user processes is called <strong><em>user space</em></strong>. Because a process is simply a state(or image) in memory, user space also refers to the memory for the entire collection of running processes.</p>
+<p>Most of the real action on a Linux system happens in user space. Although all processes are essentially equal from the kernel’s point of view, they perform different tasks for user. There is a rudimentary service level (or layer) structure to the kinds of system components that user processes represent. The following picture shows how an example set of components fit together and interact on a Linux system. Basic services are at the bottom level(closest to the kernel), utility services are in the middle, and applications that users touch are at the top. What in the picture is a greatly simplified diagram because only six components are shown, but you can see that the components at the top are closest to the user; the components in the middle level has a mail server that the web browser uses; and there are several smaller components at the bottom.</p>
+<p><img src="https://sherlockblaze.com/resources/img/profession/linux/how-linux-works/process-types-and-interactions.png" alt="Process types and interactions"></p>
+<p>The bottom level tends to consist of small components that perform single, uncomplicated tasks. The middle level has larger components such as mail, print, and database services. Finally, components at the top level perform complicated tasks that the user often controls directly. Components also use other components. Generally, if one component wants to use another, the second component is either at the same service level or below.</p>
+<p>However, the above picture is only an approximation of the arrangement of user space. In reality, there are no rules in user space. For example, most applications and services write diagnostic messages known as logs. Most programs use the standard syslog service to write log messages, but some prefer to do all of the logging themselves.</p>
+<p>In addition, it’s difficult to categorize some user-space components. Server components such as web and database servers can be considered very high-level applications because their tasks are often complicated, so you might place these at the top level in the above picture. However, user applications may depend on these servers to perform tasks that they’d rather not do themselves, so you could also make a case for placing them at the middle level.</p>
+<h2 id="Users"><a href="#Users" class="headerlink" title="Users"></a>Users</h2><p>The Linux kernel supports the traditional concept of a Unix user. A <strong><em>user</em></strong> is an entity that can run processes and own files. A user is associated with a <strong><em>username</em></strong>. </p>
+<p><strong>The kernel does not manage the usernames, instead, it identifies users by simple numeric identifiers called <code>userids</code></strong></p>
+<p><strong>Users exist primarily to support permissions and boundaries.</strong> Every user-space process has a user <strong><em>owner</em></strong>, and processes are said to run as the owner. A user may terminate or modify the behavior of its own processes(within certain limits), but it cannot interfere with other users’ processes. In addition, users may own files and choose whether they share them with other users.</p>
+<p>The most important user to know about is <strong><em>root</em></strong>. The root user is an exception to the preceding rules because root may terminate and alter another user’s processes and read any file on the local system. For this reason, root is known as the <strong>superuser</strong>. A person who can operate as root is said to have root access and is an administrator on a traditional Unix system.</p>
+<p><strong>Groups</strong> are sets of users. The primary purpose of groups is to allow a user to share file access to other users in a group.</p>
+<blockquote>
+<p>Operating as root can be dangerous. It can be difficult to identify and correct mistakes because the system will let you do anything, even if what you’re doing is harmful to the system. For this reason, system designers constantly try to make root access as unnecessary as possible, for example, by not requiring root access to switch between wireless networks on a notebook. In addition, as powerful as the root user is, it still runs in the operating system’s user mode, not kernel mode.</p>
+</blockquote>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>User processes make up the environment that you directly interact with, the kernel manages processes and hardware. Both the kernel and processes reside in memory.</p>
+<h2 id="Recommended-Reading"><a href="#Recommended-Reading" class="headerlink" title="Recommended Reading"></a>Recommended Reading</h2><ul>
+<li>Operating System Concepts, 9th edition, by Abraham Silberschatz, Peter B. Galvin, and Greg Gagne (Wiley, 2012)</li>
+<li>Modern Operating Systems, 4th edition, by Andrew S. Tanenbaum and Herbert Bos (Prentice Hall, 2014).</li>
+</ul>
+
+                
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2019/02/28/linux/how-linux-works/basic-commands-part-one/" data-toggle="tooltip" data-placement="top" title="How Linux Works(Chapter Two)--Basic Commands(Part One)">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/01/24/algorithms/combat/reverse-print-list/" data-toggle="tooltip" data-placement="top" title="Reverse Print List">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <div class="comments" id="comments"></div>
+
+                <br>                      
+            </div>
+            
+            <!-- Table of Contents -->
+<aside id="sidebar">
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">Contents</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#About-Understanding-Something"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">About Understanding Something</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Levels-and-Layers-of-Abstraction-in-a-Linux-System"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">Levels and Layers of Abstraction in a Linux System</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Hardware-Understanding-Main-Memory"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">Hardware: Understanding Main Memory</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#The-Kernel"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">The Kernel</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Process-Management"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">Process Management</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Memory-Management"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text">Memory Management</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Device-Drivers-and-Management"><span class="toc-nav-number">4.3.</span> <span class="toc-nav-text">Device Drivers and Management</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#System-calls-and-Support"><span class="toc-nav-number">4.4.</span> <span class="toc-nav-text">System calls and Support</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#User-Space"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">User Space</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Users"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">Users</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Conclusion"><span class="toc-nav-number">7.</span> <span class="toc-nav-text">Conclusion</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Recommended-Reading"><span class="toc-nav-number">8.</span> <span class="toc-nav-text">Recommended Reading</span></a></li></ol>
+    
+    </div>
+</aside>
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Linux" title="Linux">Linux</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://chaoscoffee.github.io/" target="_blank">ChaosCoffee&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<link rel="stylesheet" href="/css/valine.css">
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script type="text/javascript">
+    // Use import
+    // or Use require
+    var GUEST = ['nick','mail','link'];
+    var guest = "nick,mail,link";
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: true,
+        notify: false,
+        appId: 'zft6KmhKY69FtUwIJFY5XJo5-gzGzoHsz',
+        appKey: 'KhPyX7dVWp6nYvU3iK8OoOlS',
+        visitor: true,
+        placeholder: 'Let us talk more!!',
+        avatar: 'wavatar',
+        guest_info: guest,
+        pageSize: '10' || 10,
+        lang: 'en'
+    });
+</script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://github.com/sherlockblaze">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/jam-blaze-606ab3163">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/sherlockblaze_007">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Sherlock Blaze 2022 
+                    <br>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://sherlockblaze.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-133187385-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-133187385-1');
+</script>
+
+<!-- -->
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?4d1398d2e890275832d6fd932eb0e2e1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>

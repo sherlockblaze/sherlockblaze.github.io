@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/resources/img/header_img/DogFace.jpg">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          BAETYL - Sherlock Blaze
+        
+    </title>
+
+    <link rel="canonical" href="https://sherlockblaze.com/2019/04/12/architecture/baetyl/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url("https://source.unsplash.com/random/1280x720")
+    }
+    
+</style>
+
+<header class="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Architecture" title="Architecture">Architecture</a>
+                            
+                        </div>
+                        <h1>BAETYL</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by Sherlock Blaze on
+                            2019-04-12
+                        </span>
+                    </div>
+                
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Sherlock Blaze</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/community/">Community</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2 id="What"><a href="#What" class="headerlink" title="What"></a>What</h2><p>这次主要跟大家分享一下 baetyl 架构和核心功能实现，随着时代的发展，边缘计算受到的关注也越来越多，最近通信行业的快速发展，也推动了边缘计算的发育。baetyl 作为百度第一款开源边缘计算框架，有很多值得分享的地方。个人功力还比较浅，覆盖面可能不够全面，欢迎大家提问或纠正。</p>
+<h2 id="Why"><a href="#Why" class="headerlink" title="Why"></a>Why</h2><h3 id="为什么要做边缘计算？"><a href="#为什么要做边缘计算？" class="headerlink" title="为什么要做边缘计算？"></a>为什么要做边缘计算？</h3><ol>
+<li>先从网络的角度考虑，随着时代的发展，我们需要移动网络有能力发现离用户比较近的边缘节点实现流量就近出，并且可以满足计费、安全监管等网络运维要求。</li>
+<li>再从云来考虑。有部分企业级用户不太能接受数据完全上云的方案。这就需要边缘计算资源具备弹性、可调度性，能够配合业务逻辑实现资源的合理分配，实现计算能力到边缘的延伸。</li>
+<li>发展通用的平台计算的能力。</li>
+</ol>
+<h3 id="边缘和云端之间的关系"><a href="#边缘和云端之间的关系" class="headerlink" title="边缘和云端之间的关系"></a>边缘和云端之间的关系</h3><p>边缘计算可以理解成云计算的一个扩展，云端可以提供一些 Web Services，提供存储，模型训练等功能，但是有一些工作，在云端是很难触及到的，比如视频流的采集，以及一些IoT业务范围的事情。所以边缘计算对于云端来说起到了一个能力上的补充。另外，由于一些数据敏感性、处理时延的问题，部分工作放在端上处理显的更加合适。</p>
+<p>从上面的角度来考虑，边缘计算对云市场来说是很大的一个机会。</p>
+<ol>
+<li>流量问题，我们不可能，或者说不被允许，将大量的数据传输到云端，一个是从安全性角度考虑，一个是实际流量上的问题，如果全部上传，所有的计算都发生在云端，显然需要巨大的流量。</li>
+<li>时延，就像刚刚说的，如果所有的计算发生在云端，我们需要经历数据上传、云端服务进行计算、响应、响应处理这几个大过程，时效性上显然存在问题，特别是对于一些需要低时延的功能或操作。</li>
+</ol>
+<p>同时，我们也涉及到了一个问题，也就是动态调度，因为在边缘设备大多性能偏差、远远不如云端服务器强大，所以我们需要对资源进行动态的管理。这里主要涉及到两个方面：</p>
+<ol>
+<li>云计算中心和边缘设备之间的调度</li>
+<li>边缘设备之间的调度</li>
+</ol>
+<h2 id="How"><a href="#How" class="headerlink" title="How"></a>How</h2><p>目前我们的边缘计算分为了两部分一个是我们的通用框架，也就是今天要讲的主题 baetyl，另一个就是 BIE。</p>
+<p>我们主要分享一下 baetyl Framework。</p>
+<h3 id="我们想要做成什么样？"><a href="#我们想要做成什么样？" class="headerlink" title="我们想要做成什么样？"></a>我们想要做成什么样？</h3><ol>
+<li>独立于硬件，尽量放大终端设备的运行能力，为此我们采用了 Pure Golang 来编写程序，借用到了 Golang 的跨平台能力，并且在程序中全部使用静态链接。当然，现在我们也在探索 Rust 的可能性。</li>
+<li>支持各种类型的应用程序，从较小的层面上来讲，我们提供了一个 Function Manager，用于启动不同的函数计算，来进行函数实例管理和消息出发的函数调用。从一个更大的层面来说，我们所有的除主程序之外的内容，都可以称为是一个应用程序，包括一些我们官方提供的一些模块，比如 <code>baetyl-agent</code>，<code>baetyl-hub</code> 等，都可以算作一个应用程序，一个模块，都可以进行替换或者和其他模块进行组合完成功能上的扩展。</li>
+<li>支持在线管理和离线运行，我们提供了一个 agent 模块，用于和云端进行交互，目前我们支持硬件状态的上报，和服务OTA，现在的情况是，进行服务OTA时，会关闭原先老的服务，再按照配置重新启动服务。目标情况是保持未发生变更服务的运行。</li>
+</ol>
+<h3 id="baetyl-框架期待解决的问题"><a href="#baetyl-框架期待解决的问题" class="headerlink" title="baetyl 框架期待解决的问题"></a>baetyl 框架期待解决的问题</h3><p>那我们需要解决的问题有哪些呢？</p>
+<ol>
+<li>对硬件做抽象，上面提到，我们通过使用纯粹的 Golang 来编写框架，利用 Golang 本身强大的跨平台能力，尽可能的去屏蔽底层硬件的差别。</li>
+<li>对 App 提供 Runtime，对用户自定义的函数，我们需要尽可能的提供所需的运行环境，比如目前已有的 Python Runtime，到后面会支持的 Java、NodeJs、Go等等。</li>
+<li>提供 SDK 和 Service，我们需要为开发者提供更便捷的方式，去使用我们的 baetyl 框架，在 baetyl 框架的基础上进行开发。目前在 SDK 上我们做了这样一些操作，提供了 Dataset（静态数据集），用来存储一些配置文件，可执行文件之类，另外还提供了 Volume（动态存储集），对于一些数据，我们需要做持久化，或者记录日志，我们通过动态数据集，用挂载的方式来实现。</li>
+</ol>
+<h3 id="目前怎么做的？"><a href="#目前怎么做的？" class="headerlink" title="目前怎么做的？"></a>目前怎么做的？</h3><p>接下来我们切入正题，从我目前了解的角度来分析一下已有的架构。架构图如下：</p>
+<p><img src="https://sherlockblaze.com/resources/img/profession/architectures/baetyl-architecture.png" alt="baetyl-architectures"></p>
+<p>我们知道，一个程序或者说一个软件，主要做的事情有这三件：</p>
+<ol>
+<li>输入</li>
+<li>计算</li>
+<li>输出</li>
+</ol>
+<h4 id="输入"><a href="#输入" class="headerlink" title="输入"></a>输入</h4><p>那么我们如何处理输入问题呢？</p>
+<p>我们完成了一个模块，叫 <code>baetyl-hub</code>，它主要提供基于 MQTT 的消息路由服务。完成对我们的输入进行接受、分发的操作。</p>
+<p>目前我们支持 4 种接入方式：</p>
+<ol>
+<li>TCP</li>
+<li>SSL（TCP + SSL）</li>
+<li>WS（Websocket）</li>
+<li>WSS（Websocket + SSL）</li>
+</ol>
+<p>其中，如果使用证书双向认证，Client 必须在连接时发送 非空 的 username 和 空 的 password ，username 会用于主题鉴权。如果 password 不为空，则还会进一步检查密码是否正确</p>
+<p>而对于 MQTT 协议支持度大概是：</p>
+<ol>
+<li>支持 Connect、Disconnect、Subscribe、Publish、Unsubscribe、Ping 等功能</li>
+<li>支持 QoS 等级 0 和 1 的消息发布和订阅</li>
+<li>支持 Retain、Will、Clean Session</li>
+<li>支持订阅含有 +、# 等通配符的主题</li>
+<li>支持符合约定的 ClientID 和 Payload 的校验</li>
+<li>暂时 不支持 发布和订阅以 $ 为前缀的主题</li>
+<li>暂时 不支持 Client 的 Keep Alive 特性以及 QoS 等级 2 的发布和订阅</li>
+</ol>
+<p>如我们上面所说，虽然是官方模块，但如果该模块无法满足要求，是可以使用第三方的 MQTT Broker/Server 来进行替换的。</p>
+<h4 id="计算"><a href="#计算" class="headerlink" title="计算"></a>计算</h4><p>对于计算，我们提供了 <code>baetyl-function-manager</code> 模块，基于 MQTT 消息机制，支持弹性、高可用、可扩展、响应快的计算能力。函数计算模块通过从 <code>hub</code> 模块接受消息，触发功能，调用主程序提供的 API 来实现函数实例的启停，通过配置文件中 <code>instance</code> 的字段，来界定所能启动的函数实例个数。</p>
+<p>我们目前提供到的函数 runtime 有 <code>baetyl-function-python27</code>、<code>baetyl-function-python36</code> 以及 <code>opendge-function-sql</code>。</p>
+<p>设计的思路基本是相同的，我们以 <code>baetyl-function-python27</code> 作为例子做一次比较浅显的讲解。</p>
+<p><code>baetyl-function-python27</code> 提供的 Python 函数和 <code>CFC（Cloud Function Compute）</code> 类似，用户可以通过编写的自己的函数来处理消息，可进行消息的过滤、转换和转发等，使用上非常灵活。特别的是，该模块还可以作为 GRPC 服务单独启动，也可以为函数管理模块提供函数运行实例。</p>
+<h4 id="输出"><a href="#输出" class="headerlink" title="输出"></a>输出</h4><p>我们处理输出的方式比较多样，比如，我们可以定制 <code>BOS</code> 模块，将我们需要的数据上传到 BOS，或者写到持久化文件里，或者利用 Kafka等等。在我们目前已有的官方模块里，我们提供了 <code>baetyl-remote-mqtt</code> 模块，用来做远程信息同步。在设计上，这个模块的思路主要是作为一个 <code>MQTT Client</code> 从 <code>baetyl-hub</code> 模块中接受数据，然后转发到另一个远程的 <code>MQTT Server</code> 上。</p>
+<h3 id="在线管理"><a href="#在线管理" class="headerlink" title="在线管理"></a>在线管理</h3><p>从目前的描述来看，我们主要了解了在端上如何进行消息的收发，利用函数运行时实例以及CFC来进行消息的处理。那我们如何管理这些模块呢？</p>
+<p>因为我们的设计目标其实是，在用户启动这些模块之后，不再需要在端上进行操作，而把控制的内容转移到云上，也就是我们先前说的支持在线管理，我们提供了一个模块 <code>baetyl-agent</code>，作为一个代理服务，和云端进行交互，提供云端控制的能力。</p>
+<p>连接方式上，<code>agent</code> 拥有 MQTT 和 HTTPS 通道，MQTT 强制 SSL/TLS 证书双向认证，HTTPS 强制 SSL/TLS 证书单向认证。</p>
+<p>功能上，<code>agent</code> 模块目前就做两件事：</p>
+<ol>
+<li>启动后定时向主程序获取状态信息并上报给云端</li>
+<li>监听云端下发的事件，触发相应的操作，目前只处理应用 OTA 事件</li>
+</ol>
+<p>所以说，<code>agent</code> 模块赋予了我们从云端管理端上 baetyl 的能力。但如果想实现离线运行，只需要关闭端上运行的 <code>agent</code> 模块，就可以实现 <code>baetyl</code> 的离线运行，当然也可以在网络不好的情况下被迫离线运行。</p>
+<h3 id="主程序"><a href="#主程序" class="headerlink" title="主程序"></a>主程序</h3><p>上面大概简述了各个模块的功能和大致的设计思想，那我们如何启动这些模块呢？答案是 baetyl 主程序。通过 baetyl 主程序提供的命令行，我们可以很方便的进行 baetyl 系统的启停。</p>
+<p>主程序主要由两个部分组成：</p>
+<ol>
+<li>RESTFUL API</li>
+<li>Engine 系统</li>
+</ol>
+<h4 id="Restful-API"><a href="#Restful-API" class="headerlink" title="Restful API"></a>Restful API</h4><p>Restful API 主要用来提供一些通用的 API 供其他模块使用，目前提供的接口有一下五个：</p>
+<ol>
+<li>GET  <code>/system/inspect</code> 用于获取系统信息和状态</li>
+<li>PUT  <code>/system/update</code> 更新系统和服务</li>
+<li>GET <code>/ports/available</code> 获取宿主机的空闲端口</li>
+<li>PUT <code>/services/{serviceName}/instances/{instanceName}/start</code> 动态启动某个服务的一个实例</li>
+<li>PUT <code>/services/{serviceName}/instances/{instanceName}/stop</code> 动态停止某个服务的某个实例</li>
+</ol>
+<p>接口暴露的方式有两种，一种是在 Linux 平台下，使用 <code>Unix Domain Socket</code>，默认地址为 <code>/var/run/baetyl.sock</code>，其他平台则使用 TCP 的方式，默认地址是 <code>tcp://127.0.0.1:50050</code>。</p>
+<p>既然涉及到接口的调用，我们就需要考虑到鉴权问题，目前主程序采用的鉴权方式为动态 Token，主程序在启动服务时，会为每一个服务动态生成一个 Token，将服务名和Token以环境变量的方式传入服务实例，实例读取后放入请求的 Header 中发给主程序即可。由于动态实例并非通过主程序来启动，所以动态实例没有启动其他实例的权利。</p>
+<h4 id="引擎系统"><a href="#引擎系统" class="headerlink" title="引擎系统"></a>引擎系统</h4><p>目前我们的 baetyl 提供了两种运行模式：</p>
+<ol>
+<li>Docker 容器模式</li>
+<li>Native 进程模式</li>
+</ol>
+<p>目前我们已经在很大程度上，实现了两种模式下配置项的统一，在支持 Docker 的运行环境下，我们更建议使用 Docker 容器模式方式的运行，而在不支持容器模式的硬件平台下，我们通过 Native 模式，以存储卷的方式尽可能的模仿容器模式的运行形式。</p>
+<h2 id="Future"><a href="#Future" class="headerlink" title="Future"></a>Future</h2><p>至此，我们对 baetyl 架构的大致介绍基本就结束了。接下来，从我个人的视角来展望一下 baetyl 可能的发展。</p>
+<ul>
+<li>从纵向的角度来看，也就是边缘计算的出发点，我们希望用户在端上启动 baetyl 系统后，无需再直接操作端上设备进行控制，所有的管理操作，都可以在云端完成，这样的情况下，目前的操作系统提供的很多功能，我们都是用不上的。不如对其做一些裁剪，通过 <code>Linux Kernl + init</code> 的组合，来实现一个 <code>baetyl</code> 的启动，完成一个 <code>baetyl OS</code>。</li>
+</ul>
+<p>同时我们也可以通过直接的 <code>containerd</code> 来实现容器的运行，取代 <code>Docker</code>，因为目前的情况来说，Docker 项目正在不断膨胀，变得越来越大，而且在硬件能力较差的端设备上，需要占用更多的资源，造成比较大的性能占用。</p>
+<ul>
+<li>从横向的角度来看，边缘计算节点未来一定是分布式，可扩展的。我们可以通过启动多个 <code>baetyl OS</code>，并且选中一台服务器，启动 <code>Kubernetes</code> 的管理模块，一方面和其他 baetyl 节点建立联系，一方面，向云端开放远程管理能力。</li>
+</ul>
+<h2 id="Recap"><a href="#Recap" class="headerlink" title="Recap"></a>Recap</h2><p>到这里，我们这次的分享就结束了，主要分享了一下 baetyl 框架在实现我们三个目标上所做的事情：</p>
+<ol>
+<li>独立于硬件</li>
+<li>支持各种类型的应用程序</li>
+<li>支持在线管理和离线运行</li>
+</ol>
+<p>谢谢大家。</p>
+
+                
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2019/05/05/data-structure/trees/binary-trees/" data-toggle="tooltip" data-placement="top" title="Binary Tree">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/03/27/docker/docker-network/" data-toggle="tooltip" data-placement="top" title="Docker 网络">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <div class="comments" id="comments"></div>
+
+                <br>                      
+            </div>
+            
+            <!-- Table of Contents -->
+<aside id="sidebar">
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">Contents</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#What"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">What</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Why"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">Why</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#为什么要做边缘计算？"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">为什么要做边缘计算？</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#边缘和云端之间的关系"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text">边缘和云端之间的关系</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#How"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">How</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#我们想要做成什么样？"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">我们想要做成什么样？</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#baetyl-框架期待解决的问题"><span class="toc-nav-number">3.2.</span> <span class="toc-nav-text">baetyl 框架期待解决的问题</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#目前怎么做的？"><span class="toc-nav-number">3.3.</span> <span class="toc-nav-text">目前怎么做的？</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#输入"><span class="toc-nav-number">3.3.1.</span> <span class="toc-nav-text">输入</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#计算"><span class="toc-nav-number">3.3.2.</span> <span class="toc-nav-text">计算</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#输出"><span class="toc-nav-number">3.3.3.</span> <span class="toc-nav-text">输出</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#在线管理"><span class="toc-nav-number">3.4.</span> <span class="toc-nav-text">在线管理</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#主程序"><span class="toc-nav-number">3.5.</span> <span class="toc-nav-text">主程序</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#Restful-API"><span class="toc-nav-number">3.5.1.</span> <span class="toc-nav-text">Restful API</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#引擎系统"><span class="toc-nav-number">3.5.2.</span> <span class="toc-nav-text">引擎系统</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Future"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">Future</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Recap"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">Recap</span></a></li></ol>
+    
+    </div>
+</aside>
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Architecture" title="Architecture">Architecture</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://chaoscoffee.github.io/" target="_blank">ChaosCoffee&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<link rel="stylesheet" href="/css/valine.css">
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script type="text/javascript">
+    // Use import
+    // or Use require
+    var GUEST = ['nick','mail','link'];
+    var guest = "nick,mail,link";
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: true,
+        notify: false,
+        appId: 'zft6KmhKY69FtUwIJFY5XJo5-gzGzoHsz',
+        appKey: 'KhPyX7dVWp6nYvU3iK8OoOlS',
+        visitor: true,
+        placeholder: 'Let us talk more!!',
+        avatar: 'wavatar',
+        guest_info: guest,
+        pageSize: '10' || 10,
+        lang: 'en'
+    });
+</script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://github.com/sherlockblaze">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/jam-blaze-606ab3163">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/sherlockblaze_007">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Sherlock Blaze 2022 
+                    <br>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://sherlockblaze.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-133187385-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-133187385-1');
+</script>
+
+<!-- -->
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?4d1398d2e890275832d6fd932eb0e2e1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>

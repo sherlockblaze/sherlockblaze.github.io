@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/resources/img/header_img/DogFace.jpg">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          Golang Concurrent - Sherlock Blaze
+        
+    </title>
+
+    <link rel="canonical" href="https://sherlockblaze.com/2019/12/19/golang/golang-concurrent-intro/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url("https://source.unsplash.com/random/1280x720")
+    }
+    
+</style>
+
+<header class="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Golang" title="Golang">Golang</a>
+                            
+                        </div>
+                        <h1>Golang Concurrent</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by Sherlock Blaze on
+                            2019-12-19
+                        </span>
+                    </div>
+                
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Sherlock Blaze</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/community/">Community</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2 id="Concurrency-and-Parallelism"><a href="#Concurrency-and-Parallelism" class="headerlink" title="Concurrency and Parallelism"></a>Concurrency and Parallelism</h2><p>Computer and software programs are useful because they do a lot of laborious work very fast and can also do multiple things at once.</p>
+<p>We want our programs to be able to do multiple things simultaneously, that is, multitask, and the success of a programming language can depend on how easy it’s to write and understand multitasking programs.</p>
+<blockquote>
+<p><a href="https://blog.golang.org/concurrency-is-not-parallelism" target="_blank" rel="noopener">concurrency is not paralleism</a></p>
+</blockquote>
+<ul>
+<li><strong>Concurrency</strong>: <strong><em>Concurrency is about dealing with lots of things at once.</em></strong> This means that we manage to get multiple things done at once in a give period of time. However, we will only be doing a single thing at a time. This tends to happen in programs where one task is waiting and the program decides to run another task in the idle time. </li>
+<li><strong>Parallelism</strong>: <strong><em>Parallelism is about doing lots of things at once.</em></strong> This means that even if we have two tasks, they are continuously working without any breaks in between them.</li>
+</ul>
+<p><img src="https://sherlockblaze.com/resources/img/daily/2019-12-04/concurrency-and-parallelism.png" alt="concurrency-and-parallelism"></p>
+<p><strong>Let’s first take a look at how concurrency became such an important topic.</strong></p>
+<h2 id="Moore’s-Law"><a href="#Moore’s-Law" class="headerlink" title="Moore’s Law"></a>Moore’s Law</h2><p><strong>The number of components on an integrated circuit would double every two years.</strong> This prediction more on less held true until just recently – around 2012.</p>
+<p>Several companies foresaw this slowdown in the rate Moore’s law predicted and began to investigate alternative ways to increase computing power.</p>
+<p><strong>Necessity is the mother of innovation.</strong></p>
+<p>So, multicore processors were born.</p>
+<h2 id="Amdahl’s-Law"><a href="#Amdahl’s-Law" class="headerlink" title="Amdahl’s Law"></a>Amdahl’s Law</h2><p>Amdahl’s law describes a way in which to model the potential performance gains from implementing the solution to a problem in a parallel manner.</p>
+<p>Simply put, <strong>it states that the gains are bounded by how much of the program must be written in a sequential manner.</strong></p>
+<blockquote>
+<p>For example, imagine you were writing a program that was largely GUI based: a user is presented with an interface, clicks on some buttons, and stuff happens. This type of program is bounded by one very large sequential portion of the pipeline: human interaction. No matter how many cores you make available to this program, <strong>it will always be bounded by how quickly the user can interact with the interface.</strong></p>
+</blockquote>
+<blockquote>
+<p>Now consider a different example, calculating digits of pi. Thanks to a class of algorithms called <a href="https://en.wikipedia.org/wiki/Spigot_algorithm" target="_blank" rel="noopener">spigot algorithms</a>, this problem is called <strong><em>embarrassingly parallel</em></strong>, which – despite sounding made up – is a technical term which means that it can easily be divided into parallel tasks. In this case, significant gains can be made by making more cores available to your program, and <strong>your new problem becomes how to combine and store the results.</strong></p>
+</blockquote>
+<p><strong>Amdahl’s law helps us understand the difference between there two problems, and can help us decide whether parallelization is the right way to address performance concerns in our system.</strong></p>
+<h2 id="Why-is-Concurrency-Hard"><a href="#Why-is-Concurrency-Hard" class="headerlink" title="Why is Concurrency Hard?"></a>Why is Concurrency Hard?</h2><p><a href="http://www.gotw.ca/publications/concurrency-ddj.htm" target="_blank" rel="noopener">The free lunch is over: A fundamental turn toward concurrency in software</a></p>
+<p><strong>“We desperately need a higher-level programming model for concurrency than languages offer today.”</strong></p>
+<p>Concurrent code is notoriously difficult to get right. <strong>Fortunately everyone runs into the same issues when working with concurrent code.</strong> Because of this, computer scientists have been able to label the common issues, which allows us to discuss how they arise, why, and how to solve them.</p>
+<h3 id="Race-Conditions"><a href="#Race-Conditions" class="headerlink" title="Race Conditions"></a>Race Conditions</h3><p><strong>A race condition occurs when two or more operations must execute in the correct order, but the program has not been written so that this order is guaranteed to be maintained.</strong></p>
+<h3 id="Atomicity"><a href="#Atomicity" class="headerlink" title="Atomicity"></a>Atomicity</h3><p><strong>When something is considered atomic, or to have the property of atomicity, this means that within the context that it is operating, it’s indivisible, or uninterruptible.</strong></p>
+<p><strong>Something may be atomic in one context, but not another.</strong></p>
+<blockquote>
+<p>Operations that are atomic within the context of your process may not be atomic in the context of the operating system; operations that are atomic within the context of the operating system may not be atomic within the context of your machine; and operations that are atomic within the context of your machine may not be atomic within the context of your application.</p>
+</blockquote>
+<p><strong>When thinking about atomicity, very often the first thing you need to do is to define the context, or scope, the operation will be considered to be atomic in.</strong></p>
+<p>Let’s look at an example:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">i++</span><br></pre></td></tr></table></figure>
+<p>It may took atomic, but a brief analysis reveals several operations:</p>
+<ul>
+<li>Retrieve the value of i</li>
+<li>Increment the value of i</li>
+<li>Store the value of i</li>
+</ul>
+<h3 id="Memory-Access-Synchronization"><a href="#Memory-Access-Synchronization" class="headerlink" title="Memory Access Synchronization"></a>Memory Access Synchronization</h3><p>Two concurrent processes are attempting to access the same area of memory, and the way they are accessing the memory is not atomic.</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> data <span class="keyword">int</span></span><br><span class="line"><span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;data++&#125;()</span><br><span class="line"><span class="keyword">if</span> data == <span class="number">0</span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">"the value is 0."</span>)</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">"the value is %v.\n"</span>, data)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Deadlocks"><a href="#Deadlocks" class="headerlink" title="Deadlocks"></a>Deadlocks</h3><p><strong>A deadlocked program is one in which all concurrent processes are waiting on one another.</strong> In this state, the program will never recover without outside intervention.</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> value <span class="keyword">struct</span> &#123;</span><br><span class="line">    mu    sync.Mutex</span><br><span class="line">    value <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">printSum := <span class="function"><span class="keyword">func</span><span class="params">(v1, v2 *value)</span></span> &#123;</span><br><span class="line">    <span class="keyword">defer</span> wg.Done()</span><br><span class="line">    v1.mu.Lock()</span><br><span class="line">    <span class="keyword">defer</span> v1.mu.Unlock()</span><br><span class="line"></span><br><span class="line">    time.Sleep(<span class="number">2</span> * time.Second)</span><br><span class="line">    v2.mu.Lock()</span><br><span class="line">    <span class="keyword">defer</span> v2.mu.Unlock()</span><br><span class="line"></span><br><span class="line">    fmt.Printf(<span class="string">"sum=%v\n"</span>, v1.value + v2.value)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> a, b value</span><br><span class="line">wg.Add(<span class="number">2</span>)</span><br><span class="line"><span class="keyword">go</span> printSum(&amp;a, &amp;b)</span><br><span class="line"><span class="keyword">go</span> printSum(&amp;b, &amp;a)</span><br><span class="line"></span><br><span class="line">wg.Wait()</span><br></pre></td></tr></table></figure>
+<p>It turns out there are a few conditions that must be present for deadlocks to arise, Edgar Coffman enumerated there conditions in this paper:<a href="https://sherlockblaze.com/resources/file/golang/system-deadlock.pdf">System Deadlock</a>. The conditions are now known as the Coffman Conditions and are the basis for techniques that help detect, prevent, and correct deadlocks.</p>
+<p>The Coffman Conditions are as follows:</p>
+<ul>
+<li><strong>Mutual Exclusion</strong>: A concurrent process holds exclusive rights to a resource at any one time.</li>
+<li><strong>Wait For Condition</strong>: A concurrent process must simultaneously hold a resource and be waiting for an additional resource.</li>
+<li><strong>No Preemption</strong>: A resource held by a concurrent process can only be released by that process, so it fulfills this condition.</li>
+<li><strong>Circular Wait</strong>: A concurrent process(P1) must be waiting on a chain of other concurrent processes(P2), which are in turn waiting on it(P1), so it fulfills this final condition too.</li>
+</ul>
+<h3 id="LiveLock"><a href="#LiveLock" class="headerlink" title="LiveLock"></a>LiveLock</h3><p><strong>Livelocks are programs that are actively performing concurrent operations, but these operations do nothing to move the state of the program forward.</strong></p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">cadence := sync.NewCond(&amp;sync.Mutex&#123;&#125;)</span><br><span class="line"><span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> <span class="keyword">range</span> time.Tick(<span class="number">1</span> * time.Millisecond) &#123;</span><br><span class="line">        cadence.Broadcase()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;()</span><br><span class="line"></span><br><span class="line">takeStep := <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">    cadence.L.Lock()</span><br><span class="line">    cadence.Wait()</span><br><span class="line">    cadence.L.Unlock()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">tryDir := <span class="function"><span class="keyword">func</span><span class="params">(dirName <span class="keyword">string</span>, dir *<span class="keyword">int32</span>, out *bytes.Buffer)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">    fmt.Fprintf(out, <span class="string">" %v"</span>, dirName)</span><br><span class="line">    atomic.AddInt32(dir, <span class="number">1</span>)</span><br><span class="line">    takeStep()</span><br><span class="line">    <span class="keyword">if</span> atomic.LoadInt32(dir) == <span class="number">1</span> &#123;</span><br><span class="line">        fmt.Fprint(out, <span class="string">". Success!"</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">    takeStep()</span><br><span class="line">    atomic.AddInt32(dir, <span class="number">-1</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> left, right <span class="keyword">int32</span></span><br><span class="line">tryLeft := <span class="function"><span class="keyword">func</span><span class="params">(out *bytes.Buffer)</span> <span class="title">bool</span></span> &#123;<span class="keyword">return</span> tryDir(<span class="string">"left"</span>, &amp;left, out)&#125;</span><br><span class="line">tryRight := <span class="function"><span class="keyword">func</span><span class="params">(out *bytes.Buffer)</span> <span class="title">bool</span></span> &#123;<span class="keyword">return</span> tryDir(<span class="string">"right"</span>, &amp;right, out)&#125;</span><br><span class="line"></span><br><span class="line">walk := <span class="function"><span class="keyword">func</span><span class="params">(walking *sync.WaitGroup, name <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> out bytes.Buffer</span><br><span class="line">    <span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;fmt.Println(out.String())&#125;()</span><br><span class="line">    <span class="keyword">defer</span> walking.Done()</span><br><span class="line">    fmt.Fprintf(&amp;out, <span class="string">"%v is trying to scoot:"</span>, name)</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">5</span>; i++ &#123;</span><br><span class="line">        <span class="keyword">if</span> tryLeft(&amp;out) || tryRight(&amp;out) &#123;</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Fprintf(&amp;out, <span class="string">"\n%v tosses her hands up in exasperation!"</span>, name)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> peopleInHallway sync.WaitGroup</span><br><span class="line">peopleInHallway.Add(<span class="number">2</span>)</span><br><span class="line"><span class="keyword">go</span> walk(&amp;peopleInHallway, <span class="string">"Alice"</span>)</span><br><span class="line"><span class="keyword">go</span> walk(&amp;peopleInHallway, <span class="string">"Barbara"</span>)</span><br><span class="line">peopleInHallway.Wait()</span><br></pre></td></tr></table></figure>
+<p>This example demonstrates a very common reason livelocks are written: two or more concurrent processes attempting to prevent a deadlock without coordination.</p>
+<h3 id="Starvation"><a href="#Starvation" class="headerlink" title="Starvation"></a>Starvation</h3><p><strong>Starvation is any situation where a concurrent process cannot get all the resources it needs to perform work.</strong></p>
+<p>In a livelock, all the concurrent processes are starved equally, and <strong>no work</strong> is accomplished. More broadly, starvation usually implies that there are one or more greedy concurrent process that are unfairly preventing one or more concurrent processes from accomplishing work as efficiently as possible, or maybe at all.</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line"><span class="keyword">var</span> sharedLock sync.Mutex</span><br><span class="line"><span class="keyword">const</span> runtime = <span class="number">1</span> * time.Second</span><br><span class="line"></span><br><span class="line">greedyWorker := <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">defer</span> wg.Done()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> count <span class="keyword">int</span></span><br><span class="line">    <span class="keyword">for</span> begin := time.Now(); time.Since(begin) &lt;= runtime &#123;</span><br><span class="line">        sharedLock.Lock()</span><br><span class="line">        time.Sleep(<span class="number">3</span> * time.Nanosecond)</span><br><span class="line">        sharedLock.Unlock()</span><br><span class="line">        count++</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    fmt.Printf(<span class="string">"Greedy worker was able to execute %v work loops\n"</span>, count)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">politeWorker := <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">defer</span> wg.Done()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> count <span class="keyword">int</span></span><br><span class="line">    <span class="keyword">for</span> begin := time.Now(); time.Since(begin) &lt;= runtime; &#123;</span><br><span class="line">        sharedLock.Lock()</span><br><span class="line">        time.Sleep(<span class="number">1</span> * time.Nanosecond)</span><br><span class="line">        sharedLock.Unlock()</span><br><span class="line"></span><br><span class="line">        sharedLock.Lock()</span><br><span class="line">        time.Sleep(<span class="number">1</span> * time.Nanosecond)</span><br><span class="line">        sharedLock.Unlock()</span><br><span class="line"></span><br><span class="line">        sharedLock.Lock()</span><br><span class="line">        time.Sleep(<span class="number">1</span> * time.Nanosecond)</span><br><span class="line">        sharedLock.Unlock()</span><br><span class="line"></span><br><span class="line">        count++</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    fmt.Printf(<span class="string">"Polite worker was able to execute %v work loops.\n"</span>, count)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">wg.Add(<span class="number">2</span>)</span><br><span class="line"><span class="keyword">go</span> greedyWorker()</span><br><span class="line"><span class="keyword">go</span> politeWorker()</span><br><span class="line"></span><br><span class="line">wg.Wait()</span><br></pre></td></tr></table></figure>
+<p>Note our technique here for identifying the starvation: a metric. Starvation makes for good argument for recording and sampling metrics. One of the ways you can detect and solve starvation is by logging when work is accomplished, and then determining if your rate of work is as high as you expect it.</p>
+<p>If you utilize memory access synchronization, you’ll have to find a balance between preferring coarse-grained synchronization for performance, and fine-grained synchronization for fairness.</p>
+<p><strong>When it comes time to performance tune your application, to start with, I highly recommend you constrain memory access synchronization only to critical sections; if the synchronization becomes a performance problem, you can always broaden the scope.</strong></p>
+
+                
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2020/02/14/books/委屈成就伟大-商界精英给年轻人的12个忠告/" data-toggle="tooltip" data-placement="top" title="委屈成就伟大-商界精英给年轻人的12个忠告">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/12/13/golang/golang-gc/" data-toggle="tooltip" data-placement="top" title="Golang GC">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <div class="comments" id="comments"></div>
+
+                <br>                      
+            </div>
+            
+            <!-- Table of Contents -->
+<aside id="sidebar">
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">Contents</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Concurrency-and-Parallelism"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">Concurrency and Parallelism</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Moore’s-Law"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">Moore’s Law</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Amdahl’s-Law"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">Amdahl’s Law</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Why-is-Concurrency-Hard"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">Why is Concurrency Hard?</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Race-Conditions"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">Race Conditions</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Atomicity"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text">Atomicity</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Memory-Access-Synchronization"><span class="toc-nav-number">4.3.</span> <span class="toc-nav-text">Memory Access Synchronization</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Deadlocks"><span class="toc-nav-number">4.4.</span> <span class="toc-nav-text">Deadlocks</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#LiveLock"><span class="toc-nav-number">4.5.</span> <span class="toc-nav-text">LiveLock</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Starvation"><span class="toc-nav-number">4.6.</span> <span class="toc-nav-text">Starvation</span></a></li></ol></li></ol>
+    
+    </div>
+</aside>
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Golang" title="Golang">Golang</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://chaoscoffee.github.io/" target="_blank">ChaosCoffee&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<link rel="stylesheet" href="/css/valine.css">
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script type="text/javascript">
+    // Use import
+    // or Use require
+    var GUEST = ['nick','mail','link'];
+    var guest = "nick,mail,link";
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: true,
+        notify: false,
+        appId: 'zft6KmhKY69FtUwIJFY5XJo5-gzGzoHsz',
+        appKey: 'KhPyX7dVWp6nYvU3iK8OoOlS',
+        visitor: true,
+        placeholder: 'Let us talk more!!',
+        avatar: 'wavatar',
+        guest_info: guest,
+        pageSize: '10' || 10,
+        lang: 'en'
+    });
+</script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://github.com/sherlockblaze">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/jam-blaze-606ab3163">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/sherlockblaze_007">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Sherlock Blaze 2022 
+                    <br>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://sherlockblaze.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-133187385-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-133187385-1');
+</script>
+
+<!-- -->
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?4d1398d2e890275832d6fd932eb0e2e1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>

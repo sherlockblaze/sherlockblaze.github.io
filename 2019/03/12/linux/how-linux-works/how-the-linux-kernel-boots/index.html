@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/resources/img/header_img/DogFace.jpg">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          How Linux Works(Chapter Five)--How the Linux Kernel Boots - Sherlock Blaze
+        
+    </title>
+
+    <link rel="canonical" href="https://sherlockblaze.com/2019/03/12/linux/how-linux-works/how-the-linux-kernel-boots/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url("https://source.unsplash.com/random/1280x720")
+    }
+    
+</style>
+
+<header class="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Linux" title="Linux">Linux</a>
+                            
+                        </div>
+                        <h1>How Linux Works(Chapter Five)--How the Linux Kernel Boots</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by Sherlock Blaze on
+                            2019-03-12
+                        </span>
+                    </div>
+                
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Sherlock Blaze</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/community/">Community</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <blockquote>
+<p>All the summaries are from the book named <strong><a href="https://www.amazon.com/How-Linux-Works-2nd-Superuser/dp/1593275676/ref=sr_1_1?keywords=how+linux+works&amp;qid=1551169061&amp;s=gateway&amp;sr=8-1" target="_blank" rel="noopener">How Linux Works</a></strong>.</p>
+</blockquote>
+<p>Learn about how the kernel moves into memory up to the point where the first user process starts.</p>
+<p>A simplified view of the boot process looks like this:</p>
+<ol>
+<li>The machine’s BIOS or boot firmware loads and runs a boot loader.</li>
+<li>The boot loader finds the kernel image on desk, loads it into memory, and starts it.</li>
+<li>The kernel initializes the devices and its drivers</li>
+<li>The kernel mounts the root filesystem.</li>
+<li>The kernel starts a program called <code>init</code> with a process ID of 1. This point is the <strong><em>user space start</em></strong>.</li>
+<li><code>init</code> sets the rest of system processes in motion.</li>
+<li>At some point, <code>init</code> starts a process allowing you to log in, usually at the end or near the end of the boot.</li>
+</ol>
+<h2 id="Kernel-Initialization-and-Boot-Options"><a href="#Kernel-Initialization-and-Boot-Options" class="headerlink" title="Kernel Initialization and Boot Options"></a>Kernel Initialization and Boot Options</h2><p>Linux kernel initializes in this general order:</p>
+<ol>
+<li>CPU inspection</li>
+<li>Memory inspection</li>
+<li>Device bus discovery</li>
+<li>Device discovery</li>
+<li>Auxiliary kernel subsystem setup(networking, and so on)</li>
+<li>Root filesystem mount</li>
+<li>User space start</li>
+</ol>
+<h2 id="Kernel-Parameters"><a href="#Kernel-Parameters" class="headerlink" title="Kernel Parameters"></a>Kernel Parameters</h2><p>When running the Linux kernel, the boot loader passes in a set of text-based kernel parameters that tell the kernel how it should start.</p>
+<p>The parameters specify many different types of behavior, such as the amount of diagnostic output the kernel should produce and device driver-specific options.</p>
+<p>You can review the kernel parameters from your system’s boot by looking at the <code>/proc/cmdline</code> file:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cat /proc/cmdline</span><br></pre></td></tr></table></figure>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BOOT_IMAGE=/boot/vmlinuz<span class="number">-4.18</span><span class="number">.0</span><span class="number">-16</span>-generic root=UUID=<span class="number">91</span>ffe6ed<span class="number">-09</span>ff<span class="number">-4355</span><span class="number">-880</span>d-fc1a4aaac6ba ro quiet splash vt.handoff=<span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p>The parameters are either simple one-word flags, such as <code>ro</code> and <code>quiet</code>, or <strong><em>key=value</em></strong> pairs, such as <strong><em>vt.handoff=7</em></strong>. Many of the parameters are unimportant, such as the <code>splash</code> flag <strong>for displaying a splash screen,</strong> but one that is critical is the <code>root</code> parameter. This is the location of the root filesystem; without it, the kernel cannot find <code>init</code> and therefore cannot perform the user space start.</p>
+<p>The root filesystem can be specified as a device file, such as in this example:</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">root</span>=/dev/sda1</span><br></pre></td></tr></table></figure>
+<p>However, on most modern desktop systems, a UUID is more common:</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root=UUID=<span class="number">91</span>ffe6ed<span class="number">-09</span>ff<span class="number">-4355</span><span class="number">-880</span>d-fc1a4aaac6ba</span><br></pre></td></tr></table></figure>
+<p>The <code>ro</code> parameter is normal; <strong>It instructs the kernel to mount the root filesystem in read-only mode upon user space start.</strong> (Read-only mode ensures that <code>fsck</code> can check the root filesystem safely; after the check, the bootup process remounts the root filesystem in read-write mode.)</p>
+<p>Upon encountering a parameter that it does not understand, the Linux kernel saves the parameter. The kernel later passes the parameter to <code>init</code> when performing the user space start. For example, if you add <code>-s</code> to the kernel parameters, the kernel passes the <code>-s</code> to the <code>init</code> program to indicate that it should start in single-user mode.</p>
+<p>Now let’s look at the mechanics of how <strong>boot loaders</strong> start the kernel.</p>
+<h2 id="Boot-Loaders"><a href="#Boot-Loaders" class="headerlink" title="Boot Loaders"></a>Boot Loaders</h2><p><strong>At the start of the boot process, before the kernel and <code>init</code> start, a boot loader starts the kernel.</strong></p>
+<p>The task of a boot loader sounds simple: <strong>It loads the kernel into memory, and then starts the kernel with a set of kernel parameters.</strong> But consider the questions that the boot loader must answer:</p>
+<ul>
+<li>Where is the kernel?</li>
+<li>What kernel parameters should be passed to the kernel when it starts?</li>
+</ul>
+<p>The answers are (typically) that the kernel and its parameters are usually somewhere on the <strong>root filesystem</strong>. It sounds like the kernel parameters should be easy to find, except that the kernel is not yet running, so it can’t traverse a filesystem to find necessary files. Worse, the kernel device drivers normally used to access the disk are also unavailable. Think of this as a kind of “chicken or egg” problem.</p>
+<p>Let’s start with the driver concern. On PCs, <strong>boot loaders use the Basic Input/Output System(BIOS) or Unified Extensible Firmware Interface(UEFI) to access disks.</strong> <strong><em>Nearly all disk hardware has firmware that allows the BIOS to access attached storage hardware with Linear Block Addressing(LBA).</em></strong> Although it exhibits poor performance, this mode of access does allow universal access to disks. <strong>Boot loaders are often the only programs to use the BIOS for disk access;</strong> the kernel uses its own high-performance drivers.</p>
+<p>Most modern boot loaders can read partition tables and have built-in support for read-only access to filesystems. Thus, they can find and read files. This capability makes it far easier to dynamically configure and enhance the boot loader. Linux boot loaders have not always had this capability; without it, configuring the boot loader was more difficult.</p>
+<h3 id="Boot-Loader-Tasks"><a href="#Boot-Loader-Tasks" class="headerlink" title="Boot Loader Tasks"></a>Boot Loader Tasks</h3><p>A Linux boot loader’s core functionality includes the ability to do the following:</p>
+<ul>
+<li>Select among multiple kernels.</li>
+<li>Switch between sets of kernel parameters.</li>
+<li>Allow the user to manually override and edit kernel image names and parameters.(for example, to enter single-user mode).</li>
+<li>Provide support for booting other operating systems.</li>
+</ul>
+
+                
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2019/03/27/docker/docker-network/" data-toggle="tooltip" data-placement="top" title="Docker 网络">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/03/11/linux/how-linux-works/devices/" data-toggle="tooltip" data-placement="top" title="How Linux Works(Chapter Three)--Devices">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <div class="comments" id="comments"></div>
+
+                <br>                      
+            </div>
+            
+            <!-- Table of Contents -->
+<aside id="sidebar">
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">Contents</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Kernel-Initialization-and-Boot-Options"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">Kernel Initialization and Boot Options</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Kernel-Parameters"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">Kernel Parameters</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Boot-Loaders"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">Boot Loaders</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Boot-Loader-Tasks"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">Boot Loader Tasks</span></a></li></ol></li></ol>
+    
+    </div>
+</aside>
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Linux" title="Linux">Linux</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://chaoscoffee.github.io/" target="_blank">ChaosCoffee&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<link rel="stylesheet" href="/css/valine.css">
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script type="text/javascript">
+    // Use import
+    // or Use require
+    var GUEST = ['nick','mail','link'];
+    var guest = "nick,mail,link";
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: true,
+        notify: false,
+        appId: 'zft6KmhKY69FtUwIJFY5XJo5-gzGzoHsz',
+        appKey: 'KhPyX7dVWp6nYvU3iK8OoOlS',
+        visitor: true,
+        placeholder: 'Let us talk more!!',
+        avatar: 'wavatar',
+        guest_info: guest,
+        pageSize: '10' || 10,
+        lang: 'en'
+    });
+</script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://github.com/sherlockblaze">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/jam-blaze-606ab3163">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/sherlockblaze_007">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Sherlock Blaze 2022 
+                    <br>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://sherlockblaze.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-133187385-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-133187385-1');
+</script>
+
+<!-- -->
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?4d1398d2e890275832d6fd932eb0e2e1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>

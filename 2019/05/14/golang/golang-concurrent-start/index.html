@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/resources/img/header_img/DogFace.jpg">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          Golang 高并发初步 - Sherlock Blaze
+        
+    </title>
+
+    <link rel="canonical" href="https://sherlockblaze.com/2019/05/14/golang/golang-concurrent-start/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url("https://source.unsplash.com/random/1280x720")
+    }
+    
+</style>
+
+<header class="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Golang" title="Golang">Golang</a>
+                            
+                        </div>
+                        <h1>Golang 高并发初步</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by Sherlock Blaze on
+                            2019-05-14
+                        </span>
+                    </div>
+                
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Sherlock Blaze</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/community/">Community</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>通常程序会被编写为一个顺序执行并完成一个独立任务的代码。<strong>如果没有特别的需求，最好总是这样写代码。</strong></p>
+<p>但是有些情况并行执行多个任务会有更大的好处。比如说： Web 服务需要在各自独立的套接字(socket)上同时接受多个请求数据。每个套接字请求都是独立的，可以完全<strong>独立</strong>于其他套接字进行处理。具有并行执行多个请求的能力可以显著提高这类系统的性能。</p>
+<p>Golang 中并发指<strong>能让某个函数独立于其他函数运行的能力</strong>。</p>
+<p>当一个函数创建 <code>goroutine</code> 时，Golang 会将其视为一个独立的工作单元。这个单元会被调度到可用的逻辑处理器上执行。</p>
+<p>运行时调度器<strong>能管理被创建的所有 <code>goroutine</code> 并为其分配执行时间</strong>。在任何给定的时间，全面控制哪个 <code>goroutine</code> 在哪个逻辑处理器上运行。</p>
+<p>Golang 语言的并发同步模型来自一个叫做<strong>通信顺序进程</strong>(Communicating Sequential Processes, CSP)的范型。</p>
+<p>CSP 是一种消息传递模型，通过在 <code>goroutine</code> 之间传递数据来传递消息，而不是对数据进行加锁来实现同步访问。用于在 <code>goroutine</code> 之间同步和传递数据的关键数据类型叫<strong>通道</strong>。</p>
+<h2 id="并行和并发"><a href="#并行和并发" class="headerlink" title="并行和并发"></a>并行和并发</h2><h3 id="什么是进程和线程"><a href="#什么是进程和线程" class="headerlink" title="什么是进程和线程"></a>什么是<strong>进程</strong>和<strong>线程</strong></h3><p>当运行一个应用程序的时候，操作系统会为这个应用程序启动一个进程。可以将这个进程看做一个包含了应用程序在运行中需要用到和维护的各种资源的容器。</p>
+<p><img src="https://sherlockblaze.com/resources/img/code/golang/processing-and-running-program.png" alt=""></p>
+<p>上图展示了一个包含所有可能分配的常用资源的进程。这些资源<strong>包括但不限于</strong>: 内存地址空间、文件和设备的句柄以及线程。</p>
+<p>一个线程是一个执行空间，这个空间会被操作系统调度来运行函数中所写的代码。 </p>
+<p>每个进程至少包含一个线程，每个进程的初始化线程会被称作<strong>主线程</strong>。</p>
+<p>操作系统将线程调度到某个处理器上运行，这个处理器不一定是进程所在的处理器。</p>
+<p>操作系统会在物理处理器上调度线程来运行，而 Go 语言的运行时会在逻辑处理器上调度 <code>goroutine</code> 来运行。<strong>每个逻辑处理器都分别绑定到单个操作系统线程。</strong></p>
+<p><img src="https://sherlockblaze.com/resources/img/code/golang/how-the-go-scheduler-manages-goroutines.png" alt=""></p>
+<p>上图展示了操作系统线程、逻辑处理器和本地队列之间的关系。</p>
+<p>如果创建一个 <code>goroutine</code> 并准备运行，这个 <code>goroutine</code> 就会被放到调度器的全局运行队列中，之后调度器就将这些队列中的 <code>goroutine</code> 分配给一个逻辑处理器，并放到这个逻辑处理器对应的本地运行队列中。本地运行队列中的 <code>goroutine</code> 会一直等待直到自己被分配的逻辑处理器执行。</p>
+<p>当正在运行的 <code>goroutine</code> 需要执行一个阻塞的系统调用时，比如打开一个文件，线程和 <code>goroutine</code> 会从逻辑处理器上分离，该线程会继续阻塞，等待系统调用的返回。榆次同事，这个逻辑处理器就失去了用来运行的线程。<strong>调度器会创建一个新的线程</strong>，并将其绑定到该逻辑处理器上。</p>
+<p>当被阻塞的系统调用执行完成并返回，对应的 <code>goroutine</code> 会放回本地运行队列，而之前的线程会被保存好，以便之后可以继续使用。</p>
+<p>如果一个 <code>goroutine</code> 需要做一个网络 I/O 调用，流程上会有些不一样。在这种情况下， <code>goroutine</code> 会和逻辑处理器分离，并移到集成了网络轮训器的运行时。</p>
+<p>一旦该轮训器指示某个网络读或者写操作已经就绪，对应的 <code>goroutine</code> 就会重新分配到逻辑处理器来完成操作。调度器对可以创建的逻辑处理器数量没有限制，但语言运行时默认限制每个程序最多创建 <strong>10000</strong> 个线程。</p>
+<blockquote>
+<p>限制值可以通过调用 <code>runtime/debug</code> 包的 <code>SetMaxThreads</code> 方法来更改。如果程序试图使用更多的线程，就会崩溃。</p>
+</blockquote>
+<h3 id="并发和并行的区别"><a href="#并发和并行的区别" class="headerlink" title="并发和并行的区别"></a>并发和并行的区别</h3><p>并发是<strong>让不同的代码片段同时在不同的物理处理器上执行</strong>，并行的关键是<strong>同时做</strong>很多事情，而并发是指<strong>同时管理</strong>很多事情，这些事情可能只做了一般就被暂停去做别的事情了。</p>
+<p>很多情况下，并发的效果比并行好，因为操作系统和硬件的总资源一般很少，但能支持系统同时做很多事情。这种“使用较少的资源做更多的事情”的哲学，也是指导 <strong>Go语言设计的哲学。</strong></p>
+<p>如果希望让 <code>goroutine</code> 并行，必须使用多于一个逻辑处理器，当有多个逻辑处理器时，调度器会将 <code>goroutine</code> 平等分配到每个逻辑处理器上。这会让 <code>goroutine</code> 在不同的线程上运行。</p>
+<p><img src="https://sherlockblaze.com/resources/img/code/golang/be-parallelism.png" alt=""></p>
+<blockquote>
+<p>如果想真的实现并行的效果，需要让程序运行在有多个物理处理器的机器上，否则，哪怕 Go 语言运行时使用多个线程， <code>goroutine</code> 依然会在同一个物理处理器上并发运行，达不到并行的效果。</p>
+</blockquote>
+<h2 id="goroutine"><a href="#goroutine" class="headerlink" title="goroutine"></a>goroutine</h2><p>调度器是如何创建 <code>goroutine</code> 并管理其寿命的？</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"runtime"</span></span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 分配一个逻辑处理器给调度器使用</span></span><br><span class="line">    runtime.GOMAXPROCS(<span class="number">1</span>)</span><br><span class="line">    <span class="comment">// 可以通过以下方式为每个可用的物理处理器创建一个逻辑处理器</span></span><br><span class="line">    <span class="comment">// runtime.GOMAXPROCS(runtime.NumCPU())</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// wg 用于等待程序完成</span></span><br><span class="line">    <span class="comment">// +2: 需要等待两个 goroutine</span></span><br><span class="line">    <span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">    wg.Add(<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">    fmt.Println(<span class="string">"Start Goroutines"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="comment">// defer 关键字描述的语句会在函数运行结束后执行</span></span><br><span class="line">        <span class="keyword">defer</span> wg.Done()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> count := <span class="number">0</span>; count &lt; <span class="number">3</span>; count ++ &#123;</span><br><span class="line">            <span class="keyword">for</span> char := <span class="string">'a'</span>; char &lt; <span class="string">'a'</span> + <span class="number">26</span>; char++ &#123;</span><br><span class="line">                fmt.Printf(<span class="string">"%c"</span>, char)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// go 关键字创建一个 goroutine，这里使用了匿名函数</span></span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">defer</span> wg.Done()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> count := <span class="number">0</span>; count &lt; <span class="number">3</span>; count++ &#123;</span><br><span class="line">            <span class="keyword">for</span> char := <span class="string">'A'</span>; char &lt; <span class="string">'A'</span> + <span class="number">26</span>; char++ &#123;</span><br><span class="line">                fmt.Printf(<span class="string">"%c"</span>, char)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line"></span><br><span class="line">    fmt.Println(<span class="string">"Waiting To Finish"</span>)</span><br><span class="line">    <span class="comment">// 等待 goroutine 运行结束</span></span><br><span class="line">    wg.Wait()</span><br><span class="line"></span><br><span class="line">    fmt.Println(<span class="string">"\nTerminating Program"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>再看一段代码</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"runtime"</span></span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    runtime.GOMAXPROCS(<span class="number">1</span>)</span><br><span class="line">    wg.Add(<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">    fmt.Println(<span class="string">"Create Goroutines"</span>)</span><br><span class="line">    <span class="keyword">go</span> printPrime(<span class="string">"A"</span>)</span><br><span class="line">    <span class="keyword">go</span> printPrime(<span class="string">"B"</span>)</span><br><span class="line"></span><br><span class="line">    fmt.Println(<span class="string">"Waiting To Finish"</span>)</span><br><span class="line">    wg.Wait()</span><br><span class="line"></span><br><span class="line">    fmt.Println(<span class="string">"Terminating Program"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">printPrime</span><span class="params">(prefix <span class="keyword">string</span>)</span></span>&#123;</span><br><span class="line">    <span class="keyword">defer</span> wg.Done()</span><br><span class="line"></span><br><span class="line">next:</span><br><span class="line">    <span class="keyword">for</span> outer := <span class="number">2</span>; outer &lt; <span class="number">5000</span>; outer++ &#123;</span><br><span class="line">        <span class="keyword">for</span> inner := <span class="number">2</span>; inner &lt; outer; inner++ &#123;</span><br><span class="line">            <span class="keyword">if</span> outer%inner == <span class="number">0</span> &#123;</span><br><span class="line">                <span class="keyword">continue</span> next</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        fmt.Println(<span class="string">"%s:%d\n"</span>, prefix, outer)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://sherlockblaze.com/resources/img/code/golang/goroutines-being-swapped.png" alt=""></p>
+<p>根据上图，我们可以发现，为了防止某个 <code>goroutine</code> 长时间占用逻辑处理器，调度器在 <code>goroutine</code> 占用时间过长时会停止当前运行的 <code>goroutine</code>，并给其他可运行的 <code>goroutine</code> 运行的机会。即<strong>切换时间片</strong>。</p>
+<h2 id="竞争状态"><a href="#竞争状态" class="headerlink" title="竞争状态"></a>竞争状态</h2><h3 id="什么是竞争状态"><a href="#什么是竞争状态" class="headerlink" title="什么是竞争状态"></a>什么是竞争状态</h3><p>如果两个或多个 <code>goroutine</code> 在没有互相同步的情况下，访问某个共享的资源，并试图同时读和写这个资源，就处于互相竞争的状态。</p>
+<h3 id="要求"><a href="#要求" class="headerlink" title="要求"></a>要求</h3><p>竞争状态的存在是让并发程序变得复杂的地方，十分容易引起潜在问题。<strong>对一个共享资源的读和写操作必须是原子化的。</strong>即同一时刻只能有一个 <code>goroutine</code> 对共享资源进行读和写操作。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"runtime"</span></span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> (</span><br><span class="line">    couter <span class="keyword">int</span></span><br><span class="line">    wg sync.WaitGroup</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    wg.Add(<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">go</span> incCounter(<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">go</span> incCounter(<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">    wg.Wait()</span><br><span class="line">    fmt.Println(<span class="string">"Final Counter:"</span>, counter)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">incCounter</span><span class="params">(id <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">defer</span> wg.Done()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> count := <span class="number">0</span>; count &lt; <span class="number">2</span>; count++ &#123;</span><br><span class="line">        value := counter</span><br><span class="line">        runtime.Gosched()</span><br><span class="line">        value++</span><br><span class="line">        counter = value</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们可以观潮到，总共开启了两个 <code>goroutine</code> ，对于变量 <code>counter</code> 各加两次。但最后的结果可能不是 <code>4</code>。</p>
+<p>原因如下图所示：</p>
+<p><img src="https://sherlockblaze.com/resources/img/code/golang/visual-of-the-race-condition-in-action.png" alt=""></p>
+<p>我们可以通过一个小手段来在代码编译阶段检查竞争问题，使用命令 <code>go build -race</code> 可以使用竞争检测器标志来编译程序，帮助我们提前发现代码中的竞争问题。</p>
+<h3 id="手段"><a href="#手段" class="headerlink" title="手段"></a>手段</h3><h4 id="加锁"><a href="#加锁" class="headerlink" title="加锁"></a>加锁</h4><p>通过对共享资源加锁来保证 <code>goroutine</code> 的同步状态。</p>
+<ol>
+<li>原子函数</li>
+</ol>
+<p>如果要顺序访问一个整型变量或者一段代码， <code>atomic</code> 和 <code>sync</code> 包里的函数提供了很好的解决方案。通过原子函数，可以利用很底层的加锁机制来同步访问整型变量和指针。</p>
+<p>我们可以将上面的代码修改成下面这样:</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span>(</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"runtime"</span></span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">    <span class="string">"sync/atomic"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> (</span><br><span class="line">    counter <span class="keyword">int64</span></span><br><span class="line">    wg      sync.WaitGroup</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 计数加 2</span></span><br><span class="line">    wg.Add(<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">go</span> incCounter(<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">go</span> incCounter(<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">    wg.Wait()</span><br><span class="line">    fmt.Println(<span class="string">"Final Counter:"</span>, counter)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">incCounter</span><span class="params">(id <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">defer</span> wg.Done()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> count := <span class="number">0</span>; counter &lt; <span class="number">2</span>; count++ &#123;</span><br><span class="line">        <span class="comment">// 以原子手段对 counter 加 1</span></span><br><span class="line">        atomic.AddInt64(&amp;counter, <span class="number">1</span>)</span><br><span class="line">        runtime.Gosched()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>互斥锁</li>
+</ol>
+<p>另一种同步访问共享资源的方式是使用互斥锁(<strong>mutex</strong>)，互斥锁这个名字来自互斥的概念。互斥锁用于在代码上创建一个临界区，保证同一时间只有一个 <code>goroutine</code> 可以执行这个临界区代码。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span>(</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"runtime"</span></span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> (</span><br><span class="line">    counter <span class="keyword">int</span></span><br><span class="line">    wg      sync.WaitGroup</span><br><span class="line">    mutex   sync.Mutex</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    wg.Add(<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">go</span> incCounter(<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">go</span> incCounter(<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">    wg.Wait()</span><br><span class="line">    fmt.Printf(<span class="string">"Final Counter: %d\\n"</span>, counter)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">incCounter</span><span class="params">(id <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">defer</span> wg.Done()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> count := <span class="number">0</span>; count &lt; <span class="number">2</span>; count ++ &#123;</span><br><span class="line">        <span class="comment">// 加锁</span></span><br><span class="line">        mutex.Lock()</span><br><span class="line">        &#123;</span><br><span class="line">            value := counter</span><br><span class="line">            runtime.Gosched()</span><br><span class="line">            value++</span><br><span class="line">            counter = value</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 解锁</span></span><br><span class="line">        mutex.Unlock()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>通道</li>
+</ol>
+<p>原子函数和互斥锁都能工作，但是依靠它们都不会让编写并发程序变得更简单容易，不容易出错。</p>
+<p>在 <code>Golang</code> 中，不仅可以通过使用原子函数和互斥锁来保证对共享资源的安全访问以及消除竞争状态，<strong>还可以使用通道，通过发送和接受需要共享的资源，在 <code>goroutine</code> 之间做同步。</strong></p>
+<p><strong>当一个资源需要在 <code>goroutine</code> 之间共享时，通道在 <code>goroutine</code> 之间架起了一个管道，并提供了确保同步交换数据的机制</strong>。</p>
+<blockquote>
+<p>声明通道时，需要指定将要被共享的数据的类型。可以通过通道共享内置类型、命名类型、结构类型和引用类型的值或指针。</p>
+</blockquote>
+<p>声明通道的格式如下:</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 无缓冲的整型通道</span></span><br><span class="line">unbuffered := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line"><span class="comment">// 有缓冲的字符串通道</span></span><br><span class="line">buffered := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">string</span>, <span class="number">10</span>)</span><br></pre></td></tr></table></figure>
+<p>向通道发送值或指针需要用到 <code>&lt;-</code> 操作符:</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">buffered := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">string</span>, <span class="number">10</span>)</span><br><span class="line">buffered &lt;- <span class="string">"Gopher"</span></span><br></pre></td></tr></table></figure>
+<p>同样，从通道里接收一个值或者指针时，<code>&lt;-</code> 运算符在要操作的通道变量的左侧，代码如下:</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">value := &lt;-buffered</span><br></pre></td></tr></table></figure>
+<p>通过两个例子来系统学习一下，一个利用了<strong>无缓冲通道</strong>，另一个利用的<strong>有缓冲通道</strong></p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"math/rand"</span></span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">    <span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">    rand.Seed(time.Now().UnixNano())</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    court := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line"></span><br><span class="line">    wg.Add(<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">go</span> player(<span class="string">"Nadal"</span>, court)</span><br><span class="line">    <span class="keyword">go</span> player(<span class="string">"Djokovic"</span>, court)</span><br><span class="line"></span><br><span class="line">    count &lt;- <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    wg.Wait()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">player</span><span class="params">(name <span class="keyword">string</span>, court <span class="keyword">chan</span> <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">defer</span> wg.Done()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        ball, ok := &lt;-court</span><br><span class="line">        <span class="keyword">if</span> !ok &#123;</span><br><span class="line">            fmt.Printf(<span class="string">"Player %s Won\n"</span>, name)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        n := rand.Intn(<span class="number">100</span>)</span><br><span class="line">        <span class="keyword">if</span> n % <span class="number">13</span> == <span class="number">0</span> &#123;</span><br><span class="line">            fmt.Printf(<span class="string">"Player %s Missed\n"</span>, name)</span><br><span class="line">            <span class="built_in">close</span>(court)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        fmt.Printf(<span class="string">"Player %s Hit %d\n"</span>, name, ball)</span><br><span class="line">        ball++</span><br><span class="line">        court &lt;- ball</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"math/rand"</span></span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">    <span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">    numberGoroutines = <span class="number">4</span></span><br><span class="line">    taskLoad         = <span class="number">10</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">    rand.Seed(time.Now().Unix())</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    tasks := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">string</span>, taskLoad)</span><br><span class="line"></span><br><span class="line">    wg.Add(numberGoroutines)</span><br><span class="line">    <span class="keyword">for</span> gr := <span class="number">1</span>; gr &lt;= numberGoroutines; gr++ &#123;</span><br><span class="line">        <span class="keyword">go</span> worker(tasks, gr)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> post := <span class="number">1</span>; post &lt;= taskLoad; post++ &#123;</span><br><span class="line">        tasks &lt;- fmt.Sprintf(<span class="string">"Task: %d"</span>, post)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">close</span>(tasks)</span><br><span class="line">    wg.Wait()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">worker</span><span class="params">(tasks <span class="keyword">chan</span> <span class="keyword">string</span>, work <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">defer</span> wg.Done()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        task, ok := &lt;-tasks</span><br><span class="line">        <span class="keyword">if</span> !ok &#123;</span><br><span class="line">            fmt.Printf(<span class="string">"Worker: %d: Shutting Down\n"</span>, worker)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        fmt.Printf(<span class="string">"Worker: %d: Started %s\n"</span>, worker, task)</span><br><span class="line"></span><br><span class="line">        sleep := rand.Int63n(<span class="number">100</span>)</span><br><span class="line">        time.Sleep(time.Duration(sleep) * time.Millisecond)</span><br><span class="line"></span><br><span class="line">        fmt.Printf(<span class="string">"Worker: %d: Completed %s\n"</span>, worker, task)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="并发模式"><a href="#并发模式" class="headerlink" title="并发模式"></a>并发模式</h2><p>写并发程序时，我们不得不去考虑一些问题，用最合理的方式去编写并发代码。考虑到创建线程/goroutine时，会有一些开销，导致不必要的系统消耗，我们需要使用一些小手段来减少这些消耗。</p>
+<p>接下来我们讨论非常关键的三点:</p>
+<ol>
+<li><strong>控制程序的生命周期</strong></li>
+<li><strong>管理可复用的资源池</strong></li>
+<li><strong>创建可以处理任务的 goroutine 池</strong></li>
+</ol>
+<h3 id="Runner"><a href="#Runner" class="headerlink" title="Runner"></a>Runner</h3><p><code>runner</code> 包用于展示如何使用通道来监视程序的执行时间，如果程序运行时间太长，也可以用 <code>runner</code> 包来终止程序。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> runner</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span>(</span><br><span class="line">    <span class="string">"errors"</span></span><br><span class="line">    <span class="string">"os"</span></span><br><span class="line">    <span class="string">"os/signal"</span></span><br><span class="line">    <span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Runner <span class="keyword">struct</span> &#123;</span><br><span class="line">    interrupt <span class="keyword">chan</span> os.Signal</span><br><span class="line">    complete  <span class="keyword">chan</span> error</span><br><span class="line">    timeout   &lt;-<span class="keyword">chan</span> time.Time</span><br><span class="line">    tasks     []<span class="function"><span class="keyword">func</span><span class="params">(<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function">&#125;</span></span><br><span class="line"><span class="function"></span></span><br><span class="line">var ErrTimeout = errors.New("received timeout")</span><br><span class="line"><span class="keyword">var</span> ErrInterrupt = errors.New(<span class="string">"received interrupt"</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">New</span><span class="params">(d time.Duration)</span> *<span class="title">Runner</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> &amp;Runner&#123;</span><br><span class="line">        interrupt: <span class="built_in">make</span>(<span class="keyword">chan</span> os.Signal, <span class="number">1</span>),</span><br><span class="line">        complete:  <span class="built_in">make</span>(<span class="keyword">chan</span> error),</span><br><span class="line">        timeout:   time.After(d),</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Runner)</span> <span class="title">Add</span><span class="params">(tasks ...<span class="keyword">func</span>(<span class="keyword">int</span>)</span>)</span> &#123;</span><br><span class="line">    r.tasks = <span class="built_in">append</span>(r.tasks, tasks...)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Runner)</span> <span class="title">Start</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    signal.Notify(r.interrupt, os.Interrupt)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        r.complete &lt;- r.run()</span><br><span class="line">    &#125;()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">select</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> err := &lt;- r.complete:</span><br><span class="line">        <span class="keyword">return</span> err</span><br><span class="line">    <span class="keyword">case</span> &lt;-r.timeout:</span><br><span class="line">        <span class="keyword">return</span> ErrTimeout</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Runner)</span> <span class="title">run</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> id, task := <span class="keyword">range</span> r.tasks &#123;</span><br><span class="line">        <span class="keyword">if</span> r.gotInterrupt() &#123;</span><br><span class="line">            <span class="keyword">return</span> ErrInterrupt</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        task(id)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Runner)</span> <span class="title">gotInterrupt</span><span class="params">()</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">    <span class="keyword">select</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> &lt;- r.interrupt:</span><br><span class="line">        signal.Stop(r.interrupt)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Pool"><a href="#Pool" class="headerlink" title="Pool"></a>Pool</h3><p>如何使用有缓冲的通道实现资源池，来管理可以在任意数量的 <code>goroutine</code> 之间共享及独立使用的资源。</p>
+<p><strong>这种模式在需要共享一组静态资源的情况(如共享数据库连接或者内存缓冲区)下非常有用。</strong></p>
+<p>如果一个 <code>goroutine</code> 需要从池里得到这些资源中的一个，它可以从池里申请，使用完后归还到资源池里。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> pool</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"errors"</span></span><br><span class="line">    <span class="string">"log"</span></span><br><span class="line">    <span class="string">"io"</span></span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 声明结构提 Pool</span></span><br><span class="line"><span class="keyword">type</span> Pool <span class="keyword">struct</span> &#123;</span><br><span class="line">    <span class="comment">// 锁</span></span><br><span class="line">    m         sync.Mutex</span><br><span class="line">    <span class="comment">// 资源</span></span><br><span class="line">    resources <span class="keyword">chan</span> io.Closer</span><br><span class="line">    <span class="comment">// 工厂: 存放着函数</span></span><br><span class="line">    factory   <span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="params">(io.Closer, error)</span></span></span><br><span class="line"><span class="function">    // 标注 <span class="title">Pool</span> 是否被关闭</span></span><br><span class="line"><span class="function">    <span class="title">closed</span>    <span class="title">bool</span></span></span><br><span class="line"><span class="function">&#125;</span></span><br><span class="line"><span class="function"></span></span><br><span class="line">var ErrPoolClosed = errors.New("Pool has been closed.")</span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建 Pool</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">New</span><span class="params">(fn <span class="keyword">func</span>()</span> <span class="params">(io.Closer, error)</span>, <span class="title">size</span> <span class="title">uint</span>) <span class="params">(*Pool, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> size &lt;= <span class="number">0</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, errors.New(<span class="string">"Size value too small."</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &amp;Pool &#123;</span><br><span class="line">        factory:   fn,</span><br><span class="line">        resources: <span class="built_in">make</span>(<span class="keyword">chan</span> io.Closer, size),</span><br><span class="line">    &#125;, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 申请一个资源</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p *Pool)</span> <span class="title">Acquire</span><span class="params">()</span> <span class="params">(io.Closer, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">select</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> r, ok := &lt;-p.resources:</span><br><span class="line">        log.Println(<span class="string">"Acquire:"</span>, <span class="string">"Shared Resource"</span>)</span><br><span class="line">        <span class="keyword">if</span> !ok &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span>, ErrPoolClosed</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> r, <span class="literal">nil</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        log.Println(<span class="string">"Acquire:"</span>, <span class="string">"New Resource"</span>)</span><br><span class="line">        <span class="keyword">return</span> p.factory()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 释放一个资源</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p *Pool)</span> <span class="title">Release</span><span class="params">(r io.Closer)</span></span> &#123;</span><br><span class="line">    p.m.Lock()</span><br><span class="line">    <span class="keyword">defer</span> p.m.Unlock()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> p.closed &#123;</span><br><span class="line">        r.Close()</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">select</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> p.resources &lt;- r:</span><br><span class="line">        log.Println(<span class="string">"Resource:"</span>, <span class="string">"In Queue"</span>)</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        log.Println(<span class="string">"Release:"</span>, <span class="string">"Closing"</span>)</span><br><span class="line">        r.Close()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 关闭 Pool</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p *Pool)</span> <span class="title">Close</span><span class="params">()</span></span> &#123;</span><br><span class="line">    p.m.Lock()</span><br><span class="line">    <span class="keyword">defer</span> p.m.Unlock()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> p.closed &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    p.closed = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">close</span>(p.resources)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> r := <span class="keyword">range</span> p.resources &#123;</span><br><span class="line">        r.Close()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Work"><a href="#Work" class="headerlink" title="Work"></a>Work</h3><p>通过 <code>work</code> 包，使用无缓冲通道来创建一个 <code>goroutine</code> 池，这些 <code>goroutine</code> 执行并控制一组工作，让其并发执行。</p>
+<p>在这种情况下，使用无缓冲的通道要比随意指定一个缓冲区大小的有缓冲通道好，因为这个情况下既不需要一个工作队列，也不需要一组 <code>goroutine</code> 配合执行。</p>
+<p>无缓冲通道保证两个 <code>goroutine</code> 之间的数据交换。</p>
+<p>这种使用无缓冲的通道的方法允许使用者知道什么时候 <code>goroutine</code> 正在执行工作，而且如果池里的所有 <code>goroutine</code> 都忙，无法接受新的工作的时候，也能及时通过通道来调用通知者。</p>
+<p><strong>使用无缓存的通道不会有工作在队列里丢失或者卡住，所有的工作都会被处理。</strong></p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> work</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"sync"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 声明 Worker 接口</span></span><br><span class="line"><span class="keyword">type</span> Worker <span class="keyword">interface</span> &#123;</span><br><span class="line">    Task()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 声明 Pool 结构体</span></span><br><span class="line"><span class="keyword">type</span> Pool <span class="keyword">struct</span> &#123;</span><br><span class="line">    work <span class="keyword">chan</span> Worker</span><br><span class="line">    wg   sync.WaitGroup</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 新建 Pool</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">New</span><span class="params">(maxGoroutines <span class="keyword">int</span>)</span> *<span class="title">Pool</span></span> &#123;</span><br><span class="line">    <span class="comment">// 创建 Work 通道，用于存放 Work</span></span><br><span class="line">    p := Pool &#123;</span><br><span class="line">        work: <span class="built_in">make</span>(<span class="keyword">chan</span> Worker),</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置 wg 值，设置为最大 goroutine 参数值</span></span><br><span class="line">    p.wg.Add(maxGoroutines)</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; maxGoroutines; i++ &#123;</span><br><span class="line">        <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">            <span class="comment">// 遍历 Worker</span></span><br><span class="line">            <span class="keyword">for</span> w := <span class="keyword">range</span> p.work &#123;</span><br><span class="line">                <span class="comment">// 执行 Task 方法</span></span><br><span class="line">                w.Task()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &amp;p</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 提交 Work</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p *Pool)</span> <span class="title">Run</span><span class="params">(w Worker)</span></span> &#123;</span><br><span class="line">    p.work &lt;- w</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 关闭 Pool</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p *Pool)</span> <span class="title">Shutdown</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="built_in">close</span>(p.work)</span><br><span class="line">    p.wg.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+                
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2019/12/03/docker/docker-introduction/" data-toggle="tooltip" data-placement="top" title="docker introduction">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/05/08/golang/golang-grammar/" data-toggle="tooltip" data-placement="top" title="Golang 基本语法">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <div class="comments" id="comments"></div>
+
+                <br>                      
+            </div>
+            
+            <!-- Table of Contents -->
+<aside id="sidebar">
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">Contents</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#并行和并发"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">并行和并发</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#什么是进程和线程"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">什么是进程和线程</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#并发和并行的区别"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">并发和并行的区别</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#goroutine"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">goroutine</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#竞争状态"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">竞争状态</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#什么是竞争状态"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">什么是竞争状态</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#要求"><span class="toc-nav-number">3.2.</span> <span class="toc-nav-text">要求</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#手段"><span class="toc-nav-number">3.3.</span> <span class="toc-nav-text">手段</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#加锁"><span class="toc-nav-number">3.3.1.</span> <span class="toc-nav-text">加锁</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#并发模式"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">并发模式</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Runner"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">Runner</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Pool"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text">Pool</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Work"><span class="toc-nav-number">4.3.</span> <span class="toc-nav-text">Work</span></a></li></ol></li></ol>
+    
+    </div>
+</aside>
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Golang" title="Golang">Golang</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://chaoscoffee.github.io/" target="_blank">ChaosCoffee&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<link rel="stylesheet" href="/css/valine.css">
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script type="text/javascript">
+    // Use import
+    // or Use require
+    var GUEST = ['nick','mail','link'];
+    var guest = "nick,mail,link";
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: true,
+        notify: false,
+        appId: 'zft6KmhKY69FtUwIJFY5XJo5-gzGzoHsz',
+        appKey: 'KhPyX7dVWp6nYvU3iK8OoOlS',
+        visitor: true,
+        placeholder: 'Let us talk more!!',
+        avatar: 'wavatar',
+        guest_info: guest,
+        pageSize: '10' || 10,
+        lang: 'en'
+    });
+</script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://github.com/sherlockblaze">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/jam-blaze-606ab3163">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/sherlockblaze_007">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Sherlock Blaze 2022 
+                    <br>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://sherlockblaze.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-133187385-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-133187385-1');
+</script>
+
+<!-- -->
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?4d1398d2e890275832d6fd932eb0e2e1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>

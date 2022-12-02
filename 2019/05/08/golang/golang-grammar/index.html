@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/resources/img/header_img/DogFace.jpg">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          Golang 基本语法 - Sherlock Blaze
+        
+    </title>
+
+    <link rel="canonical" href="https://sherlockblaze.com/2019/05/08/golang/golang-grammar/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url("https://source.unsplash.com/random/1280x720")
+    }
+    
+</style>
+
+<header class="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Golang" title="Golang">Golang</a>
+                            
+                        </div>
+                        <h1>Golang 基本语法</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by Sherlock Blaze on
+                            2019-05-08
+                        </span>
+                    </div>
+                
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Sherlock Blaze</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/community/">Community</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <blockquote>
+<p>本学习笔记总结自： <a href="https://www.amazon.com/Go-Action-William-Kennedy/dp/1617291781/ref=sr_1_1?keywords=go+in+action&amp;qid=1557230058&amp;s=gateway&amp;sr=8-1" target="_blank" rel="noopener">《Go in Action》</a></p>
+</blockquote>
+<p>先讨论一些规范问题：</p>
+<ol>
+<li>如何将代码组织成包</li>
+<li>如何操作这些包</li>
+</ol>
+<h2 id="包"><a href="#包" class="headerlink" title="包"></a>包</h2><p>有这么一些目录，目录下存放一些列以 <code>.go</code> 为扩展名的相关文件，这个目录，称之为<strong>包</strong>。</p>
+<p>同一个目录下的所有 <code>.go</code> 文件必须声明为同一个包名，比如包为 <code>beauty</code>，则需要在代码中标明 <code>package beauty</code>。</p>
+<h3 id="main-包"><a href="#main-包" class="headerlink" title="main 包"></a>main 包</h3><p>所有用 Go 语言编译的可执行程序都必须有一个名叫 <code>main</code> 的包，当编译器找到 <code>main</code> 包，会去找寻 <code>main()</code> 函数，如果没有，则不会生成可运行二进制文件。</p>
+<h3 id="导入"><a href="#导入" class="headerlink" title="导入"></a>导入</h3><p>导入一个包极其简单 —- <code>import &quot;beauty&quot;</code>。注意，如果你导入了一个包，却不用，编译器会报错。</p>
+<h3 id="init-函数"><a href="#init-函数" class="headerlink" title="init 函数"></a>init 函数</h3><p>如你在<a href="https://sherlockblaze.com/2019/05/07/golang/golang-start/">Golang 初探</a>所看到的，在 <code>matcher</code> 中，你会看到 <code>init</code> 函数，如果你以这种方式 <code>import _ &quot;beauty&quot;</code> 导入包，那么会在程序开始运行时，执行这个包下面的 <code>init</code> 函数。</p>
+<h2 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h2><h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 声明一个长度为5的数组，其中的值初始化为0</span></span><br><span class="line"><span class="keyword">var</span> array1 [<span class="number">5</span>]<span class="keyword">int</span></span><br><span class="line"><span class="comment">// 声明一个长度为5的数组，值为1、2、3、4、5</span></span><br><span class="line">array2 := [<span class="number">5</span>]<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;</span><br><span class="line"><span class="comment">// 声明一个值为1、2、3、4、5，长度自动生成，为5</span></span><br><span class="line">array3 := [...]<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;</span><br><span class="line"><span class="comment">// 声明一个长度为5的数组，下标为1的值为1，下标为2的值为2，其他位置为0</span></span><br><span class="line">array4 := [<span class="number">5</span>]<span class="keyword">int</span>&#123;<span class="number">1</span>: <span class="number">1</span>, <span class="number">2</span>: <span class="number">2</span>&#125;</span><br><span class="line"><span class="comment">// 声明包含5个元素的指向整数的数组</span></span><br><span class="line">array5 := [<span class="number">5</span>]*<span class="keyword">int</span>&#123;<span class="number">0</span>: <span class="built_in">new</span>(<span class="keyword">int</span>), <span class="number">1</span>: <span class="built_in">new</span>(<span class="keyword">int</span>)&#125;</span><br><span class="line">*array5[<span class="number">0</span>] = <span class="number">1</span></span><br><span class="line">*array5[<span class="number">1</span>] = <span class="number">2</span></span><br><span class="line"><span class="comment">// 将数组array1赋值给array6，注意，是全盘复制，到时候你会有两个一样的数组</span></span><br><span class="line"><span class="keyword">var</span> array6 [<span class="number">5</span>]<span class="keyword">int</span></span><br><span class="line">array6 = array1</span><br></pre></td></tr></table></figure>
+<p>在函数间直接传递数组是直接<strong>拷贝数组</strong>，如果数组过大，直接传递指针即可。通过 <code>&amp;</code> 符号，可以获取指定数组的地址，如：<code>&amp;array1</code>。</p>
+<h2 id="切片"><a href="#切片" class="headerlink" title="切片"></a>切片</h2><h3 id="什么是切片"><a href="#什么是切片" class="headerlink" title="什么是切片"></a>什么是切片</h3><p><strong>切片</strong>是一种数据结构，这种数据结构便于使用和管理数据集合。切片是围绕动态数组的概念来构建的，可以按需自动增长和缩小。切片的动态增长是通过函数 <code>append</code> 来实现的。同时，<strong>切片的底层内存也是在连续块中分配的，所以切片还能获得索引、迭代以及为垃圾回收优化的好处。</strong></p>
+<h3 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h3><p><img src="https://sherlockblaze.com/resources/img/code/golang/slice.png" alt=""></p>
+<h3 id="使用-1"><a href="#使用-1" class="headerlink" title="使用"></a>使用</h3><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 声明一个长度、容量都为5的切片</span></span><br><span class="line">slice1 := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">5</span>)</span><br><span class="line"><span class="comment">// 声明一个长度为3、容量为5的切片</span></span><br><span class="line">slice2 := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">3</span>, <span class="number">5</span>)</span><br><span class="line"><span class="comment">// 声明一个长度为3、容量为3的切片</span></span><br><span class="line">slice3 := []<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;</span><br><span class="line"><span class="comment">// 声明一个容量为长度为101、容量为101的切片，第101个元素值为100</span></span><br><span class="line">slice4 := []<span class="keyword">int</span>&#123;<span class="number">100</span>: <span class="number">100</span>&#125;</span><br><span class="line"><span class="comment">// 声明 nil 切片</span></span><br><span class="line">slice5 := []<span class="keyword">int</span></span><br><span class="line"><span class="comment">// 声明一个空切片</span></span><br><span class="line">slice6 := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">0</span>)</span><br><span class="line"><span class="comment">// 声明一个空切片</span></span><br><span class="line">slice7 := []<span class="keyword">int</span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">slice := []<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;</span><br><span class="line">newSlice := slice[<span class="number">1</span>:<span class="number">3</span>]</span><br></pre></td></tr></table></figure>
+<p>通过一张图片观察上面两行代码所做的事。</p>
+<p><img src="https://sherlockblaze.com/resources/img/code/golang/assign-a-slice-to-another.png" alt=""></p>
+<p>接着我们再通过一段代码来看如何对切片进行遍历:</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">slice := []<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>&#125;</span><br><span class="line"><span class="keyword">for</span> index, value := <span class="keyword">range</span> slice &#123;</span><br><span class="line">    fmt.Println(<span class="string">"Index: %d Value: %d\n"</span>, index, value)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>需要注意的只有两点：</p>
+<ol>
+<li>使用 <code>range</code> 函数获得的两个值，一个是索引，一个是索引对应的值。</li>
+<li><code>range</code> 其实是对每个元素提供了一个副本。</li>
+</ol>
+<p>你可以通过下划线 <code>_</code> 来忽略函数返回的值。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">slice := []<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>&#125;</span><br><span class="line"><span class="keyword">for</span> _, value := <span class="keyword">range</span> slice &#123;</span><br><span class="line">    fmt.Println(<span class="string">"Value: %d\n"</span>, value)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>那么如何在函数中传递切片呢？</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">slice := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">1e6</span>)</span><br><span class="line"></span><br><span class="line">slice = foo(slice)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">foo</span><span class="params">(slice []<span class="keyword">int</span>)</span> []<span class="title">int</span></span> &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> slice</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>在一个64位的机器上，一个切片需要24字节的内存：指针字段8字节、长度和容量分别需要8字节</li>
+<li>函数中传递时仅复制切片本身，不复制底层数组</li>
+</ol>
+<h2 id="映射"><a href="#映射" class="headerlink" title="映射"></a>映射</h2><h3 id="什么是映射"><a href="#什么是映射" class="headerlink" title="什么是映射"></a>什么是映射</h3><p>映射是一种数据结构，用于存储一系列无序的键值对。</p>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p><img src="https://sherlockblaze.com/resources/img/code/golang/hashmap-impl.png" alt=""></p>
+<p>映射的散列表包含一组桶。在存储、删除或者查找键值对的时候，所有操作都要先选择一个桶。<strong>把操作映射时制定的键传给映射的散列函数</strong>，就能选中对应的桶。</p>
+<p><strong>散列函数的目的是生成一个索引，这个索引将最终将键值对分布到所有可用的桶里。</strong></p>
+<h3 id="使用-2"><a href="#使用-2" class="headerlink" title="使用"></a>使用</h3><p>先看怎么创建、初始化</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">dict := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span>)</span><br><span class="line">dict := <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span>&#123;<span class="string">"Red"</span>:<span class="number">1</span>, <span class="string">"Black"</span>:<span class="number">0</span>&#125;</span><br><span class="line"><span class="comment">// 声明一个值为 nil 的映射，这种映射无法存放键值对，注意</span></span><br><span class="line"><span class="keyword">var</span> colors <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span></span><br></pre></td></tr></table></figure>
+<p>只需要注意一点，作为键的类型，可以是内置的类型，也可以是结构类型，只要这个类型可以使用 <code>==</code> 来比较。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">value, exists := colors[<span class="string">"Blue"</span>]</span><br><span class="line"><span class="keyword">if</span> exists &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过这种方式，可以判断是否存在需要的键值对。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">colors := <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span> &#123;</span><br><span class="line">    <span class="string">"AliceBlue"</span>: <span class="string">"#f0f8ff"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> key, value := <span class="keyword">range</span> colors &#123;</span><br><span class="line">    fmt.Println(<span class="string">"Key: %s Value: %s\n"</span>, key, value)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过上述代码，我们可以轻松遍历 map 中的键值对，同样，你可以使用 <code>_</code> 符号来忽略函数的某个/所有返回值。</p>
+<p>Golang 中删除映射中的键值对也是很方便的。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">colors := <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span> &#123;</span><br><span class="line">    <span class="string">"AliceBlue"</span>: <span class="string">"#f0f8ff"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">delete</span>(colors, <span class="string">"AliceBlue"</span>)</span><br></pre></td></tr></table></figure>
+<p>那么如何在函数中传递使用映射呢？</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    colors := <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span> &#123;</span><br><span class="line">        <span class="string">"AliceBlue"</span>:   <span class="string">"#f0f8ff"</span>,</span><br><span class="line">        <span class="string">"Coral"</span>:       <span class="string">"#ff7F50"</span>,</span><br><span class="line">        <span class="string">"DarkGray"</span>:    <span class="string">"#a9a9a9"</span>,</span><br><span class="line">        <span class="string">"ForestGreen"</span>: <span class="string">"#228b22"</span>,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> key, value := <span class="keyword">range</span> colors &#123;</span><br><span class="line">        fmt.Println(<span class="string">"Key: %s Value: %s\n"</span>, key, value)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    removeColor(colors, <span class="string">"Coral"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> key, value := <span class="keyword">range</span> colors &#123;</span><br><span class="line">        fmt.Println(<span class="string">"Key: %s Value: %s\n"</span>, key, value)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">removeColor</span><span class="params">(colors <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>, key <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    <span class="built_in">delete</span>(colors, key)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过运行上述代码，我们可以发现，在调用了 <code>removeColor</code> 函数之后再遍历映射，会发现被删除的元素不存在了。这其中的道理很简单，传递映射时并没有对其进行复制，使用的底层数组仍然是同一个。</p>
+<h2 id="类型系统"><a href="#类型系统" class="headerlink" title="类型系统"></a>类型系统</h2><p>Golang 是一种静态编译的语言 – 编译器需要在编译时知晓程序里每个值的类型，用于提供编译器对代码进行一些性能优化，提高执行效率。</p>
+<p>值的类型给编译器提供两部分信息:</p>
+<ol>
+<li>需要分配多少内存</li>
+<li>这段内存表示什么</li>
+</ol>
+<h3 id="结构体"><a href="#结构体" class="headerlink" title="结构体"></a>结构体</h3><h4 id="什么是结构体"><a href="#什么是结构体" class="headerlink" title="什么是结构体"></a>什么是结构体</h4><p>Golang 允许用户定义类型，当用户声明一个新类型时，这个声明就给编译器提供了一个框架，告知必要的内存大小和表示信息。</p>
+<h4 id="声明"><a href="#声明" class="headerlink" title="声明"></a>声明</h4><p>有两个方式声明结构体。</p>
+<ol>
+<li>利用 <code>struct</code> 关键字</li>
+</ol>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> user <span class="keyword">struct</span> &#123;</span><br><span class="line">    name       <span class="keyword">string</span></span><br><span class="line">    email      <span class="keyword">string</span></span><br><span class="line">    ext        <span class="keyword">int</span></span><br><span class="line">    privileged <span class="keyword">bool</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>基于一个已有的类型，将其作为新类型的类型说明</li>
+</ol>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Length <span class="keyword">int64</span></span><br></pre></td></tr></table></figure>
+<h4 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h4><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">yorr := user &#123;</span><br><span class="line">    name:       <span class="string">"yorr"</span>,</span><br><span class="line">    email:      <span class="string">"beauty@love.com"</span>,</span><br><span class="line">    ext:        <span class="number">1</span>,</span><br><span class="line">    privileged: <span class="literal">true</span>, <span class="comment">// 别漏了最后一个逗号</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 用下面这种方式，需要按照结构体声明里的顺序来赋值</span></span><br><span class="line">yorr := user &#123;<span class="string">"yorr"</span>, <span class="string">"beauty@love.com"</span>, <span class="number">1</span>, <span class="literal">true</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 可以使用另一个类型来作为另一个类型中的字段</span></span><br><span class="line"><span class="keyword">type</span> <span class="keyword">struct</span> admin &#123;</span><br><span class="line">    person user</span><br><span class="line">    level <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">yorr := admin &#123;</span><br><span class="line">    person: user &#123;</span><br><span class="line">        name:      <span class="string">"yorr"</span>,</span><br><span class="line">        email:     <span class="string">"beauty@love.com"</span>,</span><br><span class="line">        ext:       <span class="number">1</span>,</span><br><span class="line">        privilege: <span class="literal">true</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">    level: <span class="string">"top"</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 将已有类型作为新类型</span></span><br><span class="line"><span class="keyword">type</span> Length <span class="keyword">int64</span></span><br><span class="line"><span class="keyword">var</span> length Length</span><br><span class="line">length = <span class="keyword">int64</span>(<span class="number">100</span>)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>嵌入类型: Golang 允许用户扩展或者修改已有类型的行为，这个功能对代码复用很重要，在修改已有类型以符合新类型的时候也很重要。通过 <code>嵌入类型</code> 完成。</p>
+</blockquote>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> user <span class="keyword">struct</span> &#123;</span><br><span class="line">    name  <span class="keyword">string</span></span><br><span class="line">    email <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(u *user)</span> <span class="title">notify</span><span class="params">()</span></span> &#123;</span><br><span class="line">    fmt.Printf(<span class="string">"Sending user email to %s&lt;%s&gt;\n"</span>,</span><br><span class="line">        u.name,</span><br><span class="line">        u.email)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> admin <span class="keyword">struct</span> &#123;</span><br><span class="line">    user</span><br><span class="line">    lever <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ad := admin &#123;</span><br><span class="line">        user: user&#123;</span><br><span class="line">            name:  <span class="string">"sherlock blaze"</span>,</span><br><span class="line">            email: <span class="string">"sherlockblaze@love.com"</span></span><br><span class="line">        &#125;,</span><br><span class="line">        level: <span class="string">"top"</span>,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 可以直接访问内部类型的方法</span></span><br><span class="line">    ad.user.notify()</span><br><span class="line">    <span class="comment">// 内部类型的方法也可以被提升到外部类型</span></span><br><span class="line">    ad.notify()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上我们注意到一个函数 – <code>notify</code>。可以给我们引入一个新的话题 —— <strong>值接收者</strong>、<strong>指针接收者</strong>。</p>
+<h3 id="值接收者-amp-指针接收者"><a href="#值接收者-amp-指针接收者" class="headerlink" title="值接收者&amp;指针接收者"></a>值接收者&amp;指针接收者</h3><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(u user)</span> <span class="title">notify</span><span class="params">()</span></span> &#123;</span><br><span class="line">    mt.Printf(<span class="string">"Sending user email to %s&lt;%s&gt;\n"</span>,</span><br><span class="line">        u.name,</span><br><span class="line">        u.email)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(u *user)</span> <span class="title">changeEmail</span><span class="params">(email <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    u.email = email</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>notify</code> 和 <code>changeEmail</code> 称为结构体 <code>user</code> 的方法，如果一个函数有接收者，这个函数就被称为<strong>方法</strong>。在 <code>func</code> 关键字和方法名之间的参数，称之为 <strong>接收者</strong>。而接收者分为两类，<strong>值接收者</strong>和<strong>指针接收者</strong>。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> user <span class="keyword">struct</span> &#123;</span><br><span class="line">    name  <span class="keyword">string</span></span><br><span class="line">    email <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(u user)</span> <span class="title">notify</span><span class="params">()</span></span> &#123;</span><br><span class="line">    fmt.Printf(<span class="string">"Sending User Email To %s&lt;%s&gt;\n"</span>,</span><br><span class="line">        u.name,</span><br><span class="line">        u.email)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">changeEmail</span><span class="params">(email <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    u.email = email</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    bill := user&#123;<span class="string">"Bill"</span>, <span class="string">"bill@email.com"</span>&#125;</span><br><span class="line">    bill.notify()</span><br><span class="line"></span><br><span class="line">    lisa := &amp;user&#123;<span class="string">"Lisa"</span>, <span class="string">"lisa@email.com"</span>&#125;</span><br><span class="line">    lisa.notify()</span><br><span class="line"></span><br><span class="line">    bill.changeEmail(<span class="string">"bill@newdomain.com"</span>)</span><br><span class="line">    bill.notify()</span><br><span class="line"></span><br><span class="line">    lisa.changeEmail(<span class="string">"lisa@newdomain.com"</span>)</span><br><span class="line">    lisa.notify()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们可以看到，<code>bill</code> 作为一个值，可以调用值接收者声明的方法，也可以调用指针接受者声明的方法，其实里面有一个语法糖。在用值对象调用指针接收者声明的方法时，golang 底层做了这样一个操作 <code>(&amp;bill).changeEmail()</code>，同理，指针对象调用值接收者声明的方法时，做了这样的操作 <code>(*lisa).notify()</code>。</p>
+<p>使用<strong>值接收者</strong>方法时，实际上会创建一个对象的副本，<strong>指针接收者</strong>则是利用指针，如果修改，会直接修改结构体里对应的项。</p>
+<h3 id="内置类型"><a href="#内置类型" class="headerlink" title="内置类型"></a>内置类型</h3><p><strong>内置类型是由语言提供的一组类型。</strong></p>
+<p>如: 数值类型、字符串类型和布尔类型。这些类型本质上是原始的类型，因此，当对这些值进行增加或者删除的时候，会创建一个新值。<strong>基于这个理论，当把这些类型的值传递给方法或者函数时，应该传递一个对应值的副本。</strong></p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Trim</span><span class="params">(s <span class="keyword">string</span>, cutset <span class="keyword">string</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> s == <span class="string">""</span> || cutset == <span class="string">""</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> s</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> TrimFunc(s, makeCutsetFunc(cutset))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Trim</code> 函数传入一个 <code>string</code> 类型的值作操作，在传入一个 <code>string</code> 类型的值用于查找，之后函数会返回一个新的 <code>string</code> 类型的值作操作。</p>
+<h3 id="引用类型"><a href="#引用类型" class="headerlink" title="引用类型"></a>引用类型</h3><p>Golang 中，引用类型有如下几个: <strong>切片</strong>、<strong>映射</strong>、<strong>通道</strong>、<strong>接口</strong>和<strong>函数</strong>。</p>
+<p>当声明上述类型变量时，创建的变量被称作<strong>标头值</strong>，从技术细节上说，<strong>字符串也是一种引用类型</strong>。</p>
+<p><strong>每个引用类型创建的标头值是包含一个指向底层数据结构的指针</strong>，每个引用类型还包含一组独特的字段，用于管理底层数据结构。因为<strong>标头值</strong>是为复制而设计的，所以永远不要共享一个引用类型的值。<strong>标头值里包含一个指针，因此通过复制来传递一个引用类型的副本，本质上就是在共享底层数据结构。</strong></p>
+<p>同时，<strong>编译器只允许为命名的用户定义的类型声明方法。</strong></p>
+<h2 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h2><h3 id="什么是接口"><a href="#什么是接口" class="headerlink" title="什么是接口"></a>什么是接口</h3><p>接口定义了一个操作。</p>
+<h3 id="实现-1"><a href="#实现-1" class="headerlink" title="实现"></a>实现</h3><p>讨论如何实现一个接口。</p>
+<p><strong>接口定义的类型不由接口直接实现，而是通过方法由用户定义的类型实现。</strong></p>
+<p>如果用户定义的类型实现了某个接口类型声明的一组方法，那么这个用户定义的类型的值就可以赋给这个接口类型的值。这个赋值会把用户定义的类型的值存入接口类型的值。</p>
+<p><img src="https://sherlockblaze.com/resources/img/code/golang/interface-impl.png" alt=""></p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> notifier <span class="keyword">interface</span> &#123;</span><br><span class="line">    notify()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> user <span class="keyword">struct</span> &#123;</span><br><span class="line">    name  <span class="keyword">string</span></span><br><span class="line">    email <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 为 struct u 实现 notify 方法</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(u *user)</span> <span class="title">notify</span><span class="params">()</span></span> &#123;</span><br><span class="line">    fmt.Printf(<span class="string">"Sending user email to %s&lt;%s&gt;\n"</span>,</span><br><span class="line">        u.name,</span><br><span class="line">        u.email)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> ad <span class="keyword">struct</span> &#123;</span><br><span class="line">    title <span class="keyword">string</span></span><br><span class="line">    topic <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 为 struct ad 实现 notify 方法</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(ad *ad)</span> <span class="title">notify</span><span class="params">()</span></span> &#123;</span><br><span class="line">    fmt.Printf(<span class="string">"Sending ads title:%s topic:%s."</span>,</span><br><span class="line">        ad.title,</span><br><span class="line">        ad.topic)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">sendNotification</span><span class="params">(n notifier)</span></span> &#123;</span><br><span class="line">    <span class="comment">// 调用 notify 方法</span></span><br><span class="line">    n.notify()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    u := user&#123;<span class="string">"Bill"</span>, <span class="string">"bill@email.com"</span>&#125;</span><br><span class="line">    <span class="comment">// 对于用指针接收者来实现的接口函数，需要传入地址，否则会导致编译失败</span></span><br><span class="line">    sendNotification(&amp;u)</span><br><span class="line">    ad := ad&#123;<span class="string">"hah"</span>, <span class="string">"haha"</span>&#125;</span><br><span class="line">    sendNotification(&amp;ad)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>简单介绍一下方法集规则:</p>
+<table>
+<thead>
+<tr>
+<th>Values</th>
+<th>Methods Receivers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T</td>
+<td>(t T)</td>
+</tr>
+<tr>
+<td>* T</td>
+<td>(t T) and (t *T)</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Methods Receivers</th>
+<th>Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(t T)</td>
+<td>T and *T</td>
+</tr>
+<tr>
+<td>(t * T)</td>
+<td>*T</td>
+</tr>
+</tbody>
+</table>
+<p>我们可以发现，在上面代码中，有这样两行代码:</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sendNotification(&amp;u)</span><br><span class="line">sendNotification(&amp;ad)</span><br></pre></td></tr></table></figure>
+<p>按照我们之前讨论的语法糖，也可以这么写:</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sendNotification(u)</span><br><span class="line">sendNotification(ad)</span><br></pre></td></tr></table></figure>
+<p>但是实际上，这样做是不可以的。通过方法集规则的描述，我们发现，我们不是总能自动获得一个值的地址。所以值的方法集只包括了使用值接收者实现的方法。</p>
+<h3 id="多态"><a href="#多态" class="headerlink" title="多态"></a>多态</h3><p>在了解完接口后，我们来看一下如何通过使用接口来实现多态。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> notifier <span class="keyword">interface</span> &#123;</span><br><span class="line">    notify()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> user <span class="keyword">struct</span> &#123;</span><br><span class="line">    name  <span class="keyword">string</span></span><br><span class="line">    email <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(u *user)</span> <span class="title">notify</span><span class="params">()</span></span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">"Sending user email to %s&lt;%s&gt;\n"</span>,</span><br><span class="line">        u.name,</span><br><span class="line">        u.email)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> admin <span class="keyword">struct</span> &#123;</span><br><span class="line">    name  <span class="keyword">string</span></span><br><span class="line">    email <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(a *admin)</span> <span class="title">notify</span><span class="params">()</span></span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">"Sending admin email to %s&lt;%s&gt;\n"</span>,</span><br><span class="line">        a.name,</span><br><span class="line">        a.email)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    bill := user&#123;<span class="string">"Bill"</span>, <span class="string">"bill@email.com"</span>&#125;</span><br><span class="line">    sendNotification(&amp;bill)</span><br><span class="line">    lisa := admin&#123;<span class="string">"Lisa"</span>, <span class="string">"lisa@email.com"</span>&#125;</span><br><span class="line">    sendNotification(&amp;lisa)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">sendNotification</span><span class="params">(n notifier)</span></span> &#123;</span><br><span class="line">    n.notify()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过多态函数 <code>sendNotification</code> ，我们实现了多态目标。</p>
+<h2 id="公开和私有"><a href="#公开和私有" class="headerlink" title="公开和私有"></a>公开和私有</h2><p>说完了基本的语法，我们要说一下方法、字段、等等一些内容的公开化和私有化问题。如果你学过 <code>Java</code> 或者 <code>C++</code> 之类的面向对象语言。你会看到过这样的关键字 <code>public</code> 和 <code>private</code> 。</p>
+<p>而对于 <code>golang</code> 是没有这些玩意的。</p>
+<p>那 <code>golang</code> 如何实现公开或者私有呢？</p>
+<p><strong>开头字母大小写！</strong></p>
+<p>如果开头字母是大小，表示对其他 <code>package</code> 是公开的标识。反之，对其他 <code>package</code> 则不是。</p>
+<p>需要注意的是，无论是大写还是小写，在文件自己待的 <code>package(目录)</code> 下，对于同级别的 <code>package(目录)</code> 都是公开的。</p>
+
+                
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2019/05/14/golang/golang-concurrent-start/" data-toggle="tooltip" data-placement="top" title="Golang 高并发初步">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/05/07/golang/golang-start/" data-toggle="tooltip" data-placement="top" title="Golang 初探">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <div class="comments" id="comments"></div>
+
+                <br>                      
+            </div>
+            
+            <!-- Table of Contents -->
+<aside id="sidebar">
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">Contents</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#包"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">包</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#main-包"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">main 包</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#导入"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">导入</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#init-函数"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">init 函数</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#数组"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">数组</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#使用"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">使用</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#切片"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">切片</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#什么是切片"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">什么是切片</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#实现原理"><span class="toc-nav-number">3.2.</span> <span class="toc-nav-text">实现原理</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#使用-1"><span class="toc-nav-number">3.3.</span> <span class="toc-nav-text">使用</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#映射"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">映射</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#什么是映射"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">什么是映射</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#实现"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text">实现</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#使用-2"><span class="toc-nav-number">4.3.</span> <span class="toc-nav-text">使用</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#类型系统"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">类型系统</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#结构体"><span class="toc-nav-number">5.1.</span> <span class="toc-nav-text">结构体</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#什么是结构体"><span class="toc-nav-number">5.1.1.</span> <span class="toc-nav-text">什么是结构体</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#声明"><span class="toc-nav-number">5.1.2.</span> <span class="toc-nav-text">声明</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#初始化"><span class="toc-nav-number">5.1.3.</span> <span class="toc-nav-text">初始化</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#值接收者-amp-指针接收者"><span class="toc-nav-number">5.2.</span> <span class="toc-nav-text">值接收者&amp;指针接收者</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#内置类型"><span class="toc-nav-number">5.3.</span> <span class="toc-nav-text">内置类型</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#引用类型"><span class="toc-nav-number">5.4.</span> <span class="toc-nav-text">引用类型</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#接口"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">接口</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#什么是接口"><span class="toc-nav-number">6.1.</span> <span class="toc-nav-text">什么是接口</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#实现-1"><span class="toc-nav-number">6.2.</span> <span class="toc-nav-text">实现</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#多态"><span class="toc-nav-number">6.3.</span> <span class="toc-nav-text">多态</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#公开和私有"><span class="toc-nav-number">7.</span> <span class="toc-nav-text">公开和私有</span></a></li></ol>
+    
+    </div>
+</aside>
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Golang" title="Golang">Golang</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://chaoscoffee.github.io/" target="_blank">ChaosCoffee&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<link rel="stylesheet" href="/css/valine.css">
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script type="text/javascript">
+    // Use import
+    // or Use require
+    var GUEST = ['nick','mail','link'];
+    var guest = "nick,mail,link";
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: true,
+        notify: false,
+        appId: 'zft6KmhKY69FtUwIJFY5XJo5-gzGzoHsz',
+        appKey: 'KhPyX7dVWp6nYvU3iK8OoOlS',
+        visitor: true,
+        placeholder: 'Let us talk more!!',
+        avatar: 'wavatar',
+        guest_info: guest,
+        pageSize: '10' || 10,
+        lang: 'en'
+    });
+</script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://github.com/sherlockblaze">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/jam-blaze-606ab3163">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/sherlockblaze_007">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Sherlock Blaze 2022 
+                    <br>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://sherlockblaze.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-133187385-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-133187385-1');
+</script>
+
+<!-- -->
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?4d1398d2e890275832d6fd932eb0e2e1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>

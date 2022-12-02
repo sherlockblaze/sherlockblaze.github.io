@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/resources/img/header_img/DogFace.jpg">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          How Linux Works(Chapter Two)--Basic Commands(Part One) - Sherlock Blaze
+        
+    </title>
+
+    <link rel="canonical" href="https://sherlockblaze.com/2019/02/28/linux/how-linux-works/basic-commands-part-one/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url("https://source.unsplash.com/random/1280x720")
+    }
+    
+</style>
+
+<header class="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Linux" title="Linux">Linux</a>
+                            
+                        </div>
+                        <h1>How Linux Works(Chapter Two)--Basic Commands(Part One)</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by Sherlock Blaze on
+                            2019-02-28
+                        </span>
+                    </div>
+                
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Sherlock Blaze</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/community/">Community</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <blockquote>
+<p>All the summaries are from the book named <strong><a href="https://www.amazon.com/How-Linux-Works-2nd-Superuser/dp/1593275676/ref=sr_1_1?keywords=how+linux+works&amp;qid=1551169061&amp;s=gateway&amp;sr=8-1" target="_blank" rel="noopener">How Linux Works</a></strong>.</p>
+</blockquote>
+<h2 id="The-Bourne-Shell"><a href="#The-Bourne-Shell" class="headerlink" title="The Bourne Shell"></a>The Bourne Shell</h2><p>The shell is one of the most important parts of a Unix system. A <code>shell</code> is a program that runs commands, like the ones that users enter. The shell also serves as a small programming environment. <strong>Unix programmers often break common tasks into little components and use the shell to manage tasks and piece things together.</strong></p>
+<p>One of the best things about the shell is that if you make a mistake, you can easily see what you typed to find out what went wrong, and then try again.</p>
+<blockquote>
+<p>Linux uses an enhanced version of the Bourne shell called <code>bash</code> or the “Bourne-again” shell. The <code>bash</code> shell is the default shell on most Linux distributions, and <code>/bin/sh</code> is normally a link to <code>bash</code> on a Linux system. You should use <code>bash</code> shell when running the examples I copy from the <a href="https://www.amazon.com/How-Linux-Works-2nd-Superuser/dp/1593275676/ref=sr_1_1?keywords=how+linux+works&amp;qid=1551169061&amp;s=gateway&amp;sr=8-1" target="_blank" rel="noopener">book</a>.</p>
+</blockquote>
+<h2 id="Using-the-Shell"><a href="#Using-the-Shell" class="headerlink" title="Using the Shell"></a>Using the Shell</h2><p>When you install Linux, you should create at least one regular user in addition to the root user; this will be your personal account.</p>
+<h3 id="cat"><a href="#cat" class="headerlink" title="cat"></a>cat</h3><p>The <code>cat</code> command is one of the easiest Unix commands to understand, it simply outputs the contents of one or more files. The general syntax of the <code>cat</code> command is as follows:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat file1 file2</span><br></pre></td></tr></table></figure>
+<p>When you run this command, <code>cat</code> prints the contents of <code>file1</code>, <code>file2</code>, and any other files that you specify, and then exits. The command is called <code>cat</code> because it performs concatenation when it prints the contents of more than one file.</p>
+<h2 id="Standard-Input-and-Standard-Output"><a href="#Standard-Input-and-Standard-Output" class="headerlink" title="Standard Input and Standard Output"></a>Standard Input and Standard Output</h2><p>We’ll use <code>cat</code> to briefly explore Unix input and output(I/O). <strong>Unix processes use I/O <code>stream</code> to read and write data. Processes read data from input streams and write data to output streams.</strong> Streams are very flexible. For example, the source of an input stream can be a file, a device, a terminal, or even the output stream from another process.</p>
+<p><strong><em>Standard output</em></strong> is similar. The kernel gives each process a standard output stream where it can write its output. The <code>cat</code> command always writes its output to the standard output. When you ran <code>cat</code> in the terminal, the standard output was connected to that terminal, so that’s where you saw the output.</p>
+<p>Standard input and output are often abbreviated as <code>stdin</code> and <code>stdout</code>. Many commands operate as <code>cat</code> does; if you don’t specify an input file, the command reads from <code>stdin</code>. Output is a little different. Some commands (like <code>cat</code>) send output only to stdout, but others have the option to send output directly to files.</p>
+<p><strong>And there is a third standard I/O stream called standard <code>error</code>.</strong></p>
+<p>One of the best features of standard streams is that you can easily manipulate them read and write to places other than the terminal.</p>
+<h2 id="Basic-Commands"><a href="#Basic-Commands" class="headerlink" title="Basic Commands"></a>Basic Commands</h2><p>Now let’s look at some more Unix commands.</p>
+<h4 id="ls"><a href="#ls" class="headerlink" title="ls"></a><code>ls</code></h4><p>The ls command lists the contents of a directory. The default is the current directory. Use <code>ls -l</code> for a detailed (long) listing and <code>ls -F</code> to display file type information.</p>
+<h4 id="cp"><a href="#cp" class="headerlink" title="cp"></a><code>cp</code></h4><p>In its simplest form <code>cp</code> copies files. For example, to copy <strong><em>file1</em></strong> to <strong><em>file2</em></strong>, enter this:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp file1 file2</span><br></pre></td></tr></table></figure>
+<p>To copy a number of files to a directory (folder) named <strong><em>dir</em></strong>, try this instead:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp file1 ... fileN dir</span><br></pre></td></tr></table></figure>
+<h4 id="mv"><a href="#mv" class="headerlink" title="mv"></a><code>mv</code></h4><p>The <code>mv</code> (move) command is like <code>cp</code>. In its simplest form, it renames a file. For example, to rename <strong><em>file1</em></strong> to <strong><em>file2</em></strong>, enter this:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv file1 file2</span><br></pre></td></tr></table></figure>
+<p>You can use <code>mv</code> to move a number of files to a different directory:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv file1 ... fileN dir</span><br></pre></td></tr></table></figure>
+<h4 id="touch"><a href="#touch" class="headerlink" title="touch"></a><code>touch</code></h4><p>The <code>touch</code> command creates a file. If the file already exists, <code>touch</code> does not change it, but it does update the file’s modification time stamp printed with the <code>ls -l</code> command. For example, to create empty file, enter this:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">touch file</span><br></pre></td></tr></table></figure>
+<h4 id="rm"><a href="#rm" class="headerlink" title="rm"></a><code>rm</code></h4><p>To delete(remove) a file, use <code>rm</code>. After you remove a file, it’s gone from your system and generally cannot be undeleted.</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm file</span><br></pre></td></tr></table></figure>
+<h4 id="echo"><a href="#echo" class="headerlink" title="echo"></a><code>echo</code></h4><p>The <code>echo</code> command prints its arguments to the standard output:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> Hello again.</span><br><span class="line">Hello again.</span><br></pre></td></tr></table></figure>
+<p>The <code>echo</code> command is very useful for finding expansions of shell globs and variables.</p>
+<h2 id="Navigating-Directories"><a href="#Navigating-Directories" class="headerlink" title="Navigating Directories"></a>Navigating Directories</h2><p>Unix has a directory hierarchy that starts at <code>/</code>, sometimes called the <code>root</code> directory. The directory separator is the slash (<code>/</code>), not the backslash (<code>\</code>). There are several standard subdirectories in the <code>root</code> directory, such as <code>/usr</code>.</p>
+<p>When you refer to a file or directory, you specify a <code>path</code> or <code>pathname</code>. When a path starts with <code>/</code> (such as <code>/usr/lib</code>), it’s a full or absolute path.</p>
+<p>A path component identified by two dot (..) specifies the parent of a directory. For example, if you’re working in <code>/usr/lib</code>, the path <code>..</code> would refer to <code>/usr</code>. Similarly, <code>../bin</code> would refer to <code>/usr/bin</code>.</p>
+<p>One dot(.) refers to the current directory; for example, if you’re in <code>/usr/lib</code>, the path <code>.</code> is still <code>/usr/lib</code>, and <code>./X11</code> is <code>/usr/lib/X11</code>. You won’t have to use <code>.</code> very often because most commands default to the current directory if a path doesn’t start with <code>/</code> (you could just use <code>X11</code> instead of <code>./X11</code> in the preceding example).</p>
+<p>A path not beginning with <code>/</code> is called a <code>relative path</code>. Most of the time, you’ll work with relative pathnames, because you’ll already be in the directory you need to be in or somewhere close by.</p>
+<h4 id="cd"><a href="#cd" class="headerlink" title="cd"></a><code>cd</code></h4><p>The current working directory is the directory that a process(such as the shell) is currently in. The <code>cd</code> command changes the shell’s current working directory:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> dir</span><br></pre></td></tr></table></figure>
+<p>If you omit <strong><em>dir</em></strong>, the shell returns to your home directory, the directory you started in when you first logged in.</p>
+<h4 id="mkdir"><a href="#mkdir" class="headerlink" title="mkdir"></a><code>mkdir</code></h4><p>The <code>mkdir</code> command creates a new directory <strong><em>dir</em></strong>.</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir dir</span><br></pre></td></tr></table></figure>
+<h4 id="rmdir"><a href="#rmdir" class="headerlink" title="rmdir"></a><code>rmdir</code></h4><p>The <code>rmdir</code> command removes the directory <strong><em>dir</em></strong>.</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rmdir dir</span><br></pre></td></tr></table></figure>
+<p>If <strong><em>dir</em></strong> isn’t empty, this command fails. However, if you’re impatient, you probably don’t want to laboriously delete all the files and subdirectories inside <code>dir</code> first. You can use <code>rm -rf dir</code> to delete a directory and its contents, but be careful! Double-check your command before you run it.</p>
+<h2 id="Recommended-Reading"><a href="#Recommended-Reading" class="headerlink" title="Recommended Reading"></a>Recommended Reading</h2><ul>
+<li>The Linux Command Line (No Starch Press, 2012)</li>
+<li>UNIX for the Impatient (Addison-Wesley Professional, 1995)</li>
+<li>Learning the UNIX Operating System, 5th edition (O’Reilly, 2001).</li>
+</ul>
+
+                
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2019/03/02/linux/how-linux-works/basic-commands-part-two/" data-toggle="tooltip" data-placement="top" title="How Linux Works(Chapter Two)--Basic Commands(Part Two)">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/02/26/linux/how-linux-works/the-big-picture-of-linux/" data-toggle="tooltip" data-placement="top" title="How Linux Works(Chapter One)--The Big Picture of Linux">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <div class="comments" id="comments"></div>
+
+                <br>                      
+            </div>
+            
+            <!-- Table of Contents -->
+<aside id="sidebar">
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">Contents</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#The-Bourne-Shell"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">The Bourne Shell</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Using-the-Shell"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">Using the Shell</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#cat"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">cat</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Standard-Input-and-Standard-Output"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">Standard Input and Standard Output</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Basic-Commands"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">Basic Commands</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#ls"><span class="toc-nav-number">4.0.1.</span> <span class="toc-nav-text">ls</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#cp"><span class="toc-nav-number">4.0.2.</span> <span class="toc-nav-text">cp</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#mv"><span class="toc-nav-number">4.0.3.</span> <span class="toc-nav-text">mv</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#touch"><span class="toc-nav-number">4.0.4.</span> <span class="toc-nav-text">touch</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#rm"><span class="toc-nav-number">4.0.5.</span> <span class="toc-nav-text">rm</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#echo"><span class="toc-nav-number">4.0.6.</span> <span class="toc-nav-text">echo</span></a></li></ol></li></ol><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Navigating-Directories"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">Navigating Directories</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#cd"><span class="toc-nav-number">5.0.1.</span> <span class="toc-nav-text">cd</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#mkdir"><span class="toc-nav-number">5.0.2.</span> <span class="toc-nav-text">mkdir</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#rmdir"><span class="toc-nav-number">5.0.3.</span> <span class="toc-nav-text">rmdir</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Recommended-Reading"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">Recommended Reading</span></a></li>
+    
+    </div>
+</aside>
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Linux" title="Linux">Linux</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://chaoscoffee.github.io/" target="_blank">ChaosCoffee&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<link rel="stylesheet" href="/css/valine.css">
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script type="text/javascript">
+    // Use import
+    // or Use require
+    var GUEST = ['nick','mail','link'];
+    var guest = "nick,mail,link";
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: true,
+        notify: false,
+        appId: 'zft6KmhKY69FtUwIJFY5XJo5-gzGzoHsz',
+        appKey: 'KhPyX7dVWp6nYvU3iK8OoOlS',
+        visitor: true,
+        placeholder: 'Let us talk more!!',
+        avatar: 'wavatar',
+        guest_info: guest,
+        pageSize: '10' || 10,
+        lang: 'en'
+    });
+</script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://github.com/sherlockblaze">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/jam-blaze-606ab3163">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/sherlockblaze_007">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Sherlock Blaze 2022 
+                    <br>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://sherlockblaze.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-133187385-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-133187385-1');
+</script>
+
+<!-- -->
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?4d1398d2e890275832d6fd932eb0e2e1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>

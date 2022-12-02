@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/resources/img/header_img/DogFace.jpg">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          Design Pattern in Go (Creational Pattern) - Sherlock Blaze
+        
+    </title>
+
+    <link rel="canonical" href="https://sherlockblaze.com/2019/12/06/golang/design-pattern-in-go-creational/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url("https://source.unsplash.com/random/1280x720")
+    }
+    
+</style>
+
+<header class="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Golang" title="Golang">Golang</a>
+                            
+                        </div>
+                        <h1>Design Pattern in Go (Creational Pattern)</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by Sherlock Blaze on
+                            2019-12-06
+                        </span>
+                    </div>
+                
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Sherlock Blaze</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/community/">Community</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2 id="The-Singleton-Pattern"><a href="#The-Singleton-Pattern" class="headerlink" title="The Singleton Pattern"></a>The Singleton Pattern</h2><p>It will provide you with a single instance of an object, and guarantee that there are no duplicates.</p>
+<p>At the first call to use the instance, it’s created and then reused between all the parts in the application that need to use that particular behavior.</p>
+<p>You’ll use the Singleton pattern in many different situations. For example:</p>
+<ul>
+<li>When you want to use the same connection to a database to make every query</li>
+<li>When you open a <strong>Secure Shell(SSh)</strong> connection to a server to do a few tasks, and don’t want to reopen the connection for each task</li>
+<li>If you need to limit the access to some variable or space, you use a Singleton as the door to this variable</li>
+<li>If you need to limit the number of calls to some places, you create a Singleton instance to make the calls in the accepted window</li>
+</ul>
+<p>The possibilities are endless, and we have just mentioned some of them.</p>
+<h3 id="Objectives"><a href="#Objectives" class="headerlink" title="Objectives"></a>Objectives</h3><p>As a general guide, we consider using the Singleton pattern when the following rule applies:</p>
+<ul>
+<li>We need a single, shared value, of some particular type.</li>
+<li>We need to restrict object creation of some type to a single unit along the entire program.</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> creational</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> singleton <span class="keyword">struct</span> &#123;</span><br><span class="line">    count <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> instance *singleton</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">GetInstance</span><span class="params">()</span> *<span class="title">singleton</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> install == <span class="literal">nil</span> &#123;</span><br><span class="line">        instance = <span class="built_in">new</span>(singleton)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> instance</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *singleton)</span> <span class="title">AddOne</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    s.count++</span><br><span class="line">    <span class="keyword">return</span> s.count</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *singleton)</span> <span class="title">GetCount</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> s.count</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Just keep in mind that the Singleton pattern will give you the power to have a unique instance of some struct in your application and that no package can create any clone of this struct.<br>With Singleton, you are also hiding the complexity of creating the object, in case it requires some computation, and the pitfall of creating it every time you need an instance of it if all of them are similar. All this code writing, checking if the variable already exists, and storage, are encapsulated in the singleton in the singleton and you won’t need to repeat it everywhere if you use a global variable.<br><strong>The implementation up there is not thread safe</strong></p>
+</blockquote>
+<h2 id="The-Builder-Design-Pattern"><a href="#The-Builder-Design-Pattern" class="headerlink" title="The Builder Design Pattern"></a>The Builder Design Pattern</h2><p><strong>Reusing an algorithm to create many implementations of an interface.</strong></p>
+<p>The Builder Pattern helps us construct complex objects without directly instantiating their struct, or writing the logic they require. Imagine an object that could have dozens of fields that are more complex structs themselves. Now Imagine that you have many objects with these characteristics, and you could have more. We don’t want to write the logic to create all these objects in the package that just needs to use the objects.</p>
+<p>You could also have an object that is composed of many objects, something that’s really idiomatic in Go, as it doesn’t support inheritance.</p>
+<p>At the same time, you could be using the same technique to create many types of objects. For example, you’ll use almost the same technique to build a car as you would build a bus, except that they’ll be different sizes and number of seats, so <strong>why don’t we reuse the construction process?</strong></p>
+<h3 id="Objectives-1"><a href="#Objectives-1" class="headerlink" title="Objectives"></a>Objectives</h3><p>A Builder design pattern tries to:</p>
+<ul>
+<li>Abstract complex creations so that object creation is separated from the object user</li>
+<li>Create an object step by step by filling its fields and creating the embedded objects</li>
+<li>Reuse the object creation algorithm between many objects</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> creational</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> BuildProcess <span class="keyword">interface</span> &#123;</span><br><span class="line">    SetWheels() BuildProcess</span><br><span class="line">    SetSeats() BuildProcess</span><br><span class="line">    SetStructure() BuildProcess</span><br><span class="line">    GetVehicle() VehicleProduct</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Director</span></span><br><span class="line"><span class="keyword">type</span> MenufacturingDirector <span class="keyword">struct</span> &#123;</span><br><span class="line">    builder BuildProcess</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(f *ManufacturingDirector)</span> <span class="title">Construct</span><span class="params">()</span></span> &#123;</span><br><span class="line">    f.builder.SetSeats().SetStructure().SetWheels()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(f *ManufacturingDirector)</span> <span class="title">SetBuilder</span><span class="params">()</span></span> &#123;</span><br><span class="line">    f.builder = b</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Product</span></span><br><span class="line"><span class="keyword">type</span> VehicleProduct <span class="keyword">struct</span> &#123;</span><br><span class="line">    Wheels    <span class="keyword">int</span></span><br><span class="line">    Seats     <span class="keyword">int</span></span><br><span class="line">    Structure <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// A Builder of type car</span></span><br><span class="line"><span class="keyword">type</span> CarBuilder <span class="keyword">struct</span> &#123;</span><br><span class="line">    v VehicleProduct</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *CarBuilder)</span> <span class="title">SetWheels</span><span class="params">()</span> <span class="title">BuildProcess</span></span> &#123;</span><br><span class="line">    c.v.Wheels = <span class="number">4</span></span><br><span class="line">    <span class="keyword">return</span> c</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *CarBuilder)</span> <span class="title">SetSeats</span><span class="params">()</span> <span class="title">BuildProcess</span></span> &#123;</span><br><span class="line">    c.v.Seats = <span class="number">5</span></span><br><span class="line">    <span class="keyword">return</span> c</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *CarBuilder)</span> <span class="title">SetStructure</span><span class="params">()</span> <span class="title">BuildProcess</span></span> &#123;</span><br><span class="line">    c.v.Structure = <span class="string">"Car"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *CarBuilder)</span> <span class="title">GetVehicle</span><span class="params">()</span> <span class="title">VehicleProduct</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> c.v</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// A builder of type motorbike</span></span><br><span class="line"><span class="keyword">type</span> BikeBuilder <span class="keyword">struct</span> &#123;</span><br><span class="line">    v VehicleProduct</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *BikeBuilder)</span> <span class="title">SetWheels</span><span class="params">()</span> <span class="title">BuildProcess</span></span> &#123;</span><br><span class="line">    b.v.Wheels = <span class="number">2</span></span><br><span class="line">    <span class="keyword">return</span> b</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *BikeBuilder)</span> <span class="title">SetSeats</span><span class="params">()</span> <span class="title">BuildProcess</span></span> &#123;</span><br><span class="line">    b.v.Seats = <span class="number">2</span></span><br><span class="line">    <span class="keyword">return</span> b</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *BikeBuilder)</span> <span class="title">SetStructure</span><span class="params">()</span> <span class="title">BuildProcess</span></span> &#123;</span><br><span class="line">    b.v.Structure = <span class="string">"motorbike"</span></span><br><span class="line">    <span class="keyword">return</span> b</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *BikeBuilder)</span> <span class="title">GetVehicle</span><span class="params">()</span> <span class="title">VehicleProduct</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> b.v</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// A builder of type bus</span></span><br><span class="line"><span class="keyword">type</span> BusBuilder <span class="keyword">struct</span> &#123;</span><br><span class="line">    v VehicleProduct</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *BusBuilder)</span> <span class="title">SetWheels</span><span class="params">()</span> <span class="title">BuildProcess</span></span> &#123;</span><br><span class="line">    b.v.Wheels = <span class="number">8</span></span><br><span class="line">    <span class="keyword">return</span> b</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *BusBuilder)</span> <span class="title">SetSeats</span><span class="params">()</span> <span class="title">BuildProcess</span></span> &#123;</span><br><span class="line">    b.v.Seats = <span class="number">30</span></span><br><span class="line">    <span class="keyword">return</span> b</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *BusBuilder)</span> <span class="title">SetStructure</span><span class="params">()</span> <span class="title">BuildProcess</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> b</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *BusBuilder)</span> <span class="title">GetVehicle</span><span class="params">()</span> <span class="title">VehicleProduct</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> b.v</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Wrapping-up-the-Builder-design-pattern"><a href="#Wrapping-up-the-Builder-design-pattern" class="headerlink" title="Wrapping up the Builder design pattern"></a>Wrapping up the Builder design pattern</h3><p>The Builder design pattern helps us maintain an unpredictable number of products by using a common construction algorithm that is used by the director. The construction process is always abstracted from the user of the product.</p>
+<p>At the same time, having a defined construction pattern helps when a newcomer to our source code needs to add a new product to the pipeline.</p>
+<h2 id="Factory-method"><a href="#Factory-method" class="headerlink" title="Factory method"></a>Factory method</h2><p><strong>delegating the creation of different types of payment</strong></p>
+<p>Its purpose is to abstract the user from the knowledge of the struct he needs to achieve for a specific purpose, such as retrieving some value, maybe from a web service or database.<br>The user only needs an interface that provides him this value. By delegating this decision to a Factory, this Factory can provide an interface that fits the user needs.</p>
+<p>When using the Factory method design pattern, we gain an extra layer of encapsulation so that our program can grow in a controlled environment. With the Factory method, we delegate the creation of families of objects to a different package or object to abstract us from the knowledge of the pool of possible objects we could use.</p>
+<h3 id="Objectives-2"><a href="#Objectives-2" class="headerlink" title="Objectives"></a>Objectives</h3><p>After the previous description, the following objectives of the Factory Method design pattern must be clear to you:</p>
+<ul>
+<li>Delegating the creation of new instances of structures to a different part of the program</li>
+<li>Working at the interface level instead of with concrete implementations</li>
+<li>Grouping families of objects to obtain a family object creator</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> creational</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"errors"</span></span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> PaymentMethod <span class="keyword">interface</span> &#123;</span><br><span class="line">    Pay(amount <span class="keyword">float32</span>) <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">    Cash      = <span class="number">1</span></span><br><span class="line">    DebitCard = <span class="number">2</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">GetPaymentMethod</span><span class="params">(m <span class="keyword">int</span>)</span> <span class="params">(PaymentMethod, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">switch</span> m &#123;</span><br><span class="line">    <span class="keyword">case</span> Cash:</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">new</span>(CashPM), <span class="literal">nil</span></span><br><span class="line">    <span class="keyword">case</span> DebitCard:</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">new</span>(NewDebitCardPM), <span class="literal">nil</span></span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, errors.New(fmt.Sprintf(<span class="string">"Payment method %d not recognized\n"</span>), m)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> CashPM <span class="keyword">struct</span> &#123;&#125;</span><br><span class="line"><span class="keyword">type</span> DebitCardPM <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *CashPM)</span> <span class="title">Pay</span><span class="params">(amount <span class="keyword">float32</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> fmt.Sprintf(<span class="string">"%0.2f payed using cash\n"</span>, amount)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *DebitCardPM)</span> <span class="title">Pay</span><span class="params">(amount <span class="keyword">float32</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> fmt.Sprintf(<span class="string">"%0.2f payed using debit card\n"</span>, amount)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> NewDebitCardPM <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(d *NewDebitCardPM)</span> <span class="title">Pay</span><span class="params">(amount <span class="keyword">float32</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> fmt.Sprintf(<span class="string">"%0.2f payed using debit card(new)\n"</span>, amount)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Abstract-Factory"><a href="#Abstract-Factory" class="headerlink" title="Abstract Factory"></a>Abstract Factory</h2><p><strong>A factory of factories.</strong></p>
+<p>The Abstract Factory design pattern is a new layer of grouping to achieve a bigger(and more complex) composite object, which is used through its interfaces.<br>The idea behind grouping objects in families and grouping families is to have big factories that can be interchangeable and can grow more easily. <strong>In the early stages of development, it is also easier to work with factories and abstract factories than to wait until all concrete implementations are done to start your code.</strong></p>
+<h3 id="Objectives-3"><a href="#Objectives-3" class="headerlink" title="Objectives"></a>Objectives</h3><p>Grouping related families of objects is very convenient when your object number is growing so much that creating a unique point to get them all seems the only way to gain the flexibility of the runtime object creation.</p>
+<ul>
+<li>Provide a new layer of encapsulation for Factory methods that return a common interface for all factories</li>
+<li><p>Group common factories into a super Factory (also called a factory of factories)</p>
+</li>
+<li><p><strong>vehicle_factory.go</strong></p>
+</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> abstract_factory</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"errors"</span></span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> VehicleFactory <span class="keyword">interface</span> &#123;</span><br><span class="line">    GetVehicle(v <span class="keyword">int</span>) (Vehicle, error)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">    CarFactoryType       = <span class="number">1</span></span><br><span class="line">    MotorbikeFactoryType = <span class="number">2</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">GetVehicleFactory</span><span class="params">(f <span class="keyword">int</span>)</span> <span class="params">(VehicleFactory, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">switch</span> f &#123;</span><br><span class="line">    <span class="keyword">case</span> CarFactoryType:</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">new</span>(CarFactoryType), <span class="literal">nil</span></span><br><span class="line">    <span class="keyword">case</span> MotorbikeFactoryType:</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">new</span>(MotorbikeFactoryType), <span class="literal">nil</span></span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, errors.New(fmt.Sprintf(<span class="string">"Factory with id %d not recognized\n"</span>, f))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>car_factory.go</strong></li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> abstract_factory</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"errors"</span></span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">    LuxuryCarType   = <span class="number">1</span></span><br><span class="line">    FamiliarCarType = <span class="number">2</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> CarFactory <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *CarFactory)</span> <span class="title">GetVehicle</span><span class="params">(v <span class="keyword">int</span>)</span> <span class="params">(Vehicle, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">switch</span> v &#123;</span><br><span class="line">    <span class="keyword">case</span> LuxuryCarType:</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">new</span>(LuxuryCar), <span class="literal">nil</span></span><br><span class="line">    <span class="keyword">case</span> FamiliarCarType:</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">new</span>(FamiliarCar), <span class="literal">nil</span></span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, errors.New(fmt.Sprintf(<span class="string">"Vehicle of type %d not recognized\n"</span>, v))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> abstract_factory</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"errors"</span></span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">    SportMotorbikeType  = <span class="number">1</span></span><br><span class="line">    CruiseMotorbikeType = <span class="number">2</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> MotorbikeFactory <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *MotorbikeFactory)</span> <span class="title">GetVehicle</span><span class="params">(v <span class="keyword">int</span>)</span> <span class="params">(Vehicle, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">switch</span> v &#123;</span><br><span class="line">    <span class="keyword">case</span> SportMotorbikeType:</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">new</span>(SportMotorbike), <span class="literal">nil</span></span><br><span class="line">    <span class="keyword">case</span> CruiseMotorbikeType:</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">new</span>(CruiseMotorbike), <span class="literal">nil</span></span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, errors.New(fmt.Sprintf(<span class="string">"Vehicle of type %d not recognized\n"</span>, v))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>vehicle.go</strong></li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> abstract_factory</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Vehicle <span class="keyword">interface</span> &#123;</span><br><span class="line">    GetWheels() <span class="keyword">int</span></span><br><span class="line">    GetSeats() <span class="keyword">int</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>car.go</strong></li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> abstract_factory</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Car <span class="keyword">interface</span> &#123;</span><br><span class="line">    GetDoors() <span class="keyword">int</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>familiar_car.go</strong></li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> abstract_factory</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> FamiliarCar <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(l *FamiliarCar)</span> <span class="title">GetDoors</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">5</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(l *FamiliarCar)</span> <span class="title">GetWheels</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">4</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(l *FamiliarCar)</span> <span class="title">GetSeats</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">5</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>luxury_car.go</strong></li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">pacakge abstract_factory</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> LuxuryCar <span class="keyword">struct</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(l *LuxuryCar)</span> <span class="title">GetDoors</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">4</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(l *LuxuryCar)</span> <span class="title">GetWheels</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">4</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(l *LuxuryCar)</span> <span class="title">GetSeats</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">5</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>motorbike.go</strong></li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> abstract_factory</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Motorbike <span class="keyword">interface</span> &#123;</span><br><span class="line">    GetType() <span class="keyword">int</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>sport_motorbike.go</strong></li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> abstract_factory</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> SportMotorbike <span class="keyword">struct</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *SportMotorbike)</span> <span class="title">GetWheels</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">2</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *SportMotorbike)</span> <span class="title">GetSeats</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *SportMotorbike)</span> <span class="title">GetType</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> SportMotorbikeType</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>cruise_motorbike.go</strong></li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> abstract_factory</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> CruiseMotorbike <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *CruiseMotorbike)</span> <span class="title">GetWheels</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">2</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *CruiseMotorbike)</span> <span class="title">GetSeats</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">2</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *CruiseMotorbike)</span> <span class="title">GetType</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> CruiseMotorbikeType</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>The Abstract factory and Builder patterns can both resolve the same problem, but your particular needs will help you find the slight differences that should lead you to take one solution or the other.</p>
+<h2 id="Prototype-design-pattern"><a href="#Prototype-design-pattern" class="headerlink" title="Prototype design pattern"></a>Prototype design pattern</h2><p>While with the Builder pattern, we are dealing with repetitive build algorithms and with the factories we are simplifying the creation of many types of objects;<br><strong>With the Prototype pattern, we will use an already created instance of some type to clone it and complete it with the particular needs of each context.</strong></p>
+<p>The aim of the Prototype pattern is to have an object or a set of objects that is already created at compilation time, but which you can clone as many times as you want at runtime.</p>
+<p><strong>The key difference between this and a Builder pattern is that objects are cloned for the user instead of building them at runtime.</strong></p>
+<h3 id="Objective"><a href="#Objective" class="headerlink" title="Objective"></a>Objective</h3><p>The main objective for the Prototype design pattern is to avoid repetitive object creation.</p>
+<ul>
+<li><strong>Maintain a set of objects that will be cloned to create new instances</strong></li>
+<li><strong>Provide a default value of some type to start working on top of it</strong></li>
+<li><strong>Free CPU of complex object initialization to take more memory resources</strong></li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> creational</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"errors"</span></span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> ShirtCloner <span class="keyword">interface</span> &#123;</span><br><span class="line">    GetClone(m <span class="keyword">int</span>) (ItemInfoGetter, error)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">    White = <span class="number">1</span></span><br><span class="line">    Black = <span class="number">2</span></span><br><span class="line">    Blue  = <span class="number">3</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">GetShirtsCloner</span><span class="params">()</span> <span class="title">ShirtCloner</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> ShirtsCache <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *ShirtsCache)</span> <span class="title">GetClone</span><span class="params">(m <span class="keyword">int</span>)</span> <span class="params">(ItemInfoGetter, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">switch</span> m &#123;</span><br><span class="line">    <span class="keyword">case</span> White:</span><br><span class="line">        newItem := *whitePrototype</span><br><span class="line">        <span class="keyword">return</span> &amp;newItem, <span class="literal">nil</span></span><br><span class="line">    <span class="keyword">case</span> Black:</span><br><span class="line">        newItem := *blackPrototype</span><br><span class="line">        <span class="keyword">return</span> &amp;newItem, <span class="literal">nil</span></span><br><span class="line">    <span class="keyword">case</span> Blue:</span><br><span class="line">        newItem := *bluePrototype</span><br><span class="line">        <span class="keyword">return</span> &amp;newItem, <span class="literal">nil</span></span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, errors.New(<span class="string">"Shirt model not recognized"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> ItemInfoGetter <span class="keyword">interface</span> &#123;</span><br><span class="line">    GetInfo() <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> ShirtColor <span class="keyword">byte</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Shirt <span class="keyword">struct</span> &#123;</span><br><span class="line">    Price <span class="keyword">float32</span></span><br><span class="line">    SKU   <span class="keyword">string</span></span><br><span class="line">    Color ShirtColor</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *Shirt)</span> <span class="title">GetInfo</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> fmt.Sprintf(<span class="string">"Shirt with SKU '%s' and Color id %d that cost %f\n"</span>, s.SKU, s.Color, s.Price)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> whitePrototype *Shirt = &amp;Shirt &#123;</span><br><span class="line">    Price: <span class="number">15.00</span>,</span><br><span class="line">    SKU:   <span class="string">"empty"</span>,</span><br><span class="line">    Color: White,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> blackPrototype *Shirt = &amp;Shirt &#123;</span><br><span class="line">    Price: <span class="number">16.00</span>,</span><br><span class="line">    SKU:   <span class="string">"empty"</span>,</span><br><span class="line">    Color: Black,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> bluePrototype *Shirt = &amp;Shirt &#123;</span><br><span class="line">    Price: <span class="number">17.00</span>,</span><br><span class="line">    SKU:   <span class="string">"empty"</span>,</span><br><span class="line">    Color: Blue,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(i *Shirt)</span> <span class="title">GetPrice</span><span class="params">()</span> <span class="title">float32</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> i.Price</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>The Prototype pattern is a powerful tool to build caches and default objects. You have probably realized too that some patterns can overlap a bit, but they have small differences that make them more appropriate in some cases and not so much in others.</strong></p>
+
+                
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2019/12/06/golang/design-pattern-in-go-behavioral/" data-toggle="tooltip" data-placement="top" title="Design Pattern in Go (Behavioral Pattern)">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/12/04/golang/golang-goroutines/" data-toggle="tooltip" data-placement="top" title="Goroutines">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <div class="comments" id="comments"></div>
+
+                <br>                      
+            </div>
+            
+            <!-- Table of Contents -->
+<aside id="sidebar">
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">Contents</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#The-Singleton-Pattern"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">The Singleton Pattern</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Objectives"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">Objectives</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#The-Builder-Design-Pattern"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">The Builder Design Pattern</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Objectives-1"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">Objectives</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Wrapping-up-the-Builder-design-pattern"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text">Wrapping up the Builder design pattern</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Factory-method"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">Factory method</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Objectives-2"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">Objectives</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Abstract-Factory"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">Abstract Factory</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Objectives-3"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">Objectives</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Prototype-design-pattern"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">Prototype design pattern</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Objective"><span class="toc-nav-number">5.1.</span> <span class="toc-nav-text">Objective</span></a></li></ol></li></ol>
+    
+    </div>
+</aside>
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Golang" title="Golang">Golang</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://chaoscoffee.github.io/" target="_blank">ChaosCoffee&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<link rel="stylesheet" href="/css/valine.css">
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script type="text/javascript">
+    // Use import
+    // or Use require
+    var GUEST = ['nick','mail','link'];
+    var guest = "nick,mail,link";
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: true,
+        notify: false,
+        appId: 'zft6KmhKY69FtUwIJFY5XJo5-gzGzoHsz',
+        appKey: 'KhPyX7dVWp6nYvU3iK8OoOlS',
+        visitor: true,
+        placeholder: 'Let us talk more!!',
+        avatar: 'wavatar',
+        guest_info: guest,
+        pageSize: '10' || 10,
+        lang: 'en'
+    });
+</script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://github.com/sherlockblaze">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/jam-blaze-606ab3163">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/sherlockblaze_007">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Sherlock Blaze 2022 
+                    <br>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://sherlockblaze.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-133187385-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-133187385-1');
+</script>
+
+<!-- -->
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?4d1398d2e890275832d6fd932eb0e2e1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>
